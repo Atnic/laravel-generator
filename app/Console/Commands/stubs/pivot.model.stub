@@ -1,0 +1,20 @@
+<?php
+
+namespace DummyNamespace;
+
+use Arados\Filters\Traits\Filterable;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+
+/**
+ * DummyClass Pivot Model
+ * @extends Pivot
+ */
+class DummyClass extends Pivot
+{
+    use Filterable;
+
+    /** @var string Filter Class */
+    protected $filters = 'DummyNamespace\Filters\DummyClassFilter';
+
+    // TODO: Define other default value and relations
+}
