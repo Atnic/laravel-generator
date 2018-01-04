@@ -2,6 +2,7 @@
 
 namespace Atnic\LaravelGenerator\Console\Commands;
 
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Console\ModelMakeCommand as Command;
 
 /**
@@ -30,6 +31,23 @@ class ModelMakeCommand extends Command
     {
         $this->call('make:filter', [
             'name' => $this->argument('name').'Filter',
+        ]);
+    }
+
+    /**
+     * Create a migration file for the model.
+     *
+     * @return void
+     */
+    protected function createMigration()
+    {
+        $table = $this->option('pivot') ?
+            Str::snake(class_basename($this->argument('name'))) :
+            Str::plurar(Str::snake(class_basename($this->argument('name'))));
+
+        $this->call('make:migration', [
+            'name' => "create_{$table}_table",
+            '--create' => $table,
         ]);
     }
 
