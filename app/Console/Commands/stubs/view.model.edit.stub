@@ -1,0 +1,42 @@
+@extends(config('generator.view').'layouts.app')
+
+@section('content')
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <form class="form" action="{{ dummy_action_update }}" method="POST">
+        {{ csrf_field() }}
+        @component(config('generator.view_component').'components.panel')
+          @slot('header')
+            <span class="panel-title">Edit DummyTitle</span>
+          @endslot
+
+          @if (session('status'))
+          <div class="alert alert-success">
+            {{ session('status') }}
+          </div>
+          @endif
+          @foreach ($fields as $key => $field)
+          @include(config('generator.view_component').'components.fields.'.$field['field'], [
+              'field' => $field,
+              'model' => $dummy_model_variable
+          ])
+          @endforeach
+
+          @slot('footer')
+            <div class="pull-right">
+              <button type="submit" name="_method" value="PUT" class="btn btn-primary">
+                Update
+              </button>
+            </div>
+            <a href="{{ request()->exists('redirect') ? urldecode(request()->redirect) : dummy_action_index }}" class="btn btn-default">Back</a>
+            <button type="submit" name="_method" value="DELETE" class="btn btn-danger">
+              Delete
+            </button>
+          @endslot
+        @endcomponent
+      </form>
+    </div>
+  </div>
+</div>
+@endsection

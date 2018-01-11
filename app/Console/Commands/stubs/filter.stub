@@ -13,13 +13,13 @@ class DummyClass extends BaseFilter
      * Searchable Field
      * @var array
      */
-    protected $searchables = [  ]; // TODO: List all searchables field, support relation also, ex: [ 'name', 'posts' => [ 'title' ] ]
+    protected $searchables = [ 'name' ]; // TODO: List all searchables field, support relation also, ex: [ 'name', 'posts' => [ 'title' ] ]
 
     /**
      * Sortables Field
      * @var array
      */
-    protected $sortables = [  ]; // TODO: List all sortables field, ex: [ 'id', 'name' ]
+    protected $sortables = [ 'name' ]; // TODO: List all sortables field, ex: [ 'id', 'name' ]
 
     /**
      * Default Sort
