@@ -2,14 +2,24 @@
 
 namespace Atnic\LaravelGenerator\Console\Commands;
 
+use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
-use Illuminate\Routing\Console\ControllerMakeCommand as Command;
+use InvalidArgumentException;
+use Illuminate\Foundation\Console\TestMakeCommand as Command;
 
-/**
- * Controller Make Command
- */
-class ControllerMakeController extends Command
+class TestMakeCommand extends Command
 {
+    /**
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $signature = 'make:test {name : The name of the class} '.
+        '{--unit : Create a unit test} '.
+        '{--parent= : Generate a nested resource controller test} '.
+        '{--model= : Generate a resource controller test for the given model} '.
+        '{--resource : Generate a resource controller test}';
+
     /**
      * Get the stub file for the generator.
      *
@@ -17,33 +27,32 @@ class ControllerMakeController extends Command
      */
     protected function getStub()
     {
-        if ($this->option('parent')) {
-            return __DIR__.'/stubs/controller.nested.stub';
-        } elseif ($this->option('model')) {
-            return __DIR__.'/stubs/controller.model.stub';
-        } elseif ($this->option('resource')) {
-            return __DIR__.'/stubs/controller.stub';
+        if ($this->option('unit')) {
+            return parent::getStub();
         }
 
-        return __DIR__.'/stubs/controller.plain.stub';
+        if ($this->option('parent')) {
+            return __DIR__.'/stubs/test.nested.stub';
+        } elseif ($this->option('model')) {
+            return __DIR__.'/stubs/test.model.stub';
+        } elseif ($this->option('resource')) {
+            return __DIR__.'/stubs/test.stub';
+        }
+
+        return parent::getStub();
     }
 
     /**
-     * Get the view stub file for the generator.
+     * Get the destination class app path.
      *
-     * @param string|null $method
+     * @param  string  $name
      * @return string
      */
-    protected function getViewStub($method = null)
+    protected function getAppPath($name)
     {
-        if ($this->option('parent')) {
-            // return __DIR__.'/stubs/view.nested.'.$method.'.stub'; //Unavailable yet
-            return __DIR__.'/stubs/view.model.'.$method.'.stub';
-        } elseif ($this->option('model') || $this->option('resource')) {
-            return __DIR__.'/stubs/view.model.'.$method.'.stub';
-        }
+        $name = Str::replaceFirst($this->laravel->getNamespace(), '', $name);
 
-        return __DIR__.'/stubs/view.stub';
+        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 
     /**
@@ -56,23 +65,8 @@ class ControllerMakeController extends Command
      */
     protected function buildClass($name)
     {
-        $replace = [];
+        $testNamespace = $this->getNamespace($name);
 
-        $replace['dummy_view'] = $this->getViewName($name);
-        $replace['dummy_route'] = $this->getRouteName($name);
-
-        return str_replace(array_keys($replace), array_values($replace), parent::buildClass($name));
-    }
-
-    /**
-     * Build the view with the given name.
-     *
-     * @param  string  $name
-     * @param  string|null  $method
-     * @return string
-     */
-    protected function buildView($name, $method = null)
-    {
         $replace = [];
 
         if ($this->option('parent')) {
@@ -107,7 +101,26 @@ class ControllerMakeController extends Command
         $replace['dummy_view'] = $this->getViewName($name);
         $replace['dummy_route'] = $this->getRouteName($name);
 
-        return str_replace(array_keys($replace), array_values($replace), $this->files->get($this->getViewStub($method)));
+        return str_replace(array_keys($replace), array_values($replace), $this->replaceUserNamespace(parent::buildClass($name)));
+    }
+
+    /**
+     * Replace the User model namespace.
+     *
+     * @param  string  $stub
+     * @return string
+     */
+    protected function replaceUserNamespace($stub)
+    {
+        if (! config('auth.providers.users.model')) {
+            return $stub;
+        }
+
+        return str_replace(
+            $this->rootNamespace().'User',
+            config('auth.providers.users.model'),
+            $stub
+        );
     }
 
     /**
@@ -118,14 +131,14 @@ class ControllerMakeController extends Command
     protected function buildParentReplacements()
     {
         $parentModelClass = $this->parseModel($this->option('parent'));
-        if (!$this->files->exists($this->getPath($parentModelClass))) {
+        if (!$this->files->exists($this->getAppPath($parentModelClass))) {
             if ($this->confirm("A {$parentModelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => str_replace($this->rootNamespace(), '', $parentModelClass), '-m' => true, '-f' => true]);
+                $this->call('make:model', ['name' => $parentModelClass, '-m' => true, '-f' => true]);
             }
         }
 
-        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', $parentModelClass).'Policy';
-        if (!$this->files->exists($this->getPath($policyClass))) {
+        $policyClass = str_replace_first($this->laravel->getNamespace(), $this->laravel->getNamespace().'Policies\\', $parentModelClass).'Policy';
+        if (!$this->files->exists($this->getAppPath($policyClass))) {
             if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
                 $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($parentModelClass)]);
             }
@@ -149,14 +162,14 @@ class ControllerMakeController extends Command
     protected function buildModelReplacements(array $replace)
     {
         $modelClass = $this->parseModel($this->option('model'));
-        if (!$this->files->exists($this->getPath($modelClass))) {
+        if (!$this->files->exists($this->getAppPath($modelClass))) {
             if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => str_replace($this->rootNamespace(), '', $modelClass), '-m' => true, '-f' => true]);
+                $this->call('make:model', ['name' => $modelClass, '-m' => true, '-f' => true]);
             }
         }
 
-        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', $modelClass).'Policy';
-        if (!$this->files->exists($this->getPath($policyClass))) {
+        $policyClass = str_replace_first($this->laravel->getNamespace(), $this->laravel->getNamespace().'Policies\\', $modelClass).'Policy';
+        if (!$this->files->exists($this->getAppPath($policyClass))) {
             if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
                 $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($modelClass)]);
             }
@@ -174,92 +187,28 @@ class ControllerMakeController extends Command
     }
 
     /**
-     * Execute the console command.
+     * Get the fully-qualified model class name.
      *
-     * @return bool|null
+     * @param  string  $model
+     * @return string
      */
-    public function handle()
+    protected function parseModel($model)
     {
-        if (parent::handle() === false) return false;
-
-        $this->createTest();
-        $this->generateView();
-        $this->appendRouteFile();
-    }
-
-    /**
-     * Create a test for the controller.
-     *
-     * @return void
-     */
-    protected function createTest()
-    {
-        $name = $this->qualifyClass($this->getNameInput());
-        $controllerClass = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
-
-        $this->call('make:test', [
-            'name' => $controllerClass.'Test',
-            '--parent' => $this->option('parent') ? : null,
-            '--model' => $this->option('model') ? : null,
-            '--resource' => $this->option('resource') ? : null,
-        ]);
-    }
-
-    /**
-     * Generate View Files
-     * @return void
-     */
-    protected function generateView()
-    {
-        $name = $this->qualifyClass($this->getNameInput());
-        $path = $this->getViewPath($name);
-
-        if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
-            foreach ([ 'index', 'create', 'show', 'edit' ] as $key => $method) {
-                $this->makeDirectory(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path));
-                $this->files->put(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path), $this->buildView($name, $method));
-            }
-        } else {
-            $this->makeDirectory($path);
-            $this->files->put($path, $this->buildView($name));
+        if (preg_match('([^A-Za-z0-9_/\\\\])', $model)) {
+            throw new InvalidArgumentException('Model name contains invalid characters.');
         }
 
-        $this->info('View also generated successfully.');
-    }
+        $model = trim(str_replace('/', '\\', $model), '\\');
 
-    /**
-     * Append Route Files
-     * @return void
-     */
-    protected function appendRouteFile()
-    {
-        $name = $this->qualifyClass($this->getNameInput());
-        $nameWithoutNamespace = str_replace($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
-
-        $file = base_path('routes/web.php');
-        $routeName = $this->getRouteName($name);
-        $routePath = $this->getRoutePath($name);
-
-        $routeDefinition = 'Route::get(\''.$routePath.'\', \''.$nameWithoutNamespace.'\')->name(\''.$routeName.'\');'.PHP_EOL;
-
-        if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
-            $asExploded = explode('/', $routePath);
-            if (count($asExploded) > 1) {
-                array_pop($asExploded);
-                $as = implode('.', $asExploded);
-                $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
-            } else {
-                $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\');'.PHP_EOL;
-            }
+        if (! Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
+            $model = $rootNamespace.$model;
         }
 
-        file_put_contents($file, $routeDefinition, FILE_APPEND);
-
-        $this->warn($file.' modified.');
+        return $model;
     }
 
     /**
-     * Get the view name.
+     * Get the route name.
      *
      * @param  string  $name
      * @return string
@@ -267,7 +216,7 @@ class ControllerMakeController extends Command
     protected function getViewName($name)
     {
         $name = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
-        $name = Str::replaceLast('Controller', '', $name);
+        $name = Str::replaceLast('ControllerTest', '', $name);
         $names = explode('\\', $name);
         foreach ($names as $key => $value) {
             $names[$key] = snake_case($value);
@@ -286,19 +235,6 @@ class ControllerMakeController extends Command
     }
 
     /**
-     * Get the view path.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getViewPath($name)
-    {
-        $name = str_replace('.', '/', $this->getViewName($name));
-
-        return base_path().'/resources/views/'.$name.'.blade.php';
-    }
-
-    /**
      * Get the route name.
      *
      * @param  string  $name
@@ -307,22 +243,5 @@ class ControllerMakeController extends Command
     protected function getRouteName($name)
     {
         return $this->getViewName($name);
-    }
-
-    /**
-     * Get the route path.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getRoutePath($name)
-    {
-        $routeName = $this->getRouteName($name);
-        $routeNameExploded = explode('.', $routeName);
-        $routePath = str_replace('.', '/', $this->getViewName($routeName));
-        if ($this->option('parent') && count($routeNameExploded) >= 2) {
-            $routePath = str_replace_last('/', '.', $routePath);
-        }
-        return $routePath;
     }
 }

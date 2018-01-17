@@ -46,7 +46,9 @@ class DummyClass extends Controller
     public function index(ParentDummyModelClass $parent_dummy_model_variable)
     {
         // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
-        $dummy_model_plural_variable = DummyModelClass::filter()->has('parent_dummy_model_variable')->paginate();
+        $dummy_model_plural_variable = DummyModelClass::filter()
+            ->where('parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName(), $parent_dummy_model_variable->getKey())
+            ->paginate();
         // $this->authorize('index', 'DummyFullModelClass'); // TODO: Policy
 
         return Resource::collection($dummy_model_plural_variable);
