@@ -8,7 +8,7 @@ use Illuminate\Routing\Console\ControllerMakeCommand as Command;
 /**
  * Controller Make Command
  */
-class ControllerMakeController extends Command
+class ControllerMakeCommand extends Command
 {
     /**
      * Get the stub file for the generator.
