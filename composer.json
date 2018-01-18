@@ -25,7 +25,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Atnic\\LaravelGenerator\\Providers\\AppServiceProvider"
+                "Atnic\\LaravelGenerator\\Providers\\AppServiceProvider",
+                "Atnic\\LaravelGenerator\\Providers\\ConsoleServiceProvider"
             ]
         }
     },
