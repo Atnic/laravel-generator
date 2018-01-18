@@ -133,14 +133,7 @@ class TestMakeCommand extends Command
         $parentModelClass = $this->parseModel($this->option('parent'));
         if (!$this->files->exists($this->getAppPath($parentModelClass))) {
             if ($this->confirm("A {$parentModelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => $parentModelClass, '-m' => true, '-f' => true]);
-            }
-        }
-
-        $policyClass = str_replace_first($this->laravel->getNamespace(), $this->laravel->getNamespace().'Policies\\', $parentModelClass).'Policy';
-        if (!$this->files->exists($this->getAppPath($policyClass))) {
-            if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($parentModelClass)]);
+                $this->call('make:model', ['name' => str_replace($this->laravel->getNamespace(), '', $parentModelClass), '-m' => true, '-f' => true]);
             }
         }
 
@@ -164,14 +157,7 @@ class TestMakeCommand extends Command
         $modelClass = $this->parseModel($this->option('model'));
         if (!$this->files->exists($this->getAppPath($modelClass))) {
             if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => $modelClass, '-m' => true, '-f' => true]);
-            }
-        }
-
-        $policyClass = str_replace_first($this->laravel->getNamespace(), $this->laravel->getNamespace().'Policies\\', $modelClass).'Policy';
-        if (!$this->files->exists($this->getAppPath($policyClass))) {
-            if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($modelClass)]);
+                $this->call('make:model', ['name' => str_replace($this->laravel->getNamespace(), '', $modelClass), '-m' => true, '-f' => true]);
             }
         }
 
