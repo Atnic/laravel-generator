@@ -55,17 +55,6 @@ class DummyClass extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @return \Illuminate\Http\Response
-     */
-    public function create(ParentDummyModelClass $parent_dummy_model_variable)
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -112,18 +101,6 @@ class DummyClass extends Controller
         // $this->authorize('view', $dummy_model_variable); // TODO: Policy
 
         return new Resource($dummy_model_variable);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
-    {
-        //
     }
 
     /**
