@@ -8,8 +8,29 @@ use Illuminate\Routing\Console\ControllerMakeCommand as Command;
 /**
  * Controller Make Command
  */
-class ControllerMakeCommand extends Command
+class ControllerApiMakeCommand extends Command
 {
+    /**
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $name = 'make:controller-api';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Create a new controller api class';
+
+    /**
+     * The type of class being generated.
+     *
+     * @var string
+     */
+    protected $type = 'Controller Api';
+
     /**
      * Get the stub file for the generator.
      *
@@ -18,32 +39,25 @@ class ControllerMakeCommand extends Command
     protected function getStub()
     {
         if ($this->option('parent')) {
-            return __DIR__.'/stubs/controller.nested.stub';
+            return __DIR__.'/stubs/controller.api.nested.stub';
         } elseif ($this->option('model')) {
-            return __DIR__.'/stubs/controller.model.stub';
+            return __DIR__.'/stubs/controller.api.model.stub';
         } elseif ($this->option('resource')) {
-            return __DIR__.'/stubs/controller.stub';
+            return __DIR__.'/stubs/controller.api.stub';
         }
 
-        return __DIR__.'/stubs/controller.plain.stub';
+        return __DIR__.'/stubs/controller.api.plain.stub';
     }
 
     /**
-     * Get the view stub file for the generator.
+     * Get the default namespace for the class.
      *
-     * @param string|null $method
+     * @param  string  $rootNamespace
      * @return string
      */
-    protected function getViewStub($method = null)
+    protected function getDefaultNamespace($rootNamespace)
     {
-        if ($this->option('parent')) {
-            // return __DIR__.'/stubs/view.nested.'.$method.'.stub'; //Unavailable yet
-            return __DIR__.'/stubs/view.model.'.$method.'.stub';
-        } elseif ($this->option('model') || $this->option('resource')) {
-            return __DIR__.'/stubs/view.model.'.$method.'.stub';
-        }
-
-        return __DIR__.'/stubs/view.stub';
+        return $rootNamespace.'\Http\Controllers\Api';
     }
 
     /**
@@ -58,56 +72,9 @@ class ControllerMakeCommand extends Command
     {
         $replace = [];
 
-        $replace['dummy_view'] = $this->getViewName($name);
         $replace['dummy_route'] = $this->getRouteName($name);
 
         return str_replace(array_keys($replace), array_values($replace), parent::buildClass($name));
-    }
-
-    /**
-     * Build the view with the given name.
-     *
-     * @param  string  $name
-     * @param  string|null  $method
-     * @return string
-     */
-    protected function buildView($name, $method = null)
-    {
-        $replace = [];
-
-        if ($this->option('parent')) {
-            $replace = $this->buildParentReplacements();
-        }
-
-        if ($this->option('model')) {
-            $replace = $this->buildModelReplacements($replace);
-            if ($this->option('parent')) {
-                $replace = array_merge($replace, [
-                    'dummy_action_index' => 'route(\''.$this->getRouteName($name).'.index\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_create' => 'route(\''.$this->getRouteName($name).'.create\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_store' => 'route(\''.$this->getRouteName($name).'.store\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_show' => 'route(\''.$this->getRouteName($name).'.show\', [ $'.$replace['parent_dummy_model_variable'].'->getKey(), $'.$replace['dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_edit' => 'route(\''.$this->getRouteName($name).'.edit\', [ $'.$replace['parent_dummy_model_variable'].'->getKey(), $'.$replace['dummy_model_variable'].'->getKey()  ])',
-                    'dummy_action_update' => 'route(\''.$this->getRouteName($name).'.update\', [ $'.$replace['parent_dummy_model_variable'].'->getKey(), $'.$replace['dummy_model_variable'].'->getKey()  ])',
-                    'dummy_action_destroy' => 'route(\''.$this->getRouteName($name).'.destroy\', [ $'.$replace['parent_dummy_model_variable'].'->getKey(), $'.$replace['dummy_model_variable'].'->getKey()  ])',
-                ]);
-            } else {
-                $replace = array_merge($replace, [
-                    'dummy_action_index' => 'route(\''.$this->getRouteName($name).'.index\')',
-                    'dummy_action_create' => 'route(\''.$this->getRouteName($name).'.create\')',
-                    'dummy_action_store' => 'route(\''.$this->getRouteName($name).'.store\')',
-                    'dummy_action_show' => 'route(\''.$this->getRouteName($name).'.show\', [ $'.$replace['dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_edit' => 'route(\''.$this->getRouteName($name).'.edit\', [ $'.$replace['dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_update' => 'route(\''.$this->getRouteName($name).'.update\', [ $'.$replace['dummy_model_variable'].'->getKey() ])',
-                    'dummy_action_destroy' => 'route(\''.$this->getRouteName($name).'.destroy\', [ $'.$replace['dummy_model_variable'].'->getKey() ])',
-                ]);
-            }
-        }
-
-        $replace['dummy_view'] = $this->getViewName($name);
-        $replace['dummy_route'] = $this->getRouteName($name);
-
-        return str_replace(array_keys($replace), array_values($replace), $this->files->get($this->getViewStub($method)));
     }
 
     /**
@@ -183,7 +150,6 @@ class ControllerMakeCommand extends Command
         if (parent::handle() === false) return false;
 
         $this->createTest();
-        $this->generateView();
         $this->appendRouteFile();
     }
 
@@ -198,33 +164,11 @@ class ControllerMakeCommand extends Command
         $controllerClass = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
 
         $this->call('make:test', [
-            'name' => $controllerClass.'Test',
+            'name' => 'Api\\'.$controllerClass.'Test',
             '--parent' => $this->option('parent') ? : null,
             '--model' => $this->option('model') ? : null,
             '--resource' => $this->option('resource') ? : false,
         ]);
-    }
-
-    /**
-     * Generate View Files
-     * @return void
-     */
-    protected function generateView()
-    {
-        $name = $this->qualifyClass($this->getNameInput());
-        $path = $this->getViewPath($name);
-
-        if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
-            foreach ([ 'index', 'create', 'show', 'edit' ] as $key => $method) {
-                $this->makeDirectory(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path));
-                $this->files->put(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path), $this->buildView($name, $method));
-            }
-        } else {
-            $this->makeDirectory($path);
-            $this->files->put($path, $this->buildView($name));
-        }
-
-        $this->info('View also generated successfully.');
     }
 
     /**
@@ -236,20 +180,20 @@ class ControllerMakeCommand extends Command
         $name = $this->qualifyClass($this->getNameInput());
         $nameWithoutNamespace = str_replace($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
 
-        $file = base_path('routes/web.php');
+        $file = base_path('routes/api.php');
         $routeName = $this->getRouteName($name);
         $routePath = $this->getRoutePath($name);
 
-        $routeDefinition = 'Route::get(\''.$routePath.'\', \''.$nameWithoutNamespace.'\')->name(\''.$routeName.'\');'.PHP_EOL;
+        $routeDefinition = 'Route::get(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\')->name(\''.$routeName.'\');'.PHP_EOL;
 
         if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
             $asExploded = explode('/', $routePath);
             if (count($asExploded) > 1) {
                 array_pop($asExploded);
                 $as = implode('.', $asExploded);
-                $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
+                $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
             } else {
-                $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\');'.PHP_EOL;
+                $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\');'.PHP_EOL;
             }
         }
 
@@ -259,15 +203,15 @@ class ControllerMakeCommand extends Command
     }
 
     /**
-     * Get the view name.
+     * Get the route name.
      *
      * @param  string  $name
      * @return string
      */
-    protected function getViewName($name)
+    protected function getRouteName($name)
     {
         $name = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
-        $name = Str::replaceLast('Controller', '', $name);
+        $name = 'Api\\'.Str::replaceLast('Controller', '', $name);
         $names = explode('\\', $name);
         foreach ($names as $key => $value) {
             $names[$key] = snake_case($value);
@@ -286,30 +230,6 @@ class ControllerMakeCommand extends Command
     }
 
     /**
-     * Get the view path.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getViewPath($name)
-    {
-        $name = str_replace('.', '/', $this->getViewName($name));
-
-        return base_path().'/resources/views/'.$name.'.blade.php';
-    }
-
-    /**
-     * Get the route name.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getRouteName($name)
-    {
-        return $this->getViewName($name);
-    }
-
-    /**
      * Get the route path.
      *
      * @param  string  $name
@@ -317,9 +237,9 @@ class ControllerMakeCommand extends Command
      */
     protected function getRoutePath($name)
     {
-        $routeName = $this->getRouteName($name);
+        $routeName = str_replace_first('api.', '', $this->getRouteName($name));
         $routeNameExploded = explode('.', $routeName);
-        $routePath = str_replace('.', '/', $this->getViewName($routeName));
+        $routePath = str_replace('.', '/', $routeName);
         if ($this->option('parent') && count($routeNameExploded) >= 2) {
             $routePath = str_replace_last('/', '.', $routePath);
         }

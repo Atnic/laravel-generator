@@ -39,7 +39,7 @@ class TestMakeCommand extends Command
             return __DIR__.'/stubs/test.stub';
         }
 
-        return parent::getStub();
+        return __DIR__.'/stubs/test.plain.stub';
     }
 
     /**

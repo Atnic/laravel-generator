@@ -1,0 +1,24 @@
+<?php
+
+namespace DummyNamespace;
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class DummyClass extends TestCase
+{
+    /**
+     * Invoke single action controller.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function test()
+    {
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user);
+        $response = $this->get(route('dummy_route'));
+        $response->assertViewIs('dummy_view');
+    }
+}
