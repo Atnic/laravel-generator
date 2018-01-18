@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Atnic\LaravelGenerator\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;

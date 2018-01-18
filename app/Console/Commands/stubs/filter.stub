@@ -1,0 +1,29 @@
+<?php
+
+namespace DummyNamespace;
+
+use Atnic\LaravelGenerator\Filters\BaseFilter;
+
+/**
+ * DummyClass Filter
+ */
+class DummyClass extends BaseFilter
+{
+    /**
+     * Searchable Field
+     * @var array
+     */
+    protected $searchables = [ 'name' ]; // TODO: List all searchables field, support relation also, ex: [ 'name', 'posts' => [ 'title' ] ]
+
+    /**
+     * Sortables Field
+     * @var array
+     */
+    protected $sortables = [ 'name' ]; // TODO: List all sortables field, ex: [ 'id', 'name' ]
+
+    /**
+     * Default Sort
+     * @var string
+     */
+    protected $default_sort = null; // TODO: Default sort, null if no default, ex: 'name,asc'
+}

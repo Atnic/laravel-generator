@@ -1,0 +1,90 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Http\Request;
+use DummyRootNamespaceHttp\Controllers\Controller;
+use Illuminate\Http\Resources\Json\Resource;
+
+/**
+ * DummyClass
+ * @extends Controller
+ */
+class DummyClass extends Controller
+{
+    /**
+    * Instantiate a new controller instance.
+    *
+    * @return void
+    */
+    public function __construct()
+    {
+        // TODO: Apply middleware if any
+        // $this->middleware('auth:api');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        // TODO: Index
+
+        return Resource::collection(/* collection */); // TODO: Model collection
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // TODO: Store
+
+        return (new Resource(/* model */))->response()->setStatusCode(201); // TODO: Model
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        // TODO: Show
+
+        return new Resource(/* model */); // TODO: Model
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        // TODO: Update
+
+        return new Resource(/* model */); // TODO: Model
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        // TODO: Destroy
+
+        return new Resource(/* model */); // TODO: Model
+    }
+}

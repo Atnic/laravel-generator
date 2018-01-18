@@ -1,0 +1,19 @@
+<?php
+
+namespace DummyNamespace;
+
+use Arados\Filters\Traits\Filterable;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * DummyClass Model
+ */
+class DummyClass extends Model
+{
+    use Filterable;
+
+    /** @var string Filter Class */
+    protected $filters = 'DummyNamespace\Filters\DummyClassFilter';
+
+    // TODO: Define other default value and relations
+}

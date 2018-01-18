@@ -1,0 +1,157 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyFullModelClass;
+use ParentDummyFullModelClass;
+use Illuminate\Http\Request;
+use DummyRootNamespaceHttp\Controllers\Controller;
+use Illuminate\Http\Resources\Json\Resource;
+
+/**
+ * DummyClass
+ * @extends Controller
+ */
+class DummyClass extends Controller
+{
+    /** @var array Validation Rules */
+    protected $rules = [
+        'store' => [
+            // TODO: Store rules
+            'name' => 'required|string|max:255',
+        ],
+        'update' => [
+            // TODO: Update rules
+            'name' => 'string|max:255',
+        ]
+    ];
+
+    /**
+    * Instantiate a new controller instance.
+    *
+    * @return void
+    */
+    public function __construct()
+    {
+        // TODO: Apply middleware if any
+        // $this->middleware('auth:api');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @return \Illuminate\Http\Response
+     */
+    public function index(ParentDummyModelClass $parent_dummy_model_variable)
+    {
+        // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
+        $dummy_model_plural_variable = DummyModelClass::filter()
+            ->where('parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName(), $parent_dummy_model_variable->getKey())
+            ->paginate();
+        // $this->authorize('index', 'DummyFullModelClass'); // TODO: Policy
+
+        return Resource::collection($dummy_model_plural_variable);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
+    {
+        // TODO: Add authorize for relation if any
+        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
+        // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
+        $this->validate($request, $this->rules['store']);
+
+        $dummy_model_variable = new DummyModelClass;
+        foreach ($this->rules['store'] as $key => $value) {
+            if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
+                if ($request->hasFile($key)) {
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                } elseif ($request->exists($key)) {
+                    $dummy_model_variable->{$key} = $request->{$key};
+                }
+            } elseif ($request->exists($key)) {
+                $dummy_model_variable->{$key} = $request->{$key};
+            }
+        }
+        $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
+        // TODO: Add custom logic if any
+        $dummy_model_variable->save();
+
+        return (new Resource($dummy_model_variable))->response()->setStatusCode(201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return \Illuminate\Http\Response
+     */
+    public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    {
+        $parent_dummy_model_variable->dummy_model_variable()->findOrFail($dummy_model_variable->getKey());
+        // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
+        // $this->authorize('view', $dummy_model_variable); // TODO: Policy
+
+        return new Resource($dummy_model_variable);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    {
+        $parent_dummy_model_variable->dummy_model_variable()->findOrFail($dummy_model_variable->getKey());
+
+        // TODO: Add authorize for relation if any
+        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
+        // $this->authorize('update', $dummy_model_variable); // TODO: Policy
+        $this->validate($request, $this->rules['update']);
+
+        foreach ($this->rules['update'] as $key => $value) {
+            if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
+                if ($request->hasFile($key)) {
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                } elseif ($request->exists($key)) {
+                    $dummy_model_variable->{$key} = $request->{$key};
+                }
+            } elseif ($request->exists($key)) {
+                $dummy_model_variable->{$key} = $request->{$key};
+            }
+        }
+        $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
+        // TODO: Add custom logic if any
+        $dummy_model_variable->save();
+
+        return new Resource($dummy_model_variable);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    {
+        $parent_dummy_model_variable->dummy_model_variable()->findOrFail($dummy_model_variable->getKey());
+        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
+        // $this->authorize('delete', $dummy_model_variable); // TODO: Policy
+        $dummy_model_variable->delete();
+
+        return new Resource($dummy_model_variable);
+    }
+}

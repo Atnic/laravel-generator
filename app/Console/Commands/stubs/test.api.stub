@@ -1,0 +1,95 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyFullModelClass;
+use NamespacedDummyUserModel;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class DummyClass extends TestCase
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return void
+     */
+    public function testIndex()
+    {
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user, 'api');
+        $response = $this->getJson(dummy_action_index);
+        $response->assertSuccessful();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return void
+     */
+    public function testStore()
+    {
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user, 'api');
+        $response = $this->postJson(dummy_action_store, [
+            'name' => 'Test'
+        ]);
+        $response->assertSuccessful();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return void
+     */
+    public function testShow()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user, 'api');
+        // $response = $this->getJson(dummy_action_show);
+        // $response->assertSuccessful();
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @return void
+     */
+    public function testUpdate()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user, 'api');
+        // $response = $this->putJson(dummy_action_update, [
+        //     'name' => 'Test'
+        // ]);
+        // $response->assertSuccessful();
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return void
+     */
+    public function testDestroy()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user, 'api');
+        // $response = $this->deleteJson(dummy_action_destroy);
+        // $response->assertSuccessful();
+        $this->assertTrue(true);
+    }
+}

@@ -1,0 +1,129 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyFullModelClass;
+use NamespacedDummyUserModel;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class DummyClass extends TestCase
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return void
+     */
+    public function testIndex()
+    {
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user);
+        $response = $this->get(dummy_action_index);
+        $response->assertViewIs('dummy_view.index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return void
+     */
+    public function testCreate()
+    {
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user);
+        $response = $this->get(dummy_action_create);
+        $response->assertViewIs('dummy_view.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return void
+     */
+    public function testStore()
+    {
+        $user = factory(User::class)->create();
+
+        $this->actingAs($user);
+        $response = $this->post(dummy_action_store, [
+            'name' => 'Test'
+        ]);
+        $response->assertSessionMissing('errors');
+        $response->assertStatus(302);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return void
+     */
+    public function testShow()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user);
+        // $response = $this->get(dummy_action_show);
+        // $response->assertViewIs('dummy_view.show');
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return void
+     */
+    public function testEdit()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user);
+        // $response = $this->get(dummy_action_edit);
+        // $response->assertViewIs('dummy_view.edit');
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @return void
+     */
+    public function testUpdate()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user);
+        // $response = $this->put(dummy_action_update, [
+        //     'name' => 'Test'
+        // ]);
+        // $response->assertSessionMissing('errors');
+        // $response->assertStatus(302);
+        $this->assertTrue(true);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return void
+     */
+    public function testDestroy()
+    {
+        $user = factory(User::class)->create();
+
+        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+
+        $this->actingAs($user);
+        // $response = $this->delete(dummy_action_destroy);
+        // $response->assertSessionMissing('errors');
+        // $response->assertStatus(302);
+        $this->assertTrue(true);
+    }
+}
