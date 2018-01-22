@@ -1,14 +1,14 @@
-@extends(config('generator.view').'layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="row">
   <div class="col-md-offset-2 col-md-8">
     @component(config('generator.view_component').'components.panel')
-      @slot('header')
-        <span class="panel-title">DummyTitle</span>
-        <div class="pull-right">
-          <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-default btn-xs">Create</a>
-        </div>
+      @slot('title')
+        DummyTitle
+      @endslot
+      @slot('tools')
+        <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-success btn-xs">Create</a>
       @endslot
 
       @if (session('status'))

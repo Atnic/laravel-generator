@@ -1,11 +1,11 @@
-@extends(config('generator.view').'layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
     @component(config('generator.view_component').'components.panel')
-      @slot('header')
-        <h3 class="panel-title">Header</h3>
+      @slot('title')
+        Title
       @endslot
 
       @if (session('status'))

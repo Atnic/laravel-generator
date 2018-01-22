@@ -1,4 +1,4 @@
-@extends(config('generator.view').'layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="row">
@@ -6,8 +6,8 @@
     <form class="form" action="{{ dummy_action_store }}" method="POST">
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
-        @slot('header')
-          <span class="panel-title">Create DummyTitle</span>
+        @slot('title')
+          Create DummyTitle
         @endslot
 
         @if (session('status'))
