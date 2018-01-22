@@ -1,64 +1,62 @@
-@extends(config('generator.view').'layouts.app')
+@extends('layouts.app')
 
 @section('content')
-<div class="container">
-  <div class="row">
-    <div class="col-md-offset-2 col-md-8">
-      @component(config('generator.view_component').'components.panel')
-        @slot('header')
-          <span class="panel-title">DummyTitle</span>
-          <div class="pull-right">
-            <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-default btn-xs">Create</a>
-          </div>
-        @endslot
+<div class="row">
+  <div class="col-md-offset-2 col-md-8">
+    @component(config('generator.view_component').'components.panel')
+      @slot('title')
+        DummyTitle
+      @endslot
+      @slot('tools')
+        <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-default btn-xs">Create</a>
+      @endslot
 
-        @if (session('status'))
-        <div class="alert alert-success">
-          {{ session('status') }}
-        </div>
-        @endif
-        <div class="table-responsive">
-          <table id="dummy_model_plural_variable" class="table table-striped table-hover">
-            <thead>
-              <tr>
-                @foreach ($visible as $key => $column)
-                <th class="text-center">{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
-                @endforeach
-                <th class="text-center action" width="1px"></th>
-              </tr>
-            </thead>
-            <tbody>
-              @forelse ($dummy_model_plural_variable as $key => $dummy_model_variable)
-              <tr>
-                @foreach ($visible as $key => $column)
-                @if (is_array($column['name']))
-                <td>{{ $dummy_model_variable->{key($column['name'])}->{$column['name'][key($column['name'])]} }}</td>
-                @else
-                <td>{{ $dummy_model_variable->{$column['name']} }}</td>
-                @endif
-                @endforeach
-                <td class="action text-nowrap">
-                  <a href="{{ dummy_action_show }}" class="btn btn-primary btn-xs">Show</a>
-                  <a href="{{ dummy_action_edit }}?redirect={{ urlencode(request()->fullUrl()) }}" class="btn btn-success btn-xs">Edit</a>
-                  <form style="display:inline" action="{{ dummy_action_destroy }}" method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
-                    {{ csrf_field() }}
-                    <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">Delete</button>
-                  </form>
-                </td>
-              </tr>
-              @empty
-              <tr>
-                <td class="text-center" colspan="{{ count($visible) + 1 }}">No Data</td>
-              </tr>
-              @endforelse
-            </tbody>
-          </table>
-        </div>
-        <div class="text-center">
-          {{ $dummy_model_plural_variable->links() }}
-        </div>
-      @endcomponent
-    </div>
+      @if (session('status'))
+      <div class="alert alert-success">
+        {{ session('status') }}
+      </div>
+      @endif
+      <div class="table-responsive">
+        <table id="dummy_model_plural_variable" class="table table-striped table-hover">
+          <thead>
+            <tr>
+              @foreach ($visible as $key => $column)
+              <th class="text-center">{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+              @endforeach
+              <th class="text-center action" width="1px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse ($dummy_model_plural_variable as $key => $dummy_model_variable)
+            <tr>
+              @foreach ($visible as $key => $column)
+              @if (is_array($column['name']))
+              <td>{{ $dummy_model_variable->{key($column['name'])}->{$column['name'][key($column['name'])]} }}</td>
+              @else
+              <td>{{ $dummy_model_variable->{$column['name']} }}</td>
+              @endif
+              @endforeach
+              <td class="action text-nowrap">
+                <a href="{{ dummy_action_show }}" class="btn btn-primary btn-xs">Show</a>
+                <a href="{{ dummy_action_edit }}?redirect={{ urlencode(request()->fullUrl()) }}" class="btn btn-success btn-xs">Edit</a>
+                <form style="display:inline" action="{{ dummy_action_destroy }}" method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
+                  {{ csrf_field() }}
+                  <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">Delete</button>
+                </form>
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td class="text-center" colspan="{{ count($visible) + 1 }}">No Data</td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+      <div class="text-center">
+        {{ $dummy_model_plural_variable->links() }}
+      </div>
+    @endcomponent
   </div>
-<div>
+</div>
 @endsection

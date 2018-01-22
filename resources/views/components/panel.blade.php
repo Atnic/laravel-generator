@@ -1,9 +1,18 @@
 <div class="panel panel-default">
-  @isset($header)
+  @if(isset($header) || isset($title))
   <div class="panel-heading">
+    @if(isset($header))
     {{ $header }}
+    @else
+    <span class="panel-title">{{ $title }}</span>
+    @isset($tools)
+    <div class="pull-right">
+      {{ $tools }}
+    </div>
+    @endisset
+    @endif
   </div>
-  @endisset
+  @endif
   <div class="panel-body">
     {{ !empty($body) ? $body : $slot }}
   </div>
