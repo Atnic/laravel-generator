@@ -8,7 +8,7 @@
         DummyTitle
       @endslot
       @slot('tools')
-        <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-success btn-xs">Create</a>
+        <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-default btn-xs">Create</a>
       @endslot
 
       @if (session('status'))
