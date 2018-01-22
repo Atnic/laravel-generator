@@ -1,46 +1,44 @@
 @extends(config('generator.view').'layouts.app')
 
 @section('content')
-<div class="container">
-  <div class="row">
-    <div class="col-md-8 col-md-offset-2">
-      @component(config('generator.view_component').'components.panel')
-        @slot('header')
-          <h3 class="panel-title">Detail DummyTitle</h3>
-        @endslot
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    @component(config('generator.view_component').'components.panel')
+      @slot('header')
+        <h3 class="panel-title">Detail DummyTitle</h3>
+      @endslot
 
-        @if (session('status'))
-        <div class="alert alert-success">
-          {{ session('status') }}
+      @if (session('status'))
+      <div class="alert alert-success">
+        {{ session('status') }}
+      </div>
+      @endif
+      <table class="table">
+        <colgroup>
+          <col class="col-xs-4">
+          <col class="col-xs-8">
+        </colgroup>
+        <tbody>
+          @foreach ($visible as $key => $column)
+          <tr>
+            <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+            @if (is_array($column['name']))
+            <td>{{ $dummy_model_variable->{key($column['name'])}->{$column['name'][key($column['name'])]} }}</td>
+            @else
+            <td>{{ $dummy_model_variable->{$column['name']} }}</td>
+            @endif
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+
+      @slot('footer')
+        <div class="pull-right">
+          <a href="{{ dummy_action_edit }}" class="btn btn-primary">Edit</a>
         </div>
-        @endif
-        <table class="table">
-          <colgroup>
-            <col class="col-xs-4">
-            <col class="col-xs-8">
-          </colgroup>
-          <tbody>
-            @foreach ($visible as $key => $column)
-            <tr>
-              <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
-              @if (is_array($column['name']))
-              <td>{{ $dummy_model_variable->{key($column['name'])}->{$column['name'][key($column['name'])]} }}</td>
-              @else
-              <td>{{ $dummy_model_variable->{$column['name']} }}</td>
-              @endif
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
-
-        @slot('footer')
-          <div class="pull-right">
-            <a href="{{ dummy_action_edit }}" class="btn btn-primary">Edit</a>
-          </div>
-          <a href="{{ request()->exists('redirect') ? urldecode(request()->redirect) : dummy_action_index }}" class="btn btn-default">Back</a>
-        @endslot
-      @endcomponent
-    </div>
+        <a href="{{ request()->exists('redirect') ? urldecode(request()->redirect) : dummy_action_index }}" class="btn btn-default">Back</a>
+      @endslot
+    @endcomponent
   </div>
 </div>
 @endsection
