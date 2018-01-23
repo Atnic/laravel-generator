@@ -30,7 +30,7 @@
             </button>
           </div>
           <a href="{{ request()->filled('redirect') ? urldecode(request()->redirect) : route('dummy_route.index') }}" class="btn btn-default">Back</a>
-          <button type="submit" name="_method" value="DELETE" class="btn btn-danger">
+          <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?');">
             Delete
           </button>
         @endslot

@@ -8,7 +8,7 @@
         DummyTitle
       @endslot
       @slot('tools')
-        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default btn-xs">Create</a>
+        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->url() ]) }}" class="btn btn-default btn-xs">Create</a>
       @endslot
 
       @if (session('status'))
@@ -16,6 +16,20 @@
         {{ session('status') }}
       </div>
       @endif
+      <div class="row">
+        <div class="col-sm-offset-8 col-sm-4">
+          <form class="form" method="GET">
+            <div class="input-group">
+              <input type="text" name="search" placeholder="Search" class="input-sm form-control" value="{{ request()->search }}" autofocus>
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-sm btn-primary">
+                  <i class="fa fa-search"></i>
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+      </div>
       <div class="table-responsive">
         <table id="dummy_model_plural_variable" class="table table-striped table-hover">
           <thead>
