@@ -8,7 +8,7 @@
         DummyTitle
       @endslot
       @slot('tools')
-        <a href="{{ dummy_action_create }}?redirect={{ urlencode(request()->url()) }}" class="btn btn-default btn-xs">Create</a>
+        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default btn-xs">Create</a>
       @endslot
 
       @if (session('status'))
@@ -20,8 +20,20 @@
         <table id="dummy_model_plural_variable" class="table table-striped table-hover">
           <thead>
             <tr>
-              @foreach ($visible as $key => $column)
-              <th class="text-center">{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+              @foreach ([ 'belongsTo', 'morphTo' ] as $key => $relation_type)
+              @foreach ($relations['dummy_model_variable'][$relation_type] as $key => $relation)
+              <th class="text-center">{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+              @endforeach
+              @endforeach
+              @foreach ($visibles['dummy_model_variable'] as $key => $column)
+              <th class="text-center">
+                {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+                @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
+                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $column['name'].',desc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+                @else
+                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $column['name'].',asc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+                @endif
+              </th>
               @endforeach
               <th class="text-center action" width="1px"></th>
             </tr>
@@ -29,17 +41,23 @@
           <tbody>
             @forelse ($dummy_model_plural_variable as $key => $dummy_model_variable)
             <tr>
-              @foreach ($visible as $key => $column)
-              @if (is_array($column['name']))
-              <td>{{ $dummy_model_variable->{key($column['name'])}->{$column['name'][key($column['name'])]} }}</td>
-              @else
+              @foreach ($relations['dummy_model_variable']['belongsTo'] as $key => $relation)
+              <td>
+                <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+                  {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
+                </a>
+              </td>
+              @endforeach
+              @foreach ($relations['dummy_model_variable']['morphTo'] as $key => $relation)
+              <td>{{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}</td>
+              @endforeach
+              @foreach ($visibles['dummy_model_variable'] as $key => $column)
               <td>{{ $dummy_model_variable->{$column['name']} }}</td>
-              @endif
               @endforeach
               <td class="action text-nowrap">
-                <a href="{{ dummy_action_show }}" class="btn btn-primary btn-xs">Show</a>
-                <a href="{{ dummy_action_edit }}?redirect={{ urlencode(request()->fullUrl()) }}" class="btn btn-success btn-xs">Edit</a>
-                <form style="display:inline" action="{{ dummy_action_destroy }}" method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
+                <a href="{{ route('dummy_route.show', [ $dummy_model_variable->getKey() ]) }}" class="btn btn-primary btn-xs">Show</a>
+                <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-success btn-xs">Edit</a>
+                <form style="display:inline" action="{{ route('dummy_route.destroy', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
                   {{ csrf_field() }}
                   <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">Delete</button>
                 </form>
@@ -47,14 +65,14 @@
             </tr>
             @empty
             <tr>
-              <td class="text-center" colspan="{{ count($visible) + 1 }}">No Data</td>
+              <td class="text-center" colspan="{{ count($relations['dummy_model_variable']['belongsTo']) + count($relations['dummy_model_variable']['morphTo']) + count($visibles['dummy_model_variable']) + 1 }}">No Data</td>
             </tr>
             @endforelse
           </tbody>
         </table>
       </div>
       <div class="text-center">
-        {{ $dummy_model_plural_variable->links() }}
+        {{ $dummy_model_plural_variable->appends(request()->query())->links() }}
       </div>
     @endcomponent
   </div>
