@@ -26,7 +26,7 @@ class BaseFilter extends Filter
      */
     public function __construct(Request $request)
     {
-        $this->request = $request;
+        $this->request = clone $request;
         if (!$this->request->exists('sort') && $this->default_sort) {
             $this->request->merge([ 'sort' => $this->default_sort ]);
         }
