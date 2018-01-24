@@ -132,7 +132,7 @@ class DummyClass extends Controller
         foreach ($this->rules['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
-                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
                 } elseif ($request->exists($key)) {
                     $dummy_model_variable->{$key} = $request->{$key};
                 }
@@ -200,7 +200,7 @@ class DummyClass extends Controller
         foreach ($this->rules['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
-                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
                 } elseif ($request->exists($key)) {
                     $dummy_model_variable->{$key} = $request->{$key};
                 }
