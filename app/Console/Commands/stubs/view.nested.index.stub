@@ -1,0 +1,79 @@
+@extends('parent_dummy_view.show')
+
+@section('parent-content')
+<div class="row">
+  <div class="col-sm-4">
+    <form class="form" method="GET">
+      <div class="input-group">
+        <span class="input-group-addon">
+          <i class="fa fa-search"></i>
+        </span>
+        <input type="text" name="search" placeholder="Search" class="input-sm form-control" value="{{ request()->search }}" autofocus>
+      </div>
+    </form>
+  </div>
+  <div class="col-sm-8">
+    <div class="pull-right">
+      <a href="{{ route('dummy_route.create', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary btn-sm">Create</a>
+    </div>
+  </div>
+</div>
+<div class="table-responsive">
+  <table id="dummy_model_plural_variable" class="table table-striped table-hover">
+    <thead>
+      <tr>
+        @foreach ([ 'belongsTo', 'morphTo' ] as $key => $relation_type)
+        @foreach ($relations['dummy_model_variable'][$relation_type] as $key => $relation)
+        <th class="text-center">{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+        @endforeach
+        @endforeach
+        @foreach ($visibles['dummy_model_variable'] as $key => $column)
+        <th class="text-center">
+          {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+          @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
+          <a href="{{ route('dummy_route.index', array_merge([ $parent_dummy_model_variable->getKey() ], request()->query(), [ 'sort' => $column['name'].',desc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+          @else
+          <a href="{{ route('dummy_route.index', array_merge([ $parent_dummy_model_variable->getKey() ], request()->query(), [ 'sort' => $column['name'].',asc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+          @endif
+        </th>
+        @endforeach
+        <th class="text-center action" width="1px"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @forelse ($dummy_model_plural_variable as $key => $dummy_model_variable)
+      <tr>
+        @foreach ($relations['dummy_model_variable']['belongsTo'] as $key => $relation)
+        <td>
+          <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+            {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
+          </a>
+        </td>
+        @endforeach
+        @foreach ($relations['dummy_model_variable']['morphTo'] as $key => $relation)
+        <td>{{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}</td>
+        @endforeach
+        @foreach ($visibles['dummy_model_variable'] as $key => $column)
+        <td>{{ $dummy_model_variable->{$column['name']} }}</td>
+        @endforeach
+        <td class="action text-nowrap">
+          <a href="{{ route('dummy_route.show', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary btn-xs">Show</a>
+          <a href="{{ route('dummy_route.edit', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-success btn-xs">Edit</a>
+          <form style="display:inline" action="{{ route('dummy_route.destroy', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">Delete</button>
+          </form>
+        </td>
+      </tr>
+      @empty
+      <tr>
+        <td class="text-center" colspan="{{ count($relations['dummy_model_variable']['belongsTo']) + count($relations['dummy_model_variable']['morphTo']) + count($visibles['dummy_model_variable']) + 1 }}">No Data</td>
+      </tr>
+      @endforelse
+    </tbody>
+  </table>
+</div>
+<div class="text-center">
+  {{ $dummy_model_plural_variable->appends(request()->query())->links() }}
+</div>
+@endsection

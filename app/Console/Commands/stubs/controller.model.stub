@@ -22,7 +22,7 @@ class DummyClass extends Controller
             'morphToMany' => [],
             'hasOne' => [],
             'hasMany' => [
-                // [ 'name' => 'childs', 'column' => 'name' ], // Example
+                // [ 'name' => 'childs' ], // Example
             ],
             'hasManyThrough' => [],
             'morphMany' => [],
@@ -143,8 +143,8 @@ class DummyClass extends Controller
         // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
-        if (request()->filled('redirect') && starts_with(urldecode(request()->redirect), request()->root()))
-            $response = response()->redirectTo(urldecode(request()->redirect));
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+            $response = response()->redirectTo(request()->redirect);
         else
             $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
 
@@ -211,8 +211,8 @@ class DummyClass extends Controller
         // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
-        if (request()->filled('redirect') && starts_with(urldecode(request()->redirect), request()->root()))
-            $response = response()->redirectTo(urldecode(request()->redirect));
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+            $response = response()->redirectTo(request()->redirect);
         else
             $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
 
@@ -230,8 +230,8 @@ class DummyClass extends Controller
         // $this->authorize('delete', $dummy_model_variable); // TODO: Policy
         $dummy_model_variable->delete();
 
-        if (request()->filled('redirect') && starts_with(urldecode(request()->redirect), request()->root()))
-            return response()->redirectTo(urldecode(request()->redirect));
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+            return response()->redirectTo(request()->redirect);
         else
             return response()->redirectToRoute('dummy_route.index');
     }

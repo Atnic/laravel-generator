@@ -37,8 +37,7 @@ class ControllerMakeCommand extends Command
     protected function getViewStub($method = null)
     {
         if ($this->option('parent')) {
-            // return __DIR__.'/stubs/view.nested.'.$method.'.stub'; //Unavailable yet
-            return __DIR__.'/stubs/view.model.'.$method.'.stub';
+            return __DIR__.'/stubs/view.nested.'.$method.'.stub';
         } elseif ($this->option('model') || $this->option('resource')) {
             return __DIR__.'/stubs/view.model.'.$method.'.stub';
         }
@@ -85,17 +84,6 @@ class ControllerMakeCommand extends Command
 
         if ($this->option('model')) {
             $replace = $this->buildModelReplacements($replace);
-            if ($this->option('parent')) {
-                $replace = array_merge($replace, [
-                    'parent_dummy_action_index' => 'route(\''.$this->getParentRouteName($name).'.index\')',
-                    'parent_dummy_action_create' => 'route(\''.$this->getParentRouteName($name).'.create\')',
-                    'parent_dummy_action_store' => 'route(\''.$this->getParentRouteName($name).'.store\')',
-                    'parent_dummy_action_show' => 'route(\''.$this->getParentRouteName($name).'.show\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                    'parent_dummy_action_edit' => 'route(\''.$this->getParentRouteName($name).'.edit\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                    'parent_dummy_action_update' => 'route(\''.$this->getParentRouteName($name).'.update\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                    'parent_dummy_action_destroy' => 'route(\''.$this->getParentRouteName($name).'.destroy\', [ $'.$replace['parent_dummy_model_variable'].'->getKey() ])',
-                ]);
-            }
         }
 
         if ($this->option('parent')) {

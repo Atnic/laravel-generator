@@ -8,7 +8,7 @@
         DummyTitle
       @endslot
       @slot('tools')
-        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->url() ]) }}" class="btn btn-default btn-xs">Create</a>
+        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}" class="btn btn-default btn-xs">Create</a>
       @endslot
 
       @if (session('status'))
@@ -17,15 +17,13 @@
       </div>
       @endif
       <div class="row">
-        <div class="col-sm-offset-8 col-sm-4">
+        <div class="col-sm-4">
           <form class="form" method="GET">
             <div class="input-group">
-              <input type="text" name="search" placeholder="Search" class="input-sm form-control" value="{{ request()->search }}" autofocus>
-              <span class="input-group-btn">
-                <button type="submit" class="btn btn-sm btn-primary">
-                  <i class="fa fa-search"></i>
-                </button>
+              <span class="input-group-addon">
+                <i class="fa fa-search"></i>
               </span>
+              <input type="text" name="search" placeholder="Search" class="input-sm form-control" value="{{ request()->search }}" autofocus>
             </div>
           </form>
         </div>
