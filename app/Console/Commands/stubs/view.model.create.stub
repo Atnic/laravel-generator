@@ -3,7 +3,7 @@
 @section('content')
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
-    <form class="form" action="{{ dummy_action_store }}" method="POST">
+    <form class="form" action="{{ route('dummy_route.store', [ 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" method="POST">
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
         @slot('title')
@@ -15,8 +15,9 @@
           {{ session('status') }}
         </div>
         @endif
-        @foreach ($fields as $key => $field)
-        @include(config('generator.view_component').'components.fields.'.$field['field'], compact('field'))
+        @foreach ($fields['dummy_model_variable'] as $key => $field)
+        @component(config('generator.view_component').'components.fields.'.$field['field'], compact('field'))
+        @endcomponent
         @endforeach
 
         @slot('footer')
@@ -25,7 +26,7 @@
               Store
             </button>
           </div>
-          <a href="{{ request()->exists('redirect') ? urldecode(request()->redirect) : dummy_action_index }}" class="btn btn-default">Back</a>
+          <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">Back</a>
         @endslot
       @endcomponent
     </form>

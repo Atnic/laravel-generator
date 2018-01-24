@@ -1,0 +1,51 @@
+@extends('parent_dummy_view.show')
+
+@section('parent-content')
+<table class="table">
+  <colgroup>
+    <col class="col-xs-4">
+    <col class="col-xs-8">
+  </colgroup>
+  <tbody>
+    @foreach ($relations['dummy_model_variable']['belongsTo'] as $key => $relation)
+    <tr>
+      <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+      <td>
+        <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+          {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
+        </a>
+      </td>
+    </tr>
+    @endforeach
+    @foreach ($relations['dummy_model_variable']['morphTo'] as $key => $relation)
+    <tr>
+      <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+      <td>{{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}</td>
+    </tr>
+    @endforeach
+    @foreach ($visibles['dummy_model_variable'] as $key => $column)
+    <tr>
+      <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+      <td>{{ $dummy_model_variable->{$column['name']} }}</td>
+    </tr>
+    @endforeach
+    @foreach ($relations['dummy_model_variable']['hasOne'] as $key => $relation)
+    <tr>
+      <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+      <td>
+        <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+          {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
+        </a>
+      </td>
+    </tr>
+    @endforeach
+  </tbody>
+</table>
+<div class="pull-right">
+  <a href="{{ route('dummy_route.edit', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">Edit</a>
+  @if (rescue(function () { return route('dummy_model_plural_variable.show'); }))
+  <a href="{{ route('dummy_model_plural_variable.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">Detail</a>
+  @endif
+</div>
+<span class="clearfix"></span>
+@endsection

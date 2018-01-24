@@ -11,27 +11,54 @@ use DummyRootNamespaceHttp\Controllers\Controller;
  */
 class DummyClass extends Controller
 {
+    /** @var array Available relations on this controller */
+    protected $relations = [
+        'dummy_model_variable' => [
+            'belongsTo' => [
+                // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
+            ],
+            'morphTo' => [],
+            'belongsToMany' => [],
+            'morphToMany' => [],
+            'hasOne' => [],
+            'hasMany' => [
+                // [ 'name' => 'childs' ], // Example
+            ],
+            'hasManyThrough' => [],
+            'morphMany' => [],
+            'morphByMany' => []
+        ]
+    ];
+
     /** @var array Visible Column */
-    protected $visible = [
+    protected $visibles = [
         'index' => [
-            // TODO: Index visible, 'label' is optional. Ex:
-            [ 'name' => 'name', 'label' => 'Name' ],
+            'dummy_model_variable' => [
+                // TODO: Index visibles, 'label' is optional. Ex:
+                [ 'name' => 'name', 'label' => 'Name' ],
+            ]
         ],
         'show' => [
-            // TODO: Show visible, 'label' is optional. Ex:
-            [ 'name' => 'name', 'label' => 'Name' ],
+            'dummy_model_variable' => [
+                // TODO: Show visibles, 'label' is optional. Ex:
+                [ 'name' => 'name', 'label' => 'Name' ],
+            ]
         ]
     ];
 
     /** @var array HTML Input Field */
     protected $fields = [
         'create' => [
-            // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-            [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+            'dummy_model_variable' => [
+                // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+            ]
         ],
         'edit' => [
-            // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-            [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+            'dummy_model_variable' => [
+                // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+            ]
         ]
     ];
 
@@ -70,7 +97,8 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.index', [
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
-            'visible' => $this->visible['index']
+            'relations' => $this->relations,
+            'visibles' => $this->visibles['index']
         ]);
     }
 
@@ -82,12 +110,6 @@ class DummyClass extends Controller
     public function create()
     {
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-
-        if (request()->exists('redirect') && starts_with(urldecode(request()->redirect), request()->root())) {
-            session()->put('url.intended', urldecode(request()->redirect));
-        } else {
-            session()->pull('url.intended');
-        }
 
         return response()->view('dummy_view.create', [
             'fields' => $this->fields['create']
@@ -104,13 +126,13 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $this->validate($request, $this->rules['store']);
+        $request->validate($this->rules['store']);
 
         $dummy_model_variable = new DummyModelClass;
         foreach ($this->rules['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
-                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
                 } elseif ($request->exists($key)) {
                     $dummy_model_variable->{$key} = $request->{$key};
                 }
@@ -121,8 +143,12 @@ class DummyClass extends Controller
         // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
-        return response()->redirectToIntended(route('dummy_route.show', $dummy_model_variable->getKey()))
-               ->withInput([ 'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey() ]);
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+            $response = response()->redirectTo(request()->redirect);
+        else
+            $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
+
+        return $response->withInput([ 'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey() ]);
     }
 
     /**
@@ -137,7 +163,8 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.show', [
             'dummy_model_variable' => $dummy_model_variable,
-            'visible' => $this->visible['show'],
+            'relations' => $this->relations,
+            'visibles' => $this->visibles['show'],
         ]);
     }
 
@@ -150,12 +177,6 @@ class DummyClass extends Controller
     public function edit(DummyModelClass $dummy_model_variable)
     {
         // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-
-        if (request()->exists('redirect') && starts_with(urldecode(request()->redirect), request()->root())) {
-            session()->put('url.intended', urldecode(request()->redirect));
-        } else {
-            session()->pull('url.intended');
-        }
 
         return response()->view('dummy_view.edit', [
             'dummy_model_variable' => $dummy_model_variable,
@@ -174,12 +195,12 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $this->validate($request, $this->rules['update']);
+        $request->validate($this->rules['update']);
 
         foreach ($this->rules['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
-                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
                 } elseif ($request->exists($key)) {
                     $dummy_model_variable->{$key} = $request->{$key};
                 }
@@ -190,8 +211,12 @@ class DummyClass extends Controller
         // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
-        return response()->redirectToIntended(route('dummy_route.show', $dummy_model_variable->getKey()))
-               ->withInput([ 'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey() ]);
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+            $response = response()->redirectTo(request()->redirect);
+        else
+            $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
+
+        return $response->withInput([ 'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey() ]);
     }
 
     /**
@@ -205,6 +230,9 @@ class DummyClass extends Controller
         // $this->authorize('delete', $dummy_model_variable); // TODO: Policy
         $dummy_model_variable->delete();
 
-        return response()->redirectToIntended(route('dummy_route.index'));
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+            return response()->redirectTo(request()->redirect);
+        else
+            return response()->redirectToRoute('dummy_route.index');
     }
 }

@@ -59,13 +59,13 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $this->validate($request, $this->rules['store']);
+        $request->validate($this->rules['store']);
 
         $dummy_model_variable = new DummyModelClass;
         foreach ($this->rules['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
-                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
                 } elseif ($request->exists($key)) {
                     $dummy_model_variable->{$key} = $request->{$key};
                 }
@@ -103,12 +103,12 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $this->validate($request, $this->rules['update']);
+        $request->validate($this->rules['update']);
 
         foreach ($this->rules['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
-                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable', 'public');
+                    $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
                 } elseif ($request->exists($key)) {
                     $dummy_model_variable->{$key} = $request->{$key};
                 }

@@ -1,0 +1,21 @@
+@extends('parent_dummy_view.show')
+
+@section('parent-content')
+<form class="form" action="{{ route('dummy_route.store', [
+  $parent_dummy_model_variable->getKey(),
+  'redirect' => route('dummy_route.index', [
+    $parent_dummy_model_variable->getKey(),
+    'redirect' => request()->filled('redirect') ? request()->redirect : null ]) ]) }}" method="POST">
+  {{ csrf_field() }}
+  @foreach ($fields['dummy_model_variable'] as $key => $field)
+  @component(config('generator.view_component').'components.fields.'.$field['field'], compact('field'))
+  @endcomponent
+  @endforeach
+  <div class="pull-right">
+    <button type="submit" class="btn btn-primary">
+      Store
+    </button>
+  </div>
+  <span class="clearfix"></span>
+</form>
+@endsection
