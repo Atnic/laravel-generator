@@ -16,17 +16,12 @@ class DummyClass extends Controller
         'dummy_model_variable' => [
             'belongsTo' => [
                 // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
-            ],
-            'morphTo' => [],
-            'belongsToMany' => [],
-            'morphToMany' => [],
-            'hasOne' => [],
+            ], // also for morphTo
+            'belongsToMany' => [], // also for morphToMany
+            'hasOne' => [], // also for morphOne
             'hasMany' => [
                 // [ 'name' => 'childs' ], // Example
-            ],
-            'hasManyThrough' => [],
-            'morphMany' => [],
-            'morphByMany' => []
+            ], // also for morphMany, hasManyThrough
         ]
     ];
 

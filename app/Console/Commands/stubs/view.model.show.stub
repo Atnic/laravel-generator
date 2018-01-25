@@ -3,11 +3,7 @@
 @section('content')
 <div class="row">
   <div class="{{ (empty(array_merge($relations['dummy_model_variable']['belongsToMany'],
-                                    $relations['dummy_model_variable']['morphToMany'],
-                                    $relations['dummy_model_variable']['hasMany'],
-                                    $relations['dummy_model_variable']['hasManyThrough'],
-                                    $relations['dummy_model_variable']['morphMany'],
-                                    $relations['dummy_model_variable']['morphByMany']))) ?
+                                    $relations['dummy_model_variable']['hasMany']))) ?
                 'col-md-8 col-md-offset-2' : 'col-md-4' }}" >
     @component(config('generator.view_component').'components.panel')
       @slot('title')
@@ -37,12 +33,6 @@
               -
               @endif
             </td>
-          </tr>
-          @endforeach
-          @foreach ($relations['dummy_model_variable']['morphTo'] as $key => $relation)
-          <tr>
-            <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
-            <td>{{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}</td>
           </tr>
           @endforeach
           @foreach ($visibles['dummy_model_variable'] as $key => $column)
@@ -77,18 +67,14 @@
     @endcomponent
   </div>
   @if (!empty(array_merge($relations['dummy_model_variable']['belongsToMany'],
-                          $relations['dummy_model_variable']['morphToMany'],
-                          $relations['dummy_model_variable']['hasMany'],
-                          $relations['dummy_model_variable']['hasManyThrough'],
-                          $relations['dummy_model_variable']['morphMany'],
-                          $relations['dummy_model_variable']['morphByMany'])))
+                          $relations['dummy_model_variable']['hasMany'])))
   <div class="col-md-8">
     @component(config('generator.view_component').'components.tabs')
       @slot('nav_tabs')
         <li role="presentation" class="{{ request()->routeIs('dummy_route.show') ? 'active' : '' }}">
           <a href="{{ route('dummy_route.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}">DummyTitle</a>
         </li>
-        @foreach ([ 'belongsToMany', 'morphToMany', 'hasMany', 'hasManyThrough', 'morphMany', 'morphByMany' ] as $key => $relation_type)
+        @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
         @foreach ($relations['dummy_model_variable'][$relation_type] as $key => $relation)
         @if (Route::has('dummy_route.'.$relation['name'].'.index'))
         <li role="presentation" class="{{ request()->routeIs('dummy_route.'.$relation['name'].'.*') ? 'active' : '' }}">
@@ -110,7 +96,7 @@
               <col class="col-xs-8">
             </colgroup>
             <tbody>
-              @foreach ([ 'belongsToMany', 'morphToMany', 'hasMany', 'hasManyThrough', 'morphMany', 'morphByMany' ] as $key => $relation_type)
+              @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
               @foreach ($relations['dummy_model_variable'][$relation_type] as $key => $relation)
               <tr>
                 <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>

@@ -21,12 +21,6 @@
       </td>
     </tr>
     @endforeach
-    @foreach ($relations['dummy_model_variable']['morphTo'] as $key => $relation)
-    <tr>
-      <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
-      <td>{{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}</td>
-    </tr>
-    @endforeach
     @foreach ($visibles['dummy_model_variable'] as $key => $column)
     <tr>
       <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
