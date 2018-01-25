@@ -285,7 +285,7 @@ class DummyClass extends Controller
         // $this->authorize('delete', $dummy_model_variable); // TODO: Policy
         $dummy_model_variable->delete();
 
-        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
+        if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()) && !str_contains(request()->redirect, '/'.array_last(explode('.', 'dummy_route')).'/'.$cycle->getKey()))
             return response()->redirectTo(request()->redirect);
         else
             return response()->redirectToRoute('dummy_route.index', $parent_dummy_model_variable->getKey());
