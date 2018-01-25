@@ -45,9 +45,13 @@
       <tr>
         @foreach ($relations['dummy_model_variable']['belongsTo'] as $key => $relation)
         <td>
-          <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+          @if ($dummy_model_variable->{$relation['name']})
+          <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
             {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
           </a>
+          @else
+          -
+          @endif
         </td>
         @endforeach
         @foreach ($relations['dummy_model_variable']['morphTo'] as $key => $relation)

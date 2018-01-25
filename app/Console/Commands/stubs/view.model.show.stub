@@ -29,9 +29,13 @@
           <tr>
             <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
             <td>
-              <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+              @if ($dummy_model_variable->{$relation['name']})
+              <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
                 {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
               </a>
+              @else
+              -
+              @endif
             </td>
           </tr>
           @endforeach
@@ -51,9 +55,13 @@
           <tr>
             <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
             <td>
-              <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+              @if ($dummy_model_variable->{$relation['name']})
+              <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
                 {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
               </a>
+              @else
+              -
+              @endif
             </td>
           </tr>
           @endforeach
@@ -82,11 +90,13 @@
         </li>
         @foreach ([ 'belongsToMany', 'morphToMany', 'hasMany', 'hasManyThrough', 'morphMany', 'morphByMany' ] as $key => $relation_type)
         @foreach ($relations['dummy_model_variable'][$relation_type] as $key => $relation)
+        @if (Route::has('dummy_route.'.$relation['name'].'.index'))
         <li role="presentation" class="{{ request()->routeIs('dummy_route.'.$relation['name'].'.*') ? 'active' : '' }}">
           <a href="{{ route('dummy_route.'.$relation['name'].'.index', [ $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}">
             {{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}
           </a>
         </li>
+        @endif
         @endforeach
         @endforeach
       @endslot
@@ -105,7 +115,7 @@
               <tr>
                 <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
                 <td>
-                  <a href="{{ route('dummy_route.'.$relation['name'].'.index', [ $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}">
+                  <a href="{{ Route::has('dummy_route.'.$relation['name'].'.index') ? route('dummy_route.'.$relation['name'].'.index', [ $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) : '#' }}">
                     {{ $dummy_model_variable->{$relation['name']}->count() }}
                   </a>
                 </td>

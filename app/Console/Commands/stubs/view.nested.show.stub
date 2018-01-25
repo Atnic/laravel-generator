@@ -11,9 +11,13 @@
     <tr>
       <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
       <td>
-        <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+        @if ($dummy_model_variable->{$relation['name']})
+        <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
           {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
         </a>
+        @else
+        -
+        @endif
       </td>
     </tr>
     @endforeach
@@ -33,9 +37,13 @@
     <tr>
       <th>{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
       <td>
-        <a href="{{ route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) }}">
+        @if ($dummy_model_variable->{$relation['name']})
+        <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
           {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
         </a>
+        @else
+        -
+        @endif
       </td>
     </tr>
     @endforeach
@@ -43,8 +51,8 @@
 </table>
 <div class="pull-right">
   <a href="{{ route('dummy_route.edit', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">Edit</a>
-  @if (rescue(function () { return route('dummy_model_plural_variable.show'); }))
-  <a href="{{ route('dummy_model_plural_variable.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">Detail</a>
+  @if (Route::has(array_last(explode('.', 'dummy_route')).'.show'))
+  <a href="{{ route(array_last(explode('.', 'dummy_route')).'.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">Detail</a>
   @endif
 </div>
 <span class="clearfix"></span>
