@@ -14,17 +14,27 @@ use Illuminate\Http\Resources\Json\Resource;
  */
 class DummyClass extends Controller
 {
-    /** @var array Validation Rules */
-    protected $rules = [
-        'store' => [
-            // TODO: Store rules
-            'name' => 'required|string|max:255',
-        ],
-        'update' => [
-            // TODO: Update rules
-            'name' => 'string|max:255',
-        ]
-    ];
+    /**
+     * Rules
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \ParentDummyModelClass  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return Array
+     */
+    public function rules(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    {
+        return [
+            'store' => [
+                // TODO: Store rules
+                'name' => 'required|string|max:255',
+            ],
+            'update' => [
+                // TODO: Update rules
+                'name' => 'string|max:255',
+            ]
+        ];
+    }
+
 
     /**
     * Instantiate a new controller instance.

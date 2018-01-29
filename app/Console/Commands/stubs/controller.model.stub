@@ -11,63 +11,95 @@ use DummyRootNamespaceHttp\Controllers\Controller;
  */
 class DummyClass extends Controller
 {
-    /** @var array Available relations on this controller */
-    protected $relations = [
-        'dummy_model_variable' => [
-            'belongsTo' => [
-                // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
-            ], // also for morphTo
-            'belongsToMany' => [], // also for morphToMany
-            'hasOne' => [], // also for morphOne
-            'hasMany' => [
-                // [ 'name' => 'childs' ], // Example
-            ], // also for morphMany, hasManyThrough
-        ]
-    ];
+    /**
+     * Relations
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return Array
+     */
+    public function relations(Request $request, DummyModelClass $dummy_model_variable)
+    {
+        return [
+            'dummy_model_variable' => [
+                'belongsTo' => [
+                    // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
+                ], // also for morphTo
+                'belongsToMany' => [], // also for morphToMany
+                'hasOne' => [], // also for morphOne
+                'hasMany' => [
+                    // [ 'name' => 'childs' ], // Example
+                ], // also for morphMany, hasManyThrough
+            ]
+        ];
+    }
 
-    /** @var array Visible Column */
-    protected $visibles = [
-        'index' => [
-            'dummy_model_variable' => [
-                // TODO: Index visibles, 'label' is optional. Ex:
-                [ 'name' => 'name', 'label' => 'Name' ],
+    /**
+     * Visibles
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return Array
+     */
+    public function visibles(Request $request, DummyModelClass $dummy_model_variable)
+    {
+        return [
+            'index' => [
+                'dummy_model_variable' => [
+                    // TODO: Index visibles, 'label' is optional. Ex:
+                    [ 'name' => 'name', 'label' => 'Name' ],
+                ]
+            ],
+            'show' => [
+                'dummy_model_variable' => [
+                    // TODO: Show visibles, 'label' is optional. Ex:
+                    [ 'name' => 'name', 'label' => 'Name' ],
+                ]
             ]
-        ],
-        'show' => [
-            'dummy_model_variable' => [
-                // TODO: Show visibles, 'label' is optional. Ex:
-                [ 'name' => 'name', 'label' => 'Name' ],
-            ]
-        ]
-    ];
+        ];
+    }
 
-    /** @var array HTML Input Field */
-    protected $fields = [
-        'create' => [
-            'dummy_model_variable' => [
-                // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
-            ]
-        ],
-        'edit' => [
-            'dummy_model_variable' => [
-                // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
-            ]
-        ]
-    ];
+    /**
+     * Fields
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return Array
+     */
+    public function fields(Request $request, DummyModelClass $dummy_model_variable)
+    {
+      return [
+          'create' => [
+              'dummy_model_variable' => [
+                  // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+              ]
+          ],
+          'edit' => [
+              'dummy_model_variable' => [
+                  // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+              ]
+          ]
+      ];
+    }
 
-    /** @var array Validation Rules */
-    protected $rules = [
-        'store' => [
-            // TODO: Store rules
-            'name' => 'required|string|max:255',
-        ],
-        'update' => [
-            // TODO: Update rules
-            'name' => 'string|max:255',
-        ]
-    ];
+    /**
+     * Rules
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @return Array
+     */
+    public function rules(Request $request, DummyModelClass $dummy_model_variable)
+    {
+        return [
+            'store' => [
+                // TODO: Store rules
+                'name' => 'required|string|max:255',
+            ],
+            'update' => [
+                // TODO: Update rules
+                'name' => 'string|max:255',
+            ]
+        ];
+    }
 
     /**
     * Instantiate a new controller instance.
