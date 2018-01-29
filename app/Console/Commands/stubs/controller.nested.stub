@@ -14,12 +14,12 @@ class DummyClass extends Controller
 {
     /**
      * Relations
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return Array
      */
-    public function relations(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function relations(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'parent_dummy_model_variable' => [
@@ -43,12 +43,12 @@ class DummyClass extends Controller
 
     /**
      * Visibles
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return Array
      */
-    public function visibles(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function visibles(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'parent' => [
@@ -74,12 +74,12 @@ class DummyClass extends Controller
 
     /**
      * Fields
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return Array
      */
-    public function fields(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function fields(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
       return [
           'create' => [
@@ -99,12 +99,12 @@ class DummyClass extends Controller
 
     /**
      * Rules
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return Array
      */
-    public function rules(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
@@ -146,8 +146,8 @@ class DummyClass extends Controller
         return response()->view('dummy_view.index', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
-            'relations' => $this->relations,
-            'visibles' => array_merge($this->visibles['parent'], $this->visibles['index']),
+            'relations' => $this->relations(),
+            'visibles' => array_merge($this->visibles()['parent'], $this->visibles()['index']),
         ]);
     }
 
@@ -164,9 +164,9 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.create', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
-            'relations' => $this->relations,
-            'visibles' => $this->visibles['parent'],
-            'fields' => $this->fields['create']
+            'relations' => $this->relations(),
+            'visibles' => $this->visibles()['parent'],
+            'fields' => $this->fields()['create']
         ]);
     }
 
@@ -182,10 +182,10 @@ class DummyClass extends Controller
         // TODO: Add authorize for relation if any
         // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $request->validate($this->rules['store']);
+        $request->validate($this->rules()['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules['store'] as $key => $value) {
+        foreach ($this->rules()['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -227,8 +227,8 @@ class DummyClass extends Controller
         return response()->view('dummy_view.show', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations,
-            'visibles' => array_merge($this->visibles['parent'], $this->visibles['show'])
+            'relations' => $this->relations(),
+            'visibles' => array_merge($this->visibles()['parent'], $this->visibles()['show'])
         ]);
     }
 
@@ -248,9 +248,9 @@ class DummyClass extends Controller
         return response()->view('dummy_view.edit', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations,
-            'visibles' => $this->visibles['parent'],
-            'fields' => $this->fields['edit']
+            'relations' => $this->relations(),
+            'visibles' => $this->visibles()['parent'],
+            'fields' => $this->fields()['edit']
         ]);
     }
 
@@ -269,9 +269,9 @@ class DummyClass extends Controller
         // TODO: Add authorize for relation if any
         // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
         // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $request->validate($this->rules['update']);
+        $request->validate($this->rules()['update']);
 
-        foreach ($this->rules['update'] as $key => $value) {
+        foreach ($this->rules()['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
