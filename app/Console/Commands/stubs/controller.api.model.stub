@@ -13,17 +13,25 @@ use Illuminate\Http\Resources\Json\Resource;
  */
 class DummyClass extends Controller
 {
-    /** @var array Validation Rules */
-    protected $rules = [
-        'store' => [
-            // TODO: Store rules
-            'name' => 'required|string|max:255',
-        ],
-        'update' => [
-            // TODO: Update rules
-            'name' => 'string|max:255',
-        ]
-    ];
+    /**
+     * Rules
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @return Array
+     */
+    public function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    {
+        return [
+            'store' => [
+                // TODO: Store rules
+                'name' => 'required|string|max:255',
+            ],
+            'update' => [
+                // TODO: Update rules
+                'name' => 'string|max:255',
+            ]
+        ];
+    }
 
     /**
     * Instantiate a new controller instance.
@@ -59,10 +67,10 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $request->validate($this->rules['store']);
+        $request->validate($this->rules()['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules['store'] as $key => $value) {
+        foreach ($this->rules()['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -103,9 +111,9 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $request->validate($this->rules['update']);
+        $request->validate($this->rules()['update']);
 
-        foreach ($this->rules['update'] as $key => $value) {
+        foreach ($this->rules()['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');

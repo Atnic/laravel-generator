@@ -11,63 +11,95 @@ use DummyRootNamespaceHttp\Controllers\Controller;
  */
 class DummyClass extends Controller
 {
-    /** @var array Available relations on this controller */
-    protected $relations = [
-        'dummy_model_variable' => [
-            'belongsTo' => [
-                // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
-            ], // also for morphTo
-            'belongsToMany' => [], // also for morphToMany
-            'hasOne' => [], // also for morphOne
-            'hasMany' => [
-                // [ 'name' => 'childs' ], // Example
-            ], // also for morphMany, hasManyThrough
-        ]
-    ];
+    /**
+     * Relations
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @return Array
+     */
+    public function relations(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    {
+        return [
+            'dummy_model_variable' => [
+                'belongsTo' => [
+                    // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
+                ], // also for morphTo
+                'belongsToMany' => [], // also for morphToMany
+                'hasOne' => [], // also for morphOne
+                'hasMany' => [
+                    // [ 'name' => 'childs' ], // Example
+                ], // also for morphMany, hasManyThrough
+            ]
+        ];
+    }
 
-    /** @var array Visible Column */
-    protected $visibles = [
-        'index' => [
-            'dummy_model_variable' => [
-                // TODO: Index visibles, 'label' is optional. Ex:
-                [ 'name' => 'name', 'label' => 'Name' ],
+    /**
+     * Visibles
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @return Array
+     */
+    public function visibles(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    {
+        return [
+            'index' => [
+                'dummy_model_variable' => [
+                    // TODO: Index visibles, 'label' is optional. Ex:
+                    [ 'name' => 'name', 'label' => 'Name' ],
+                ]
+            ],
+            'show' => [
+                'dummy_model_variable' => [
+                    // TODO: Show visibles, 'label' is optional. Ex:
+                    [ 'name' => 'name', 'label' => 'Name' ],
+                ]
             ]
-        ],
-        'show' => [
-            'dummy_model_variable' => [
-                // TODO: Show visibles, 'label' is optional. Ex:
-                [ 'name' => 'name', 'label' => 'Name' ],
-            ]
-        ]
-    ];
+        ];
+    }
 
-    /** @var array HTML Input Field */
-    protected $fields = [
-        'create' => [
-            'dummy_model_variable' => [
-                // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
-            ]
-        ],
-        'edit' => [
-            'dummy_model_variable' => [
-                // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
-            ]
-        ]
-    ];
+    /**
+     * Fields
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @return Array
+     */
+    public function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    {
+      return [
+          'create' => [
+              'dummy_model_variable' => [
+                  // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+              ]
+          ],
+          'edit' => [
+              'dummy_model_variable' => [
+                  // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+              ]
+          ]
+      ];
+    }
 
-    /** @var array Validation Rules */
-    protected $rules = [
-        'store' => [
-            // TODO: Store rules
-            'name' => 'required|string|max:255',
-        ],
-        'update' => [
-            // TODO: Update rules
-            'name' => 'string|max:255',
-        ]
-    ];
+    /**
+     * Rules
+     * @param  \Illuminate\Http\Request|null  $request
+     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @return Array
+     */
+    public function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    {
+        return [
+            'store' => [
+                // TODO: Store rules
+                'name' => 'required|string|max:255',
+            ],
+            'update' => [
+                // TODO: Update rules
+                'name' => 'string|max:255',
+            ]
+        ];
+    }
 
     /**
     * Instantiate a new controller instance.
@@ -92,8 +124,8 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.index', [
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
-            'relations' => $this->relations,
-            'visibles' => $this->visibles['index']
+            'relations' => $this->relations(),
+            'visibles' => $this->visibles()['index']
         ]);
     }
 
@@ -107,7 +139,7 @@ class DummyClass extends Controller
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
 
         return response()->view('dummy_view.create', [
-            'fields' => $this->fields['create']
+            'fields' => $this->fields()['create']
         ]);
     }
 
@@ -121,10 +153,10 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $request->validate($this->rules['store']);
+        $request->validate($this->rules()['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules['store'] as $key => $value) {
+        foreach ($this->rules()['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -158,8 +190,8 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.show', [
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations,
-            'visibles' => $this->visibles['show'],
+            'relations' => $this->relations(),
+            'visibles' => $this->visibles()['show'],
         ]);
     }
 
@@ -175,7 +207,7 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.edit', [
             'dummy_model_variable' => $dummy_model_variable,
-            'fields' => $this->fields['edit']
+            'fields' => $this->fields()['edit']
         ]);
     }
 
@@ -190,9 +222,9 @@ class DummyClass extends Controller
     {
         // TODO: Add authorize for relation if any
         // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $request->validate($this->rules['update']);
+        $request->validate($this->rules()['update']);
 
-        foreach ($this->rules['update'] as $key => $value) {
+        foreach ($this->rules()['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
