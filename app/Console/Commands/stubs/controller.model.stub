@@ -15,7 +15,7 @@ class DummyClass extends Controller
      * Relations
      * @param  \Illuminate\Http\Request|null  $request
      * @param  \DummyFullModelClass|null  $dummy_model_variable
-     * @return Array
+     * @return array
      */
     public function relations(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
@@ -37,7 +37,7 @@ class DummyClass extends Controller
      * Visibles
      * @param  \Illuminate\Http\Request|null  $request
      * @param  \DummyFullModelClass|null  $dummy_model_variable
-     * @return Array
+     * @return array
      */
     public function visibles(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
@@ -61,7 +61,7 @@ class DummyClass extends Controller
      * Fields
      * @param  \Illuminate\Http\Request|null  $request
      * @param  \DummyFullModelClass|null  $dummy_model_variable
-     * @return Array
+     * @return array
      */
     public function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
@@ -85,7 +85,7 @@ class DummyClass extends Controller
      * Rules
      * @param  \Illuminate\Http\Request|null  $request
      * @param  \DummyFullModelClass|null  $dummy_model_variable
-     * @return Array
+     * @return array
      */
     public function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
