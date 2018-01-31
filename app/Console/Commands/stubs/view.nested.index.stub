@@ -23,7 +23,7 @@
     <thead>
       <tr>
         @foreach ($relations['dummy_model_variable']['belongsTo'] as $key => $relation)
-        <th class="text-center">{{ title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+        <th class="text-center">{{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
         @endforeach
         @foreach ($visibles['dummy_model_variable'] as $key => $column)
         <th class="text-center">
