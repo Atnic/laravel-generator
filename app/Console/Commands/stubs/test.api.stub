@@ -10,8 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DummyClass extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Display a listing of the resource.
      *
