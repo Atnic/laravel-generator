@@ -65,20 +65,20 @@ class DummyClass extends Controller
      */
     public function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
-      return [
-          'create' => [
-              'dummy_model_variable' => [
-                  // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
-              ]
-          ],
-          'edit' => [
-              'dummy_model_variable' => [
-                  // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
-              ]
-          ]
-      ];
+        return [
+            'create' => [
+                'dummy_model_variable' => [
+                    // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+                ]
+            ],
+            'edit' => [
+                'dummy_model_variable' => [
+                    // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+                ]
+            ]
+        ];
     }
 
     /**
