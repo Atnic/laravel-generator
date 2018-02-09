@@ -17,7 +17,7 @@ class DummyClass extends Controller
     /**
      * Rules
      * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
