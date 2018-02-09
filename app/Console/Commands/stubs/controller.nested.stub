@@ -15,7 +15,7 @@ class DummyClass extends Controller
     /**
      * Relations
      * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
@@ -44,7 +44,7 @@ class DummyClass extends Controller
     /**
      * Visibles
      * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
@@ -75,32 +75,32 @@ class DummyClass extends Controller
     /**
      * Fields
      * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
     public function fields(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
-      return [
-          'create' => [
-              'dummy_model_variable' => [
-                  // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
-              ]
-          ],
-          'edit' => [
-              'dummy_model_variable' => [
-                  // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                  [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
-              ]
-          ]
-      ];
+        return [
+            'create' => [
+                'dummy_model_variable' => [
+                    // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+                ]
+            ],
+            'edit' => [
+                'dummy_model_variable' => [
+                    // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+                ]
+            ]
+        ];
     }
 
     /**
      * Rules
      * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyModelClass|null  $parent_dummy_model_variable
+     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
