@@ -21,7 +21,7 @@ class DummyClass extends TestCase
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_plural_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->saveMany(factory(DummyModelClass::class, 5)->make());
+        $dummy_model_plural_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->saveMany(factory(DummyModelClass::class, 5)->make([ 'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey() ]));
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_index);
@@ -73,7 +73,7 @@ class DummyClass extends TestCase
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make());
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ 'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey() ]));
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_show);
@@ -90,7 +90,7 @@ class DummyClass extends TestCase
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make());
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ 'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey() ]));
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_edit);
@@ -107,7 +107,7 @@ class DummyClass extends TestCase
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make());
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ 'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey() ]));
 
         $this->actingAs($user);
         $response = $this->put(dummy_action_update, [
@@ -127,7 +127,7 @@ class DummyClass extends TestCase
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make());
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ 'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey() ]));
 
         $this->actingAs($user);
         $response = $this->delete(dummy_action_destroy);
