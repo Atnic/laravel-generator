@@ -191,9 +191,9 @@ class ControllerApiMakeCommand extends Command
             if (count($asExploded) > 1) {
                 array_pop($asExploded);
                 $as = implode('.', $asExploded);
-                $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
+                $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\', [ \'as\' => \'api.'.$as.'\' ]);'.PHP_EOL;
             } else {
-                $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\');'.PHP_EOL;
+                $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \'Api\\'.$nameWithoutNamespace.'\', [ \'as\' => \'api\' ]);'.PHP_EOL;
             }
         }
 
