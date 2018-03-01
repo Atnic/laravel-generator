@@ -2,6 +2,7 @@
 
 namespace DummyNamespace;
 
+use NamespacedDummyUserModel;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
