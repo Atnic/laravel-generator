@@ -163,8 +163,8 @@ class ControllerApiMakeCommand extends Command
         $name = $this->qualifyClass($this->getNameInput());
         $controllerClass = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
 
-        $this->call('make:test', [
-            'name' => 'Api\\'.$controllerClass.'Test',
+        $this->call('make:test-api', [
+            'name' => $controllerClass.'Test',
             '--parent' => $this->option('parent') ? : null,
             '--model' => $this->option('model') ? : null,
             '--resource' => $this->option('resource') ? : false,
