@@ -70,7 +70,7 @@ class BaseFilter extends Filter
         $sorts = [];
         foreach ($sorted_columns as $key => $sorted_column) {
             $sort = $sorted_column ? explode(',', $sorted_column) : [];
-            if (empty($sort)) continue;
+            if (!is_array($sort) || !in_array($sort[0], $this->sortables)) continue;
             array_push($sorts, [
                 'column' => $sort[0],
                 'dir' => isset($sort[1]) ? $sort[1] : 'asc'
@@ -86,7 +86,7 @@ class BaseFilter extends Filter
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
                     $relation = $query->getModel()->{$join[0]}();
-                    if (in_array(class_basename($relation), [ 'BelongsTo', 'HasOne', 'MorphOne', 'MorphTo' ])) {
+                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                         $query->leftJoin($relation->getRelated()->getTable(), $relation->getQualifiedForeignKey(), '=', $relation->getQualifiedOwnerKeyName());
                         $query->orderBy($relation->getRelated()->getTable().'.'.$join[1], $sort['dir']);
                         $query->addSelect($relation->getRelated()->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]);
