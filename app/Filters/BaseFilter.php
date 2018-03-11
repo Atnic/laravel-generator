@@ -46,13 +46,13 @@ class BaseFilter extends Filter
                     if (is_array($searchable)) {
                         $query->orWhereHas($key, function ($query) use($searchable, $value) {
                             $query->where(function ($query) use($searchable, $value) {
-                                foreach ($searchable as $key => $searchable) {
-                                    $query->where($searchable, 'like', '%'.str_replace(' ', '%', $value).'%');
+                                foreach ($searchable as $key => $searchable_child) {
+                                    $query->orWhere($query->qualifyColumn($searchable_child), 'like', '%'.str_replace(' ', '%', $value).'%');
                                 }
                             });
                         });
                     } else {
-                        $query->orWhere($searchable, 'like', '%'.str_replace(' ', '%', $value).'%');
+                        $query->orWhere($query->qualifyColumn($searchable), 'like', '%'.str_replace(' ', '%', $value).'%');
                     }
                 }
             });
@@ -81,8 +81,19 @@ class BaseFilter extends Filter
             'sorts.*.dir' => 'in:asc,desc'
         ]);
         return $this->builder->when(!$validator->fails(), function ($query) use($sorts) {
+            $query->select($query->qualifyColumn('*'));
             foreach ($sorts as $key => $sort) {
-                $query->orderBy($sort['column'], $sort['dir']);
+                if (str_contains($sort['column'], '.')) {
+                    $join = explode('.', $sort['column']);
+                    $relation = $query->getModel()->{$join[0]}();
+                    if (in_array(class_basename($relation), [ 'BelongsTo', 'HasOne', 'MorphOne', 'MorphTo' ])) {
+                        $query->leftJoin($relation->getRelated()->getTable(), $relation->getQualifiedForeignKey(), '=', $relation->getQualifiedOwnerKeyName());
+                        $query->orderBy($relation->getRelated()->getTable().'.'.$join[1], $sort['dir']);
+                        $query->addSelect($relation->getRelated()->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]);
+                    }
+                } else {
+                    $query->orderBy($sort['column'], $sort['dir']);
+                }
             }
         });
     }
