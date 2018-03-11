@@ -88,9 +88,13 @@ class BaseFilter extends Filter
                     $relation = $query->getModel()->{$join[0]}();
                     if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                         $query->leftJoin($relation->getRelated()->getTable(), $relation->getQualifiedForeignKey(), '=', $relation->getQualifiedOwnerKeyName());
-                        $query->orderBy($relation->getRelated()->getTable().'.'.$join[1], $sort['dir']);
-                        $query->addSelect($relation->getRelated()->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]);
+                    } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
+                        $query->leftJoin($relation->getRelated()->getTable(), $relation->getQualifiedForeignKeyName(), '=', $relation->getQualifiedParentKeyName());
+                    } else {
+                        continue;
                     }
+                    $query->orderBy($relation->getRelated()->getTable().'.'.$join[1], $sort['dir']);
+                    $query->addSelect($relation->getRelated()->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]);
                 } else {
                     $query->orderBy($sort['column'], $sort['dir']);
                 }
