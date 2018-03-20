@@ -16,7 +16,7 @@
         {{ session('status') }}
       </div>
       @endif
-      <div class="row">
+      <div class="row" style="margin-bottom:15px">
         <div class="col-sm-4">
           <form class="form" method="GET">
             <div class="input-group">
@@ -36,9 +36,9 @@
               <th class="text-center">
                 {{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}
                 @if (array_search($relation['name'].'.'.$relation['column'].',desc', explode('|', request()->sort)) === false)
-                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $relation['name'].'.'.$relation['column'].',desc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $relation['name'].'.'.$relation['column'].',desc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
                 @else
-                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $relation['name'].'.'.$relation['column'].',asc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $relation['name'].'.'.$relation['column'].',asc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
                 @endif
               </th>
               @endforeach
@@ -46,9 +46,9 @@
               <th class="text-center">
                 {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
                 @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
-                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $column['name'].',desc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $column['name'].',desc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
                 @else
-                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $column['name'].',asc' ])) }}" style="float:right"> <i class="fa fa-sort text-muted"></i></a>
+                <a href="{{ route('dummy_route.index', array_merge(request()->query(), [ 'sort' => $column['name'].',asc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
                 @endif
               </th>
               @endforeach
