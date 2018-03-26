@@ -5,6 +5,8 @@ namespace Atnic\LaravelGenerator\Filters;
 use Arados\Filters\Filter;
 use Illuminate\Http\Request;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
+
 /**
  * Base Filters
  */
@@ -99,6 +101,34 @@ class BaseFilter extends Filter
                     $query->orderBy($sort['column'], $sort['dir']);
                 }
             }
+        });
+    }
+
+    public function keys($values)
+    {
+        $keys = explode(',', $values);
+        $model = $this->builder->getModel();
+        $validator = validator([ 'values' => $keys ], [ 'values.*' => 'required|exists:'.$model->getTable().','.$model->getKeyName() ]);
+        return $this->builder->when(!$validator->fails(), function ($query) use($keys) {
+            $query->whereKey($keys);
+        });
+    }
+
+    /**
+     * With
+     * @param  mixed $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function with($value)
+    {
+        $withs = explode(',', $value);
+        $model = $this->builder->getModel();
+        $withs = collect($withs)->filter(function ($with) use($model) {
+            if (str_contains($with, '.')) return true;
+            return ($model->{$with}() instanceof Relation);
+        })->toArray();
+        return $this->builder->when(count($withs), function ($query) use($withs) {
+            $query->with($withs);
         });
     }
 }
