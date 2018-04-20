@@ -21,7 +21,7 @@ class DummyClass
      */
     public function index(DummyUser $user)
     {
-        return true;
+        return true; // TODO: Change as needed, but leave it true if no policy
     }
 
     /**
@@ -33,7 +33,7 @@ class DummyClass
      */
     public function view(DummyUser $user, DummyModel $dummyModel)
     {
-        return true;
+        return true; // TODO: Change as needed, but leave it true if no policy
     }
 
     /**
@@ -44,7 +44,7 @@ class DummyClass
      */
     public function create(DummyUser $user)
     {
-        return true;
+        return true; // TODO: Change as needed, but leave it true if no policy
     }
 
     /**
@@ -56,7 +56,7 @@ class DummyClass
      */
     public function update(DummyUser $user, DummyModel $dummyModel)
     {
-        return true;
+        return true; // TODO: Change as needed, but leave it true if no policy
     }
 
     /**
@@ -68,6 +68,6 @@ class DummyClass
      */
     public function delete(DummyUser $user, DummyModel $dummyModel)
     {
-        return true;
+        return true; // TODO: Change as needed, but leave it true if no policy
     }
 }

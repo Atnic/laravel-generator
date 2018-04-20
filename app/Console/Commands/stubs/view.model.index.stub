@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('content-title', 'DummyTitle')
+
 @section('content')
 <div class="row">
   <div class="col-md-offset-2 col-md-8">
@@ -90,7 +92,7 @@
         </table>
       </div>
       <div class="text-center">
-        {{ $dummy_model_plural_variable->appends(request()->query())->links() }}
+        {{ $dummy_model_plural_variable->links() }}
       </div>
     @endcomponent
   </div>

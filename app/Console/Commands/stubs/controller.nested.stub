@@ -125,8 +125,8 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Apply middleware if any
-        // $this->middleware('auth');
+        // TODO: Add/Remove middleware as needed
+        $this->middleware('auth');
     }
 
     /**
@@ -137,17 +137,17 @@ class DummyClass extends Controller
      */
     public function index(ParentDummyModelClass $parent_dummy_model_variable)
     {
-        // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
+        $this->authorize('view', $parent_dummy_model_variable);
         $dummy_model_plural_variable = DummyModelClass::filter()
             ->where('parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName(), $parent_dummy_model_variable->getKey())
-            ->paginate();
-        // $this->authorize('index', 'DummyFullModelClass'); // TODO: Policy
+            ->paginate()->appends(request()->query());
+        $this->authorize('index', 'DummyFullModelClass');
 
         return response()->view('dummy_view.index', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
-            'relations' => $this->relations(),
-            'visibles' => array_merge($this->visibles()['parent'], $this->visibles()['index']),
+            'relations' => $this->relations(request(), $parent_dummy_model_variable),
+            'visibles' => array_merge($this->visibles(request(), $parent_dummy_model_variable)['parent'], $this->visibles(request(), $parent_dummy_model_variable)['index']),
         ]);
     }
 
@@ -159,14 +159,14 @@ class DummyClass extends Controller
      */
     public function create(ParentDummyModelClass $parent_dummy_model_variable)
     {
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('create', 'DummyFullModelClass');
 
         return response()->view('dummy_view.create', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
-            'relations' => $this->relations(),
-            'visibles' => $this->visibles()['parent'],
-            'fields' => $this->fields()['create']
+            'relations' => $this->relations(request(), $parent_dummy_model_variable),
+            'visibles' => $this->visibles(request(), $parent_dummy_model_variable)['parent'],
+            'fields' => $this->fields(request(), $parent_dummy_model_variable)['create']
         ]);
     }
 
@@ -179,13 +179,12 @@ class DummyClass extends Controller
      */
     public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
     {
-        // TODO: Add authorize for relation if any
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $request->validate($this->rules()['store']);
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('create', 'DummyFullModelClass');
+        $request->validate($this->rules($request, $parent_dummy_model_variable)['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules()['store'] as $key => $value) {
+        foreach ($this->rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -221,14 +220,14 @@ class DummyClass extends Controller
     public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('view', $dummy_model_variable); // TODO: Policy
+        $this->authorize('view', $parent_dummy_model_variable);
+        $this->authorize('view', $dummy_model_variable);
 
         return response()->view('dummy_view.show', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations(),
-            'visibles' => array_merge($this->visibles()['parent'], $this->visibles()['show'])
+            'relations' => $this->relations(request(), $parent_dummy_model_variable, $dummy_model_variable),
+            'visibles' => array_merge($this->visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['parent'], $this->visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['show'])
         ]);
     }
 
@@ -242,15 +241,15 @@ class DummyClass extends Controller
     public function edit(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('update', $dummy_model_variable); // TODO: Policy
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('update', $dummy_model_variable);
 
         return response()->view('dummy_view.edit', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations(),
-            'visibles' => $this->visibles()['parent'],
-            'fields' => $this->fields()['edit']
+            'relations' => $this->relations(request(), $parent_dummy_model_variable, $dummy_model_variable),
+            'visibles' => $this->visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['parent'],
+            'fields' => $this->fields(request(), $parent_dummy_model_variable, $dummy_model_variable)['edit']
         ]);
     }
 
@@ -267,11 +266,11 @@ class DummyClass extends Controller
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
 
         // TODO: Add authorize for relation if any
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $request->validate($this->rules()['update']);
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('update', $dummy_model_variable);
+        $request->validate($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
 
-        foreach ($this->rules()['update'] as $key => $value) {
+        foreach ($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -307,8 +306,8 @@ class DummyClass extends Controller
     public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('delete', $dummy_model_variable); // TODO: Policy
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('delete', $dummy_model_variable);
         $dummy_model_variable->delete();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()) && !str_contains(request()->redirect, '/'.array_last(explode('.', 'dummy_route')).'/'.$dummy_model_variable->getKey()))

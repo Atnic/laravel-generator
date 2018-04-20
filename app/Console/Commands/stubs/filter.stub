@@ -19,7 +19,7 @@ class DummyClass extends BaseFilter
      * Sortables Field
      * @var array
      */
-    protected $sortables = [ 'id', 'name', 'created_at', 'updated_at' ]; // TODO: List all sortables field, ex: [ 'id', 'name' ]
+    protected $sortables = [ 'id', 'name', 'created_at', 'updated_at' ]; // TODO: List all sortables field, support relation but belongsTo morhpTo hasOne morphOne only, ex: [ 'id', 'name', 'role.name' ]
 
     /**
      * Default Sort

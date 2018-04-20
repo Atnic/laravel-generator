@@ -80,6 +80,6 @@
   </table>
 </div>
 <div class="text-center">
-  {{ $dummy_model_plural_variable->appends(request()->query())->links() }}
+  {{ $dummy_model_plural_variable->links() }}
 </div>
 @endsection
