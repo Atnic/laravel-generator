@@ -49,5 +49,5 @@
   <a href="{{ route(array_last(explode('.', 'dummy_route')).'.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">Detail</a>
   @endif
 </div>
-<span class="clearfix"></span>
+<a href="{{ route('dummy_route.dummy_model_plural_variable.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">List</a>
 @endsection

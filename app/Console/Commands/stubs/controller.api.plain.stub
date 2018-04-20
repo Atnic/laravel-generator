@@ -18,8 +18,8 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Apply middleware if any
-        // $this->middleware('auth:api');
+        // TODO: Add/Remove middleware as needed
+        $this->middleware('auth:api');
     }
 
     /**
