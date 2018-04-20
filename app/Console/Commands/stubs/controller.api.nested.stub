@@ -43,8 +43,8 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Apply middleware if any
-        // $this->middleware('auth:api');
+        // TODO: Add/Remove middleware as needed
+        $this->middleware('auth:api');
     }
 
     /**
@@ -55,11 +55,11 @@ class DummyClass extends Controller
      */
     public function index(ParentDummyModelClass $parent_dummy_model_variable)
     {
-        // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
+        $this->authorize('view', $parent_dummy_model_variable);
         $dummy_model_plural_variable = DummyModelClass::filter()
             ->where('parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName(), $parent_dummy_model_variable->getKey())
-            ->paginate();
-        // $this->authorize('index', 'DummyFullModelClass'); // TODO: Policy
+            ->paginate()->appends(request()->query());
+        $this->authorize('index', 'DummyFullModelClass');
 
         return Resource::collection($dummy_model_plural_variable);
     }
@@ -74,12 +74,12 @@ class DummyClass extends Controller
     public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
     {
         // TODO: Add authorize for relation if any
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('create', 'DummyFullModelClass'); // TODO: Policy
-        $request->validate($this->rules()['store']);
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('create', 'DummyFullModelClass');
+        $request->validate($this->rules($request, $parent_dummy_model_variable)['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules()['store'] as $key => $value) {
+        foreach ($this->rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -106,9 +106,9 @@ class DummyClass extends Controller
      */
     public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
-        $parent_dummy_model_variable->dummy_model_variable()->findOrFail($dummy_model_variable->getKey());
-        // $this->authorize('view', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('view', $dummy_model_variable); // TODO: Policy
+        $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
+        $this->authorize('view', $parent_dummy_model_variable);
+        $this->authorize('view', $dummy_model_variable);
 
         return new Resource($dummy_model_variable);
     }
@@ -123,14 +123,14 @@ class DummyClass extends Controller
      */
     public function update(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
-        $parent_dummy_model_variable->dummy_model_variable()->findOrFail($dummy_model_variable->getKey());
+        $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
 
         // TODO: Add authorize for relation if any
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('update', $dummy_model_variable); // TODO: Policy
-        $request->validate($this->rules()['update']);
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('update', $dummy_model_variable);
+        $request->validate($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
 
-        foreach ($this->rules()['update'] as $key => $value) {
+        foreach ($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -157,9 +157,9 @@ class DummyClass extends Controller
      */
     public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
-        $parent_dummy_model_variable->dummy_model_variable()->findOrFail($dummy_model_variable->getKey());
-        // $this->authorize('update', $parent_dummy_model_variable); // TODO: Policy
-        // $this->authorize('delete', $dummy_model_variable); // TODO: Policy
+        $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
+        $this->authorize('update', $parent_dummy_model_variable);
+        $this->authorize('delete', $dummy_model_variable);
         $dummy_model_variable->delete();
 
         return new Resource($dummy_model_variable);
