@@ -19,7 +19,7 @@
       Update
     </button>
   </div>
-  <a href="{{ route('dummy_route.dummy_model_plural_variable.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">List</a>
+  <a href="{{ route('dummy_route.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">List</a>
   <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?');">
     Delete
   </button>
