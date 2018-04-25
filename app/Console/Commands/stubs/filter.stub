@@ -23,7 +23,14 @@ class DummyClass extends BaseFilter
 
     /**
      * Default Sort
-     * @var string
+     * @var string|null
      */
     protected $default_sort = null; // TODO: Default sort, null if no default, ex: 'name,asc'
+
+
+    /**
+     * Default per page
+     * @var int|null
+     */
+    protected $default_per_page = null; // TODO: Default per page, null if use model per page default, ex: 20
 }
