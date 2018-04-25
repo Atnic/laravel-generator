@@ -1,0 +1,13 @@
+<?php
+
+return [
+
+    'plural' => 'dummy_model_plural_variable',
+    'singular' => 'dummy_model_variable',
+
+    'name' => 'name',
+    // TODO: List all column you need, and its translation
+
+    // 'parent' => 'parent',
+    // 'childs' => 'childs'
+];

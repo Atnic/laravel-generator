@@ -16,12 +16,12 @@
   @endforeach
   <div class="pull-right">
     <button type="submit" name="_method" value="PUT" class="btn btn-primary">
-      Update
+      {{ __('Update') }}
     </button>
   </div>
-  <a href="{{ route('dummy_route.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">List</a>
-  <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?');">
-    Delete
+  <a href="{{ route('dummy_route.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
+  <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
+    {{ __('Delete') }}
   </button>
 </form>
 @endsection
