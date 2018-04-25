@@ -62,9 +62,9 @@
 
       @slot('footer')
         <div class="pull-right">
-          <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-primary">Edit</a>
+          <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-primary">{{ __('Edit') }}</a>
         </div>
-        <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">Back</a>
+        <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">{{ __('Back') }}</a>
       @endslot
     @endcomponent
   </div>
