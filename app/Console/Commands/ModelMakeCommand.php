@@ -118,7 +118,7 @@ class ModelMakeCommand extends Command
     {
         $name = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
         $name = Str::replaceLast('Models\\', '', $name);
-        $name = strtolower(str_plural($name));
+        $name = str_plural(snake_case($name));
 
         return $name;
     }
