@@ -27,7 +27,6 @@ class DummyClass extends BaseFilter
      */
     protected $default_sort = null; // TODO: Default sort, null if no default, ex: 'name,asc'
 
-
     /**
      * Default per page
      * @var int|null
