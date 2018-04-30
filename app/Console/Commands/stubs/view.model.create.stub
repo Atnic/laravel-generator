@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content-title', 'DummyTitle')
+@section('content-title', title_case(__('dummy_model_plural_variable.plural')))
 
 @section('content')
 <div class="row">
@@ -9,7 +9,7 @@
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
         @slot('title')
-          Create DummyTitle
+          {{  __('Create') }} {{ title_case(__('dummy_model_plural_variable.singular')) }}
         @endslot
 
         @if (session('status'))
@@ -25,10 +25,10 @@
         @slot('footer')
           <div class="pull-right">
             <button type="submit" class="btn btn-primary">
-              Store
+              {{ __('Store') }}
             </button>
           </div>
-          <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">Back</a>
+          <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">{{ __('Back') }}</a>
         @endslot
       @endcomponent
     </form>

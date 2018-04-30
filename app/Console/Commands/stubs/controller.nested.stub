@@ -24,12 +24,12 @@ class DummyClass extends Controller
         return [
             'parent_dummy_model_variable' => [
                 'belongsTo' => [
-                    // [ 'name' => 'parent', 'column' => 'name' ], // TODO: Add relation you want to show
+                    // [ 'name' => 'parent', 'label' => title_case(__('parent_dummy_model_plural_variable.parent')), 'column' => 'name' ], // TODO: Add relation you want to show
                 ], // also for morphTo
                 'belongsToMany' => [], // also for morphToMany
                 'hasOne' => [], // also for morphOne
                 'hasMany' => [
-                    [ 'name' => 'dummy_model_plural_variable' ],
+                    [ 'name' => 'dummy_model_plural_variable', 'label' => title_case(__('parent_dummy_model_plural_variable.dummy_model_plural_variable')) ],
                 ], // also for morphMany, hasManyThrough
             ],
             'dummy_model_variable' => [
@@ -54,19 +54,19 @@ class DummyClass extends Controller
             'parent' => [
                 'parent_dummy_model_variable' => [
                     // TODO: Parent visibles, 'label' is optional. Ex:
-                    [ 'name' => 'name', 'label' => 'Name' ],
+                    [ 'name' => 'name', 'label' => title_case(__('parent_dummy_model_plural_variable.name')) ],
                 ]
             ],
             'index' => [
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
-                    [ 'name' => 'name', 'label' => 'Name' ],
+                    [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
-                    // TODO: Show visibles, 'label' is optional. Ex:
-                    [ 'name' => 'name', 'label' => 'Name' ],
+                    // TODO: Index visibles, 'label' is optional. Ex:
+                    [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
         ];
@@ -85,13 +85,13 @@ class DummyClass extends Controller
             'create' => [
                 'dummy_model_variable' => [
                     // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true ],
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')), 'required' => true ],
                 ]
             ],
             'edit' => [
                 'dummy_model_variable' => [
                     // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => 'Name' ],
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
         ];

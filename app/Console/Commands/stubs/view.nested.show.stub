@@ -44,10 +44,10 @@
   </tbody>
 </table>
 <div class="pull-right">
-  <a href="{{ route('dummy_route.edit', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">Edit</a>
+  <a href="{{ route('dummy_route.edit', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">{{ __('Edit') }}</a>
   @if (Route::has(array_last(explode('.', 'dummy_route')).'.show'))
-  <a href="{{ route(array_last(explode('.', 'dummy_route')).'.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">Detail</a>
+  <a href="{{ route(array_last(explode('.', 'dummy_route')).'.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">{{ __('Detail') }}</a>
   @endif
 </div>
-<a href="{{ route('dummy_route.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">List</a>
+<a href="{{ route('dummy_route.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
 @endsection

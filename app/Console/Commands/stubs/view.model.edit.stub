@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content-title', 'DummyTitle')
+@section('content-title', title_case(__('dummy_model_plural_variable.plural')))
 
 @section('content')
 <div class="row">
@@ -9,7 +9,7 @@
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
         @slot('title')
-          Edit DummyTitle
+          {{  __('Edit') }} {{ title_case(__('dummy_model_plural_variable.singular')) }}
         @endslot
 
         @if (session('status'))
@@ -28,12 +28,12 @@
         @slot('footer')
           <div class="pull-right">
             <button type="submit" name="_method" value="PUT" class="btn btn-primary">
-              Update
+              {{ __('Update') }}
             </button>
           </div>
-          <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">Back</a>
-          <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?');">
-            Delete
+          <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">{{{ __('Back') }}}</a>
+          <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
+            {{ __('Delete') }}
           </button>
         @endslot
       @endcomponent

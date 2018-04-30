@@ -21,6 +21,9 @@ class BaseFilter extends Filter
     /** @var string|null Default sort */
     protected $default_sort = null;
 
+    /** @var int|null Default per page */
+    protected $default_per_page = null;
+
     /**
      * Filter constructor.
      *
@@ -31,6 +34,9 @@ class BaseFilter extends Filter
         $this->request = clone $request;
         if (!$this->request->exists('sort') && $this->default_sort) {
             $this->request->merge([ 'sort' => $this->default_sort ]);
+        }
+        if (!$this->request->exists('per_page') && $this->default_per_page) {
+            $this->request->merge([ 'per_page' => $this->default_per_page ]);
         }
     }
 
@@ -104,6 +110,26 @@ class BaseFilter extends Filter
         });
     }
 
+    /**
+     * Total per page on pagination
+     * @param  int $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function per_page($value)
+    {
+        $validator = validator([ 'value' => $value ], [ 'value' => 'required|numeric|min:1|max:1000' ]);
+        return $this->builder->when(!$validator->fails(), function ($query) use($value) {
+            $model = $query->getModel();
+            $model->setPerPage($value);
+            $query->setModel($model);
+        });
+    }
+
+    /**
+     * Get collection of resources by keys
+     * @param  string $values
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function keys($values)
     {
         $keys = explode(',', $values);

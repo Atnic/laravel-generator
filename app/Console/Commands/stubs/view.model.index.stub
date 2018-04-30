@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('content-title', 'DummyTitle')
+@section('content-title', title_case(__('dummy_model_plural_variable.plural')))
 
 @section('content')
 <div class="row">
   <div class="col-md-offset-2 col-md-8">
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        DummyTitle
+        {{ __('List') }} {{ title_case(__('dummy_model_plural_variable.plural')) }}
       @endslot
       @slot('tools')
-        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}" class="btn btn-default btn-xs">Create</a>
+        <a href="{{ route('dummy_route.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}" class="btn btn-default btn-xs">{{ __('Create') }}</a>
       @endslot
 
       @if (session('status'))
@@ -25,7 +25,7 @@
               <span class="input-group-addon">
                 <i class="fa fa-search"></i>
               </span>
-              <input type="text" name="search" placeholder="Search" class="input-sm form-control" value="{{ request()->search }}" autofocus>
+              <input type="text" name="search" placeholder="{{ __('Search') }}" class="input-sm form-control" value="{{ request()->search }}" autofocus>
             </div>
           </form>
         </div>
@@ -75,17 +75,17 @@
               <td>{{ $dummy_model_variable->{$column['name']} }}</td>
               @endforeach
               <td class="action text-nowrap">
-                <a href="{{ route('dummy_route.show', [ $dummy_model_variable->getKey() ]) }}" class="btn btn-primary btn-xs">Show</a>
-                <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-success btn-xs">Edit</a>
-                <form style="display:inline" action="{{ route('dummy_route.destroy', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
+                <a href="{{ route('dummy_route.show', [ $dummy_model_variable->getKey() ]) }}" class="btn btn-primary btn-xs">{{ __('Show') }}</a>
+                <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-success btn-xs">{{ __('Edit') }}</a>
+                <form style="display:inline" action="{{ route('dummy_route.destroy', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete?') }}');">
                   {{ csrf_field() }}
-                  <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">Delete</button>
+                  <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">{{ __('Delete') }}</button>
                 </form>
               </td>
             </tr>
             @empty
             <tr>
-              <td class="text-center" colspan="{{ count($relations['dummy_model_variable']['belongsTo']) + count($visibles['dummy_model_variable']) + 1 }}">No Data</td>
+              <td class="text-center" colspan="{{ count($relations['dummy_model_variable']['belongsTo']) + count($visibles['dummy_model_variable']) + 1 }}">{{ __('Empty') }}</td>
             </tr>
             @endforelse
           </tbody>

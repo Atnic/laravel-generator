@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content-title', 'DummyTitle')
+@section('content-title', title_case(__('dummy_model_plural_variable.plural')))
 
 @section('content')
 <div class="row">
@@ -9,7 +9,7 @@
                 'col-md-8 col-md-offset-2' : 'col-md-4' }}" >
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        Detail DummyTitle
+        {{ __('Detail') }} {{ title_case(__('dummy_model_plural_variable.singular')) }}
       @endslot
 
       @if (session('status'))
@@ -62,9 +62,9 @@
 
       @slot('footer')
         <div class="pull-right">
-          <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-primary">Edit</a>
+          <a href="{{ route('dummy_route.edit', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-primary">{{ __('Edit') }}</a>
         </div>
-        <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">Back</a>
+        <a href="{{ request()->filled('redirect') ? request()->redirect : route('dummy_route.index') }}" class="btn btn-default">{{ __('Back') }}</a>
       @endslot
     @endcomponent
   </div>
@@ -74,7 +74,7 @@
     @component(config('generator.view_component').'components.tabs')
       @slot('nav_tabs')
         <li role="presentation" class="{{ request()->routeIs('dummy_route.show') ? 'active' : '' }}">
-          <a href="{{ route('dummy_route.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" style="cursor:pointer">DummyTitle</a>
+          <a href="{{ route('dummy_route.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" style="cursor:pointer">{{ title_case(__('dummy_model_plural_variable.singular')) }}</a>
         </li>
         @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
         @foreach ($relations['dummy_model_variable'][$relation_type] as $key => $relation)

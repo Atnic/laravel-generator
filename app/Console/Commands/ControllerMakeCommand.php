@@ -122,6 +122,7 @@ class ControllerMakeCommand extends Command
             'ParentDummyModelClass' => class_basename($parentModelClass),
             'ParentDummyModelVariable' => lcfirst(class_basename($parentModelClass)),
             'parent_dummy_model_variable' => snake_case(class_basename($parentModelClass)),
+            'parent_dummy_model_plural_variable' => str_plural(snake_case(class_basename($parentModelClass))),
             'ParentDummyTitle' => title_case(snake_case(class_basename($parentModelClass), ' ')),
         ];
     }
