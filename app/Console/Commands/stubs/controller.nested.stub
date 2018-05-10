@@ -139,7 +139,7 @@ class DummyClass extends Controller
     {
         $this->authorize('view', $parent_dummy_model_variable);
         $dummy_model_plural_variable = DummyModelClass::filter()
-            ->where($parent_dummy_model_variable->getTable().'_'.$parent_dummy_model_variable->getKeyName(), $parent_dummy_model_variable->getKey())
+            ->where($parent_dummy_model_variable->getForeignKey(), $parent_dummy_model_variable->getKey())
             ->paginate()->appends(request()->query());
         $this->authorize('index', 'DummyFullModelClass');
 
