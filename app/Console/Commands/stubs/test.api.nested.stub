@@ -40,9 +40,7 @@ class DummyClass extends TestCase
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
 
         $this->actingAs($user, 'api');
-        $response = $this->postJson(dummy_action_store, [
-            'name' => 'Test'
-        ]);
+        $response = $this->postJson(dummy_action_store, factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
         $response->assertSuccessful();
     }
 
@@ -76,9 +74,7 @@ class DummyClass extends TestCase
         $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ 'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey() ]));
 
         $this->actingAs($user, 'api');
-        $response = $this->putJson(dummy_action_update, [
-            'name' => 'Test'
-        ]);
+        $response = $this->putJson(dummy_action_update, factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
         $response->assertSuccessful();
     }
 
