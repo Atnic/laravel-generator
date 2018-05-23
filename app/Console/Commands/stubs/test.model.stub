@@ -50,9 +50,7 @@ class DummyClass extends TestCase
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
-        $response = $this->post(dummy_action_store, [
-            'name' => 'Test'
-        ]);
+        $response = $this->post(dummy_action_store, factory(DummyModelClass::class)->make()->toArray());
         $response->assertSessionMissing('errors');
         $response->assertStatus(302);
     }
@@ -101,9 +99,7 @@ class DummyClass extends TestCase
         $dummy_model_variable = factory(DummyModelClass::class)->create();
 
         $this->actingAs($user);
-        $response = $this->put(dummy_action_update, [
-            'name' => 'Test'
-        ]);
+        $response = $this->put(dummy_action_update, factory(DummyModelClass::class)->make()->toArray());
         $response->assertSessionMissing('errors');
         $response->assertStatus(302);
     }
