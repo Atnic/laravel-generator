@@ -1,5 +1,3 @@
-@section('content-title', title_case(__($resource_route.'.plural')))
-
 @section('content')
 <div class="row">
   <div class="{{ (empty(array_merge($relations[$model_variable]['belongsToMany'],
@@ -7,7 +5,7 @@
                 'col-md-8 col-md-offset-2' : 'col-md-4' }}" >
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        {{ __('Detail') }} {{ title_case(__($resource_route.'.singular')) }}
+        {{ __('Detail') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
       @endslot
 
       @if (session('status'))

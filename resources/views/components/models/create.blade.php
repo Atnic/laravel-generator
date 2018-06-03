@@ -1,5 +1,3 @@
-@section('content-title', title_case(__($resource_route.'.plural')))
-
 @section('content')
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
@@ -7,7 +5,7 @@
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
         @slot('title')
-          {{ __('Create') }} {{ title_case(__($resource_route.'.singular')) }}
+          {{ __('Create') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
         @endslot
 
         @if (session('status'))

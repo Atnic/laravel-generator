@@ -1,11 +1,9 @@
-@section('content-title', title_case(__($resource_route.'.plural')))
-
 @section('content')
 <div class="row">
   <div class="col-md-offset-2 col-md-8">
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        {{ __('List') }} {{ title_case(__($resource_route.'.plural')) }}
+        {{ __('List') }} {{ $panel_title ? : title_case(__($resource_route.'.plural')) }}
       @endslot
       @slot('tools')
         <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}" class="btn btn-default btn-xs">{{ __('Create') }}</a>
