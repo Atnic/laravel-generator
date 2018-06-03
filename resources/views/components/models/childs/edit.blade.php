@@ -1,0 +1,25 @@
+@section('parent-content')
+<form class="form" action="{{ route($resource_route.'.update', [
+  $parent->getKey(), $model->getKey(),
+  'redirect' => route($resource_route.'.index', [
+    $parent->getKey(),
+    'redirect' => request()->filled('redirect') ? request()->redirect : null ]) ]) }}" method="POST">
+  {{ csrf_field() }}
+  @foreach ($fields[$model_variable] as $key => $field)
+  @component(config('generator.view_component').'components.fields.'.$field['field'], [
+      'field' => $field,
+      'model' => $model
+  ])
+  @endcomponent
+  @endforeach
+  <div class="pull-right">
+    <button type="submit" name="_method" value="PUT" class="btn btn-primary">
+      {{ __('Update') }}
+    </button>
+  </div>
+  <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
+  <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
+    {{ __('Delete') }}
+  </button>
+</form>
+@endsection

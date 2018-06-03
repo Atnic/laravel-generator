@@ -21,7 +21,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
+    public static function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
@@ -76,10 +76,10 @@ class DummyClass extends Controller
         // TODO: Add authorize for relation if any
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('create', 'DummyFullModelClass');
-        $request->validate($this->rules($request, $parent_dummy_model_variable)['store']);
+        $request->validate(self::rules($request, $parent_dummy_model_variable)['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
+        foreach (self::rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -128,9 +128,9 @@ class DummyClass extends Controller
         // TODO: Add authorize for relation if any
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('update', $dummy_model_variable);
-        $request->validate($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
+        $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
 
-        foreach ($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
+        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');

@@ -1,53 +1,8 @@
 @extends('parent_dummy_view.show')
 
-@section('parent-content')
-<table class="table">
-  <colgroup>
-    <col class="col-xs-4">
-    <col class="col-xs-8">
-  </colgroup>
-  <tbody>
-    @foreach ($relations['dummy_model_variable']['belongsTo'] as $key => $relation)
-    <tr>
-      <th>{{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
-      <td>
-        @if ($dummy_model_variable->{$relation['name']})
-        <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-          {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
-        </a>
-        @else
-        -
-        @endif
-      </td>
-    </tr>
-    @endforeach
-    @foreach ($visibles['dummy_model_variable'] as $key => $column)
-    <tr>
-      <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
-      <td>{{ $dummy_model_variable->{$column['name']} }}</td>
-    </tr>
-    @endforeach
-    @foreach ($relations['dummy_model_variable']['hasOne'] as $key => $relation)
-    <tr>
-      <th>{{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
-      <td>
-        @if ($dummy_model_variable->{$relation['name']})
-        <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $dummy_model_variable->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-          {{ $dummy_model_variable->{$relation['name']}->{$relation['column']} }}
-        </a>
-        @else
-        -
-        @endif
-      </td>
-    </tr>
-    @endforeach
-  </tbody>
-</table>
-<div class="pull-right">
-  <a href="{{ route('dummy_route.edit', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">{{ __('Edit') }}</a>
-  @if (Route::has(array_last(explode('.', 'dummy_route')).'.show'))
-  <a href="{{ route(array_last(explode('.', 'dummy_route')).'.show', [ $dummy_model_variable->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">{{ __('Detail') }}</a>
-  @endif
-</div>
-<a href="{{ route('dummy_route.index', [ $parent_dummy_model_variable->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
-@endsection
+@include('generator::components.models.childs.show', [
+  'resource_route' => 'dummy_route',
+  'model_variable' => 'dummy_model_variable',
+  'parent' => $parent_dummy_model_variable,
+  'model' => $dummy_model_variable
+])
