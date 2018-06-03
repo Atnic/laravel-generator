@@ -6,6 +6,7 @@ use DummyFullModelClass;
 use ParentDummyFullModelClass;
 use Illuminate\Http\Request;
 use DummyRootNamespaceHttp\Controllers\Controller;
+use DummyFullParentClass;
 
 /**
  * DummyClass
@@ -19,19 +20,10 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function relations(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
+    public static function relations(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
-            'parent_dummy_model_variable' => [
-                'belongsTo' => [
-                    // [ 'name' => 'parent', 'label' => title_case(__('parent_dummy_model_plural_variable.parent')), 'column' => 'name' ], // TODO: Add relation you want to show
-                ], // also for morphTo
-                'belongsToMany' => [], // also for morphToMany
-                'hasOne' => [], // also for morphOne
-                'hasMany' => [
-                    [ 'name' => 'dummy_model_plural_variable', 'label' => title_case(__('parent_dummy_model_plural_variable.dummy_model_plural_variable')) ],
-                ], // also for morphMany, hasManyThrough
-            ],
+            'parent_dummy_model_variable' => DummyParentClass::relations($request, $parent_dummy_model_variable)['parent_dummy_model_variable'],
             'dummy_model_variable' => [
                 'belongsTo' => [], // also for morphTo
                 'belongsToMany' => [], // also for morphToMany
@@ -48,14 +40,11 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function visibles(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
+    public static function visibles(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'parent' => [
-                'parent_dummy_model_variable' => [
-                    // TODO: Parent visibles, 'label' is optional. Ex:
-                    [ 'name' => 'name', 'label' => title_case(__('parent_dummy_model_plural_variable.name')) ],
-                ]
+                'parent_dummy_model_variable' => DummyParentClass::visibles($request, $parent_dummy_model_variable)['show']['parent_dummy_model_variable']
             ],
             'index' => [
                 'dummy_model_variable' => [
@@ -79,7 +68,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function fields(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
+    public static function fields(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'create' => [
@@ -104,7 +93,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
+    public static function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
@@ -146,8 +135,8 @@ class DummyClass extends Controller
         return response()->view('dummy_view.index', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
-            'relations' => $this->relations(request(), $parent_dummy_model_variable),
-            'visibles' => array_merge($this->visibles(request(), $parent_dummy_model_variable)['parent'], $this->visibles(request(), $parent_dummy_model_variable)['index']),
+            'relations' => self::relations(request(), $parent_dummy_model_variable),
+            'visibles' => array_merge(self::visibles(request(), $parent_dummy_model_variable)['parent'], self::visibles(request(), $parent_dummy_model_variable)['index']),
         ]);
     }
 
@@ -164,9 +153,9 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.create', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
-            'relations' => $this->relations(request(), $parent_dummy_model_variable),
-            'visibles' => $this->visibles(request(), $parent_dummy_model_variable)['parent'],
-            'fields' => $this->fields(request(), $parent_dummy_model_variable)['create']
+            'relations' => self::relations(request(), $parent_dummy_model_variable),
+            'visibles' => self::visibles(request(), $parent_dummy_model_variable)['parent'],
+            'fields' => self::fields(request(), $parent_dummy_model_variable)['create']
         ]);
     }
 
@@ -181,10 +170,10 @@ class DummyClass extends Controller
     {
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('create', 'DummyFullModelClass');
-        $request->validate($this->rules($request, $parent_dummy_model_variable)['store']);
+        $request->validate(self::rules($request, $parent_dummy_model_variable)['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
+        foreach (self::rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -205,8 +194,8 @@ class DummyClass extends Controller
             $response = response()->redirectToRoute('dummy_route.show', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey() ]);
 
         return $response->withInput([
-            'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey(),
-            'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey(),
+            $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey(),
+            $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey(),
         ]);
     }
 
@@ -226,8 +215,8 @@ class DummyClass extends Controller
         return response()->view('dummy_view.show', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations(request(), $parent_dummy_model_variable, $dummy_model_variable),
-            'visibles' => array_merge($this->visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['parent'], $this->visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['show'])
+            'relations' => self::relations(request(), $parent_dummy_model_variable, $dummy_model_variable),
+            'visibles' => array_merge(self::visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['parent'], self::visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['show'])
         ]);
     }
 
@@ -247,9 +236,9 @@ class DummyClass extends Controller
         return response()->view('dummy_view.edit', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations(request(), $parent_dummy_model_variable, $dummy_model_variable),
-            'visibles' => $this->visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['parent'],
-            'fields' => $this->fields(request(), $parent_dummy_model_variable, $dummy_model_variable)['edit']
+            'relations' => self::relations(request(), $parent_dummy_model_variable, $dummy_model_variable),
+            'visibles' => self::visibles(request(), $parent_dummy_model_variable, $dummy_model_variable)['parent'],
+            'fields' => self::fields(request(), $parent_dummy_model_variable, $dummy_model_variable)['edit']
         ]);
     }
 
@@ -268,9 +257,9 @@ class DummyClass extends Controller
         // TODO: Add authorize for relation if any
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('update', $dummy_model_variable);
-        $request->validate($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
+        $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
 
-        foreach ($this->rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
+        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -291,8 +280,8 @@ class DummyClass extends Controller
             $response = response()->redirectToRoute('dummy_route.show', [ $parent_dummy_model_variable->getKey(), $dummy_model_variable->getKey() ]);
 
         return $response->withInput([
-            'parent_dummy_model_variable_'.$parent_dummy_model_variable->getKeyName() => $parent_dummy_model_variable->getKey(),
-            'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey(),
+            $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey(),
+            $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey(),
         ]);
     }
 

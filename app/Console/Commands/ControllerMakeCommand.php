@@ -58,6 +58,8 @@ class ControllerMakeCommand extends Command
         $replace = [];
 
         if ($this->option('parent')) {
+            $replace['DummyFullParentClass'] = $this->getNamespace($name).'Controller';
+            $replace['DummyParentClass'] = class_basename($this->getNamespace($name).'Controller');
             $replace['parent_dummy_view'] = $this->getParentViewName($name);
             $replace['parent_dummy_route'] = $this->getParentRouteName($name);
         }

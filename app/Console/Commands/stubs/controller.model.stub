@@ -17,7 +17,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function relations(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function relations(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'dummy_model_variable' => [
@@ -39,7 +39,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function visibles(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function visibles(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'index' => [
@@ -63,7 +63,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'create' => [
@@ -87,7 +87,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass|null  $dummy_model_variable
      * @return array
      */
-    public function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
@@ -125,8 +125,8 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.index', [
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
-            'relations' => $this->relations(request()),
-            'visibles' => $this->visibles(request())['index']
+            'relations' => self::relations(request()),
+            'visibles' => self::visibles(request())['index']
         ]);
     }
 
@@ -140,7 +140,7 @@ class DummyClass extends Controller
         $this->authorize('create', 'DummyFullModelClass');
 
         return response()->view('dummy_view.create', [
-            'fields' => $this->fields(request())['create']
+            'fields' => self::fields(request())['create']
         ]);
     }
 
@@ -153,10 +153,10 @@ class DummyClass extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', 'DummyFullModelClass');
-        $request->validate($this->rules($request)['store']);
+        $request->validate(self::rules($request)['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach ($this->rules($request)['store'] as $key => $value) {
+        foreach (self::rules($request)['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -175,7 +175,7 @@ class DummyClass extends Controller
         else
             $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
 
-        return $response->withInput([ 'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey() ]);
+        return $response->withInput([ $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey() ]);
     }
 
     /**
@@ -190,8 +190,8 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.show', [
             'dummy_model_variable' => $dummy_model_variable,
-            'relations' => $this->relations(request(), $dummy_model_variable),
-            'visibles' => $this->visibles(request(), $dummy_model_variable)['show'],
+            'relations' => self::relations(request(), $dummy_model_variable),
+            'visibles' => self::visibles(request(), $dummy_model_variable)['show'],
         ]);
     }
 
@@ -207,7 +207,7 @@ class DummyClass extends Controller
 
         return response()->view('dummy_view.edit', [
             'dummy_model_variable' => $dummy_model_variable,
-            'fields' => $this->fields(request(), $dummy_model_variable)['edit']
+            'fields' => self::fields(request(), $dummy_model_variable)['edit']
         ]);
     }
 
@@ -221,9 +221,9 @@ class DummyClass extends Controller
     public function update(Request $request, DummyModelClass $dummy_model_variable)
     {
         $this->authorize('update', $dummy_model_variable);
-        $request->validate($this->rules($request, $dummy_model_variable)['update']);
+        $request->validate(self::rules($request, $dummy_model_variable)['update']);
 
-        foreach ($this->rules($request, $dummy_model_variable)['update'] as $key => $value) {
+        foreach (self::rules($request, $dummy_model_variable)['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -242,7 +242,7 @@ class DummyClass extends Controller
         else
             $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
 
-        return $response->withInput([ 'dummy_model_variable_'.$dummy_model_variable->getKeyName() => $dummy_model_variable->getKey() ]);
+        return $response->withInput([ $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey() ]);
     }
 
     /**
