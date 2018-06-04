@@ -25,9 +25,7 @@ class DummyClass extends Controller
         return [
             'parent_dummy_model_variable' => DummyParentClass::relations($request, $parent_dummy_model_variable)['parent_dummy_model_variable'],
             'dummy_model_variable' => [
-                'belongsTo' => [], // also for morphTo
                 'belongsToMany' => [], // also for morphToMany
-                'hasOne' => [], // also for morphOne
                 'hasMany' => [], // also for morphMany, hasManyThrough
             ]
         ];
@@ -50,14 +48,12 @@ class DummyClass extends Controller
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
                     [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
-                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
                     [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
-                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
                 ]
             ]
         ];
