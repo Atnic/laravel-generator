@@ -5,7 +5,7 @@
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
         @slot('title')
-          {{ __('Create') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
+          {{ __('Create') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.singular')) }}
         @endslot
 
         @if (session('status'))

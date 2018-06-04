@@ -5,7 +5,7 @@
                 'col-md-8 col-md-offset-2' : 'col-md-4' }}" >
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        {{ __('Detail') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
+        {{ __('Detail') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.singular')) }}
       @endslot
 
       <table class="table">

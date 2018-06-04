@@ -1,9 +1,9 @@
 @section('content')
 <div class="row">
-  <div class="{{ $col_class ? : 'col-md-8 col-md-offset-2' }}">
+  <div class="{{ !empty($col_class) ? $col_class : 'col-md-8 col-md-offset-2' }}">
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        {{ __('List') }} {{ $panel_title ? : title_case(__($resource_route.'.plural')) }}
+        {{ __('List') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.plural')) }}
       @endslot
       @slot('tools')
         <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}" class="btn btn-default btn-xs">{{ __('Create') }}</a>
