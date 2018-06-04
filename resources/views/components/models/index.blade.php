@@ -1,6 +1,6 @@
 @section('content')
 <div class="row">
-  <div class="col-md-offset-2 col-md-8">
+  <div class="{{ $col_class ? : 'col-md-8 col-md-offset-2' }}">
     @component(config('generator.view_component').'components.panel')
       @slot('title')
         {{ __('List') }} {{ $panel_title ? : title_case(__($resource_route.'.plural')) }}
