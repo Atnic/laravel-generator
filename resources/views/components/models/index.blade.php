@@ -60,9 +60,9 @@
               @foreach ($visibles[$model_variable] as $key => $column)
               @if (!empty($column['column']))
               <td>
-                @if ($model->{$relation['name']})
-                <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $model->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-                  {{ $model->{$relation['name']}->{$relation['column']} }}
+                @if ($model->{$column['name']})
+                <a href="{{ Route::has(str_plural($column['name']).'.show') ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
+                  {{ $model->{$column['name']}->{$column['column']} }}
                 </a>
                 @else
                 -
