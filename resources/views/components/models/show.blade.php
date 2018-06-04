@@ -8,11 +8,6 @@
         {{ __('Detail') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
       @endslot
 
-      @if (session('status'))
-      <div class="alert alert-success">
-        {{ session('status') }}
-      </div>
-      @endif
       <table class="table">
         <colgroup>
           <col class="col-xs-4">
@@ -87,6 +82,11 @@
 
       <div class="tab-pane active">
         <div class="panel-body">
+          @if (session('status'))
+          <div class="alert alert-{{ session('status-type') ? : 'success' }}">
+            {{ session('status') }}
+          </div>
+          @endif
           @section('parent-content')
           <table class="table">
             <colgroup>

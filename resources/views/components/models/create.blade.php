@@ -9,7 +9,7 @@
         @endslot
 
         @if (session('status'))
-        <div class="alert alert-success">
+        <div class="alert alert-{{ session('status-type') ? : 'success' }}">
           {{ session('status') }}
         </div>
         @endif
