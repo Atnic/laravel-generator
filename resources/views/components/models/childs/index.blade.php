@@ -20,17 +20,17 @@
   <table id="dummy_model_plural_variable" class="table table-striped table-hover">
     <thead>
       <tr>
-        @foreach ($relations[$model_variable]['belongsTo'] as $key => $relation)
+        @foreach ($visibles[$model_variable] as $key => $column)
+        @if (!empty($column['column']))
         <th class="text-center">
-          {{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}
-          @if (array_search($relation['name'].'.'.$relation['column'].',desc', explode('|', request()->sort)) === false)
-          <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $relation['name'].'.'.$relation['column'].',desc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
+          {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+          @if (array_search($column['name'].'.'.$column['column'].',desc', explode('|', request()->sort)) === false)
+          <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',desc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
           @else
-          <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $relation['name'].'.'.$relation['column'].',asc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
+          <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',asc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
           @endif
         </th>
-        @endforeach
-        @foreach ($visibles[$model_variable] as $key => $column)
+        @else
         <th class="text-center">
           {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
           @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
@@ -39,6 +39,7 @@
           <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].',asc' ])) }}"> <i class="fa fa-sort text-muted"></i></a>
           @endif
         </th>
+        @endif
         @endforeach
         <th class="text-center action" width="1px"></th>
       </tr>
@@ -46,19 +47,20 @@
     <tbody>
       @forelse ($models as $key => $model)
       <tr>
-        @foreach ($relations[$model_variable]['belongsTo'] as $key => $relation)
+        @foreach ($visibles[$model_variable] as $key => $column)
+        @if (!empty($column['column']))
         <td>
-          @if ($model->{$relation['name']})
-          <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $model->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-            {{ $model->{$relation['name']}->{$relation['column']} }}
+          @if ($model->{$column['name']})
+          <a href="{{ Route::has(str_plural($column['name']).'.show') ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
+            {{ $model->{$column['name']}->{$column['column']} }}
           </a>
           @else
           -
           @endif
         </td>
-        @endforeach
-        @foreach ($visibles[$model_variable] as $key => $column)
+        @else
         <td>{{ $model->{$column['name']} }}</td>
+        @endif
         @endforeach
         <td class="action text-nowrap">
           <a href="{{ route($resource_route.'.show', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary btn-xs">{{ __('Show') }}</a>
@@ -71,7 +73,7 @@
       </tr>
       @empty
       <tr>
-        <td class="text-center" colspan="{{ count($relations[$model_variable]['belongsTo']) + count($visibles[$model_variable]) + 1 }}">{{ __('Empty') }}</td>
+        <td class="text-center" colspan="{{ count($visibles[$model_variable]) + 1 }}">{{ __('Empty') }}</td>
       </tr>
       @endforelse
     </tbody>

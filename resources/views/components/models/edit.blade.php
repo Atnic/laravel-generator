@@ -5,11 +5,11 @@
       {{ csrf_field() }}
       @component(config('generator.view_component').'components.panel')
         @slot('title')
-          {{  __('Edit') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
+          {{  __('Edit') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.singular')) }}
         @endslot
 
         @if (session('status'))
-        <div class="alert alert-success">
+        <div class="alert alert-{{ session('status-type') ? : 'success' }}">
           {{ session('status') }}
         </div>
         @endif

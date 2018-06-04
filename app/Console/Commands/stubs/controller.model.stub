@@ -21,11 +21,7 @@ class DummyClass extends Controller
     {
         return [
             'dummy_model_variable' => [
-                'belongsTo' => [
-                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // TODO: Add relation you want to show
-                ], // also for morphTo
                 'belongsToMany' => [], // also for morphToMany
-                'hasOne' => [], // also for morphOne
                 'hasMany' => [
                     // [ 'name' => 'childs', 'label' => title_case(__('dummy_model_plural_variable.childs')) ], // Example
                 ], // also for morphMany, hasManyThrough
@@ -45,12 +41,14 @@ class DummyClass extends Controller
             'index' => [
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
+                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
                     [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
                     // TODO: Show visibles, 'label' is optional. Ex:
+                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
                     [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
@@ -69,12 +67,18 @@ class DummyClass extends Controller
             'create' => [
                 'dummy_model_variable' => [
                     // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => title_case(__('bars.parent')), 'required' => true, 'options' => \App\Parent::filter()->get()->map(function ($parent) {
+                    //     return [ 'value' => $parent->id, 'text' => $parent->name ];
+                    // })->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
                     [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')), 'required' => true ],
                 ]
             ],
             'edit' => [
                 'dummy_model_variable' => [
                     // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
+                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => title_case(__('bars.parent')), 'options' => \App\Parent::filter()->get()->map(function ($parent) {
+                    //     return [ 'value' => $parent->id, 'text' => $parent->name ];
+                    // })->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
                     [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
@@ -92,10 +96,12 @@ class DummyClass extends Controller
         return [
             'store' => [
                 // TODO: Store rules
+                // 'parent_id' => 'required|exists:parents,id',
                 'name' => 'required|string|max:255',
             ],
             'update' => [
                 // TODO: Update rules
+                // 'parent_id' => 'exists:parents,id',
                 'name' => 'string|max:255',
             ]
         ];

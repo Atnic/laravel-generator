@@ -25,9 +25,7 @@ class DummyClass extends Controller
         return [
             'parent_dummy_model_variable' => DummyParentClass::relations($request, $parent_dummy_model_variable)['parent_dummy_model_variable'],
             'dummy_model_variable' => [
-                'belongsTo' => [], // also for morphTo
                 'belongsToMany' => [], // also for morphToMany
-                'hasOne' => [], // also for morphOne
                 'hasMany' => [], // also for morphMany, hasManyThrough
             ]
         ];

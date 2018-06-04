@@ -5,53 +5,35 @@
                 'col-md-8 col-md-offset-2' : 'col-md-4' }}" >
     @component(config('generator.view_component').'components.panel')
       @slot('title')
-        {{ __('Detail') }} {{ $panel_title ? : title_case(__($resource_route.'.singular')) }}
+        {{ __('Detail') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.singular')) }}
       @endslot
 
-      @if (session('status'))
-      <div class="alert alert-success">
-        {{ session('status') }}
-      </div>
-      @endif
       <table class="table">
         <colgroup>
           <col class="col-xs-4">
           <col class="col-xs-8">
         </colgroup>
         <tbody>
-          @foreach ($relations[$model_variable]['belongsTo'] as $key => $relation)
+          @foreach ($visibles[$model_variable] as $key => $column)
+          @if (!empty($column['column']))
           <tr>
-            <th>{{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+            <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
             <td>
-              @if ($model->{$relation['name']})
-              <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $model->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-                {{ $model->{$relation['name']}->{$relation['column']} }}
+              @if ($model->{$column['name']})
+              <a href="{{ Route::has(str_plural($column['name']).'.show') ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
+                {{ $model->{$column['name']}->{$column['column']} }}
               </a>
               @else
               -
               @endif
             </td>
           </tr>
-          @endforeach
-          @foreach ($visibles[$model_variable] as $key => $column)
+          @else
           <tr>
             <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
             <td>{{ $model->{$column['name']} }}</td>
           </tr>
-          @endforeach
-          @foreach ($relations[$model_variable]['hasOne'] as $key => $relation)
-          <tr>
-            <th>{{ !empty($relation['label']) ? $relation['label'] : title_case(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
-            <td>
-              @if ($model->{$relation['name']})
-              <a href="{{ Route::has(str_plural($relation['name']).'.show') ? route(str_plural($relation['name']).'.show', [ $model->{$relation['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-                {{ $model->{$relation['name']}->{$relation['column']} }}
-              </a>
-              @else
-              -
-              @endif
-            </td>
-          </tr>
+          @endif
           @endforeach
         </tbody>
       </table>
@@ -87,6 +69,11 @@
 
       <div class="tab-pane active">
         <div class="panel-body">
+          @if (session('status'))
+          <div class="alert alert-{{ session('status-type') ? : 'success' }}">
+            {{ session('status') }}
+          </div>
+          @endif
           @section('parent-content')
           <table class="table">
             <colgroup>
