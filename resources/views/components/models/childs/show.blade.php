@@ -6,7 +6,7 @@
   </colgroup>
   <tbody>
     @foreach ($visibles[$model_variable] as $key => $column)
-    @if (!empty($column))
+    @if (!empty($column['column']))
     <tr>
       <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
       <td>
