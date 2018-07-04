@@ -17,9 +17,13 @@
       {{ __('Update') }}
     </button>
   </div>
+  @if (Route::has($resource_route.'.index'))
   <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
+  @endif
+  @if (Route::has($resource_route.'.destroy'))
   <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
     {{ __('Delete') }}
   </button>
+  @endif
 </form>
 @endsection

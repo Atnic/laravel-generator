@@ -6,7 +6,9 @@
         {{ __('List') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.plural')) }}
       @endslot
       @slot('tools')
+        @if (Route::has($resource_route.'.create'))
         <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}" class="btn btn-default btn-xs">{{ __('Create') }}</a>
+        @endif
       @endslot
 
       @if (session('status'))
@@ -73,12 +75,18 @@
               @endif
               @endforeach
               <td class="action text-nowrap">
+                @if (Route::has($resource_route.'.show'))
                 <a href="{{ route($resource_route.'.show', [ $model->getKey() ]) }}" class="btn btn-primary btn-xs">{{ __('Show') }}</a>
+                @endif
+                @if (Route::has($resource_route.'.edit'))
                 <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-success btn-xs">{{ __('Edit') }}</a>
+                @endif
+                @if (Route::has($resource_route.'.destroy'))
                 <form style="display:inline" action="{{ route($resource_route.'.destroy', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete?') }}');">
                   {{ csrf_field() }}
                   <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">{{ __('Delete') }}</button>
                 </form>
+                @endif
               </td>
             </tr>
             @empty

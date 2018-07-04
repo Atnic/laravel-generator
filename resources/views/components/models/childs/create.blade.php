@@ -14,6 +14,8 @@
       {{ __('Store') }}
     </button>
   </div>
+  @if (Route::has($resource_route.'.index'))
   <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
+  @endif
 </form>
 @endsection
