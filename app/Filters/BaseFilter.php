@@ -2,7 +2,7 @@
 
 namespace Atnic\LaravelGenerator\Filters;
 
-use Arados\Filters\Filter;
+use Smartisan\Filters\Filter;
 use Illuminate\Http\Request;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -47,7 +47,7 @@ class BaseFilter extends Filter
      */
     public function search($value)
     {
-        $validator = validator([ 'value' => $value ], [ 'value' => 'required|string' ]);
+        $validator = validator([ 'value' => $value ], [ 'value' => 'string' ]);
         return $this->builder->when(!$validator->fails(), function ($query) use($value) {
             $query->where(function ($query) use($value) {
                 $this->buildSearch($query, $this->searchables, $value);
@@ -95,7 +95,7 @@ class BaseFilter extends Filter
             ]);
         }
         $validator = validator([ 'sorts' => $sorts ], [
-            'sorts.*.column' => 'required|in:'.implode(',', $this->sortables),
+            'sorts.*.column' => 'in:'.implode(',', $this->sortables),
             'sorts.*.dir' => 'in:asc,desc'
         ]);
         return $this->builder->when(!$validator->fails(), function ($query) use($sorts) {
@@ -148,7 +148,7 @@ class BaseFilter extends Filter
      */
     public function per_page($value)
     {
-        $validator = validator([ 'value' => $value ], [ 'value' => 'required|numeric|min:1|max:1000' ]);
+        $validator = validator([ 'value' => $value ], [ 'value' => 'numeric|min:1|max:1000' ]);
         return $this->builder->when(!$validator->fails(), function ($query) use($value) {
             $model = $query->getModel();
             $model->setPerPage($value);
@@ -165,7 +165,7 @@ class BaseFilter extends Filter
     {
         $keys = explode(',', $values);
         $model = $this->builder->getModel();
-        $validator = validator([ 'values' => $keys ], [ 'values.*' => 'required|exists:'.$model->getTable().','.$model->getKeyName() ]);
+        $validator = validator([ 'values' => $keys ], [ 'values.*' => 'exists:'.$model->getTable().','.$model->getKeyName() ]);
         return $this->builder->when(!$validator->fails(), function ($query) use($keys) {
             $query->whereKey($keys);
         });
