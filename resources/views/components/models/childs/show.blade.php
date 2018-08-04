@@ -29,10 +29,14 @@
   </tbody>
 </table>
 <div class="pull-right">
+  @if (Route::has($resource_route.'.edit'))
   <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">{{ __('Edit') }}</a>
+  @endif
   @if (Route::has(array_last(explode('.', $resource_route)).'.show'))
   <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-default">{{ __('Detail') }}</a>
   @endif
 </div>
+@if (Route::has($resource_route.'.index'))
 <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default">{{ __('List') }}</a>
+@endif
 @endsection

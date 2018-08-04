@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ab8ad3c5456a53ff8807e021170a08e",
+    "content-hash": "ecac8f1750ec00222379e1bf7c9e299e",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -450,30 +450,28 @@
         },
         {
             "name": "mohd-isa/eloquent-filters",
-            "version": "1.0.2",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mohd-isa/eloquent-filters.git",
-                "reference": "4fbf45696531578a191baa3f282f958bef253609"
+                "reference": "ce5170dddf369958eabc8f13f4da4e9ff7645b64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mohd-isa/eloquent-filters/zipball/4fbf45696531578a191baa3f282f958bef253609",
-                "reference": "4fbf45696531578a191baa3f282f958bef253609",
+                "url": "https://api.github.com/repos/mohd-isa/eloquent-filters/zipball/ce5170dddf369958eabc8f13f4da4e9ff7645b64",
+                "reference": "ce5170dddf369958eabc8f13f4da4e9ff7645b64",
                 "shasum": ""
             },
             "require": {
-                "illuminate/config": "~5.5.0",
-                "illuminate/contracts": "~5.5.0",
-                "illuminate/database": "~5.5.0",
-                "illuminate/filesystem": "~5.5.0",
-                "illuminate/support": "~5.5.0",
+                "illuminate/contracts": "~5.5.0|~5.6.0",
+                "illuminate/database": "~5.5.0|~5.6.0",
+                "illuminate/support": "~5.5.0|~5.6.0",
                 "php": "^7.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Arados\\Filters\\": "src"
+                    "Smartisan\\Filters\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -487,14 +485,12 @@
                 }
             ],
             "description": "Laravel 5 Filterable Eloquents.",
-            "homepage": "https://github.com/arados-io/filterable-eloquents",
+            "homepage": "https://github.com/mohd-isa/eloquent-filters",
             "keywords": [
-                "arados-io",
                 "eloquent-filters",
-                "filterable-eloquents",
                 "laravel"
             ],
-            "time": "2017-11-01T18:10:22+00:00"
+            "time": "2018-03-11T16:22:53+00:00"
         },
         {
             "name": "monolog/monolog",

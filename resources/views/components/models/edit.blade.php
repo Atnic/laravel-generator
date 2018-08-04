@@ -28,9 +28,11 @@
             </button>
           </div>
           <a href="{{ request()->filled('redirect') ? request()->redirect : route($resource_route.'.index') }}" class="btn btn-default">{{{ __('Back') }}}</a>
+          @if (Route::has($resource_route.'.destroy'))
           <button type="submit" name="_method" value="DELETE" class="btn btn-danger" onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
             {{ __('Delete') }}
           </button>
+          @endif
         @endslot
       @endcomponent
     </form>

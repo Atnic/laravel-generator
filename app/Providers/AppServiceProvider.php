@@ -15,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../../config/generator.php' => config_path('generator.php'),
+            __DIR__.'/../../config/filters.php' => config_path('filters.php'),
         ], 'config');
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'generator');
         $this->publishes([
@@ -31,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(
             __DIR__.'/../../config/generator.php', 'generator'
+        );
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/filters.php', 'filters'
         );
     }
 }

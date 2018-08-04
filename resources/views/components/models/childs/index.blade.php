@@ -12,7 +12,9 @@
   </div>
   <div class="col-sm-8">
     <div class="pull-right">
-      <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary btn-sm">{{ __('Create') }}</a>
+      @if (Route::has($resource_route.'.create'))
+      <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-default btn-sm">{{ __('Create') }}</a>
+      @endif
     </div>
   </div>
 </div>
@@ -63,12 +65,18 @@
         @endif
         @endforeach
         <td class="action text-nowrap">
+          @if (Route::has($resource_route.'.show'))
           <a href="{{ route($resource_route.'.show', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary btn-xs">{{ __('Show') }}</a>
+          @endif
+          @if (Route::has($resource_route.'.edit'))
           <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-success btn-xs">{{ __('Edit') }}</a>
+          @endif
+          @if (Route::has($resource_route.'.destroy'))
           <form style="display:inline" action="{{ route($resource_route.'.destroy', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->fullUrl() ]) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete?') }}');">
             {{ csrf_field() }}
             <button type="submit" class="btn btn-danger btn-xs" name="_method" value="DELETE">{{ __('Delete') }}</button>
           </form>
+          @endif
         </td>
       </tr>
       @empty

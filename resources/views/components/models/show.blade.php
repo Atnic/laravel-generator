@@ -39,9 +39,11 @@
       </table>
 
       @slot('footer')
+        @if (Route::has($resource_route.'.edit'))
         <div class="pull-right">
           <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}" class="btn btn-primary">{{ __('Edit') }}</a>
         </div>
+        @endif
         <a href="{{ request()->filled('redirect') ? request()->redirect : route($resource_route.'.index') }}" class="btn btn-default">{{ __('Back') }}</a>
       @endslot
     @endcomponent
