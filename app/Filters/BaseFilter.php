@@ -50,21 +50,31 @@ class BaseFilter extends Filter
         $validator = validator([ 'value' => $value ], [ 'value' => 'required|string' ]);
         return $this->builder->when(!$validator->fails(), function ($query) use($value) {
             $query->where(function ($query) use($value) {
-                foreach ($this->searchables as $key => $searchable) {
-                    if (is_array($searchable)) {
-                        $query->orWhereHas($key, function ($query) use($searchable, $value) {
-                            $query->where(function ($query) use($searchable, $value) {
-                                foreach ($searchable as $key => $searchable_child) {
-                                    $query->orWhere($query->qualifyColumn($searchable_child), 'like', '%'.str_replace(' ', '%', $value).'%');
-                                }
-                            });
-                        });
-                    } else {
-                        $query->orWhere($query->qualifyColumn($searchable), 'like', '%'.str_replace(' ', '%', $value).'%');
-                    }
-                }
+                $this->buildSearch($query, $this->searchables, $value);
             });
         });
+    }
+
+    /**
+     * Recursive Build Search
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  array|string $searchables
+     * @param  string $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function buildSearch($query, $searchables, $value)
+    {
+        foreach ($searchables as $key => $searchable) {
+            if (is_array($searchable)) {
+                $query->orWhereHas($key, function ($query) use($searchable, $value) {
+                    $query->where(function ($query) use($searchable, $value) {
+                        $this->buildSearch($query, $searchable, $value);
+                    });
+                });
+            } else {
+                $query->orWhere($query->qualifyColumn($searchable), 'like', '%'.str_replace(' ', '%', $value).'%');
+            }
+        }
     }
 
     /**
@@ -94,17 +104,38 @@ class BaseFilter extends Filter
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
                     $relation = $query->getModel()->{$join[0]}();
-                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
-                        $query->leftJoin($relation->getRelated()->getTable(), $relation->getQualifiedForeignKey(), '=', $relation->getQualifiedOwnerKeyName());
-                    } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
-                        $query->leftJoin($relation->getRelated()->getTable(), $relation->getQualifiedForeignKeyName(), '=', $relation->getQualifiedParentKeyName());
+                    $wheres = $relation->getQuery()->getQuery()->wheres;
+                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne' ])) {
+                        if (count($wheres) > 1) {
+                            $q = $query->getQuery();
+                            $wheres = $relation->getQuery()->getQuery()->wheres;
+                            for ($i=(count($wheres) - 1); $i >= 1; $i--) {
+                                array_unshift($q->wheres, $wheres[$i]);
+                            }
+                            $query->setQuery($q);
+                        }
+                        foreach ($relation->getRelated()->getGlobalScopes() as $key => $scope) {
+                            $query->withGlobalScope($key, $scope);
+                        }
+                        if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
+                            if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
+                                $query->leftJoin($relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKey(), '=', $relation->getQualifiedOwnerKeyName());
+                        } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
+                            if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
+                                $query->leftJoin($relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKeyName(), '=', $relation->getQualifiedParentKeyName());
+                        } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
+                            if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getTable()))
+                                $query->leftJoin($relation->getTable(), $relation->getQualifiedParentKeyName(), '=', $relation->getQualifiedForeignPivotKeyName());
+                            if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
+                                $query->leftJoin($relation->getQuery()->getQuery()->from, $relation->getQualifiedRelatedPivotKeyName(), '=', $relation->getRelated()->getQualifiedKeyName());
+                        }
                     } else {
                         continue;
                     }
-                    $query->orderBy($relation->getRelated()->getTable().'.'.$join[1], $sort['dir']);
-                    $query->addSelect($relation->getRelated()->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]);
+                    $query->orderBy($relation->getRelated()->qualifyColumn($join[1]), $sort['dir']);
+                    $query->addSelect(DB::raw($relation->getRelated()->qualifyColumn($join[1]).' as '.$join[0].'_'.$join[1]));
                 } else {
-                    $query->orderBy($sort['column'], $sort['dir']);
+                    $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
             }
         });
@@ -158,3 +189,4 @@ class BaseFilter extends Filter
         });
     }
 }
+
