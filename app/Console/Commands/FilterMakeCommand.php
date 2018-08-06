@@ -64,7 +64,7 @@ class FilterMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $this->app['config']->get('filters.namespace').'\Filters';
+        return $this->app['config']->get('filters.namespace');
     }
 
     /**
