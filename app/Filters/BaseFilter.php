@@ -104,30 +104,21 @@ class BaseFilter extends Filter
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
                     $relation = $query->getModel()->{$join[0]}();
-                    $wheres = $relation->getQuery()->getQuery()->wheres;
                     if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne' ])) {
-                        if (count($wheres) > 1) {
-                            $q = $query->getQuery();
-                            $wheres = $relation->getQuery()->getQuery()->wheres;
-                            for ($i=(count($wheres) - 1); $i >= 1; $i--) {
-                                array_unshift($q->wheres, $wheres[$i]);
-                            }
-                            $query->setQuery($q);
-                        }
                         foreach ($relation->getRelated()->getGlobalScopes() as $key => $scope) {
                             $query->withGlobalScope($key, $scope);
                         }
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                             if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
-                                $query->leftJoin($relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKey(), '=', $relation->getQualifiedOwnerKeyName());
+                                $this->joinOnSort($query, $relation, $relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKey(), $relation->getQualifiedOwnerKeyName());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
                             if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
-                                $query->leftJoin($relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKeyName(), '=', $relation->getQualifiedParentKeyName());
+                                $this->joinOnSort($query, $relation, $relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
                             if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getTable()))
-                                $query->leftJoin($relation->getTable(), $relation->getQualifiedParentKeyName(), '=', $relation->getQualifiedForeignPivotKeyName());
+                                $this->joinOnSort($query, $relation, $relation->getTable(), $relation->getQualifiedParentKeyName(), $relation->getQualifiedForeignPivotKeyName());
                             if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
-                                $query->leftJoin($relation->getQuery()->getQuery()->from, $relation->getQualifiedRelatedPivotKeyName(), '=', $relation->getRelated()->getQualifiedKeyName());
+                                $this->joinOnSort($query, $relation, $relation->getQuery()->getQuery()->from, $relation->getQualifiedRelatedPivotKeyName(), $relation->getRelated()->getQualifiedKeyName());
                         }
                     } else {
                         continue;
@@ -138,6 +129,27 @@ class BaseFilter extends Filter
                     $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
             }
+        });
+    }
+
+    /**
+     * Join on sort
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
+     * @param  string $table
+     * @param  string $first
+     * @param  string $second
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function joinOnSort($query, $relation, $table, $first, $second)
+    {
+        $query->leftJoin($table, function ($query) use($relation, $first, $second) {
+            if (count($wheres = $relation->getQuery()->getQuery()->wheres) > 1) {
+                for ($i=(count($wheres) - 1); $i >= 1; $i--) {
+                    array_unshift($query->wheres, $wheres[$i]);
+                }
+            }
+            $query->whereColumn($first, $second);
         });
     }
 
