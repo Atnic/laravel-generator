@@ -2,10 +2,10 @@
 
 namespace Atnic\LaravelGenerator\Filters;
 
-use Smartisan\Filters\Filter;
-use Illuminate\Http\Request;
-
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Smartisan\Filters\Filter;
 
 /**
  * Base Filters

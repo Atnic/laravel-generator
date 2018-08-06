@@ -111,7 +111,7 @@ class ConsoleServiceProvider extends ServiceProvider
     protected function registerFilterMakeCommand()
     {
         $this->app->singleton('command.filter.make', function ($app) {
-            return new FilterMakeCommand($app['files']);
+            return new FilterMakeCommand($app['files'], $app);
         });
     }
 
