@@ -72,7 +72,10 @@ class BaseFilter extends Filter
                     });
                 });
             } else {
-                $query->orWhere($query->qualifyColumn($searchable), 'like', '%'.str_replace(' ', '%', $value).'%');
+                if ($query->getConnection()->getDriverName() == 'pgsql')
+                    $query->orWhere($query->qualifyColumn($searchable), 'ilike', '%'.str_replace(' ', '%', $value).'%');
+                else
+                    $query->orWhere($query->qualifyColumn($searchable), 'like', '%'.str_replace(' ', '%', $value).'%');
             }
         }
     }
