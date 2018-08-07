@@ -116,9 +116,9 @@ class BaseFilter extends Filter
                                 $this->joinOnSort($query, $relation, $relation->getQuery()->getQuery()->from, $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
                             if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getTable()))
-                                $this->joinOnSort($query, $relation, $relation->getTable(), $relation->getQualifiedParentKeyName(), $relation->getQualifiedForeignPivotKeyName());
+                                $query->leftJoin(($relation->getTable().' as '.$relation->getQuery()->getQuery()->from.'_'.$relation->getTable()), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'_'.$relation->getTable().'.'.$relation->getForeignPivotKeyName());
                             if (!collect($query->getQuery()->joins)->pluck('table')->contains($relation->getQuery()->getQuery()->from))
-                                $this->joinOnSort($query, $relation, $relation->getQuery()->getQuery()->from, $relation->getQualifiedRelatedPivotKeyName(), $relation->getRelated()->getQualifiedKeyName());
+                                $this->joinOnSort($query, $relation, $relation->getQuery()->getQuery()->from, $relation->getQuery()->getQuery()->from.'_'.$relation->getTable().'.'.$relation->getRelatedPivotKeyName(), $relation->getRelated()->getQualifiedKeyName());
                         }
                     } else {
                         continue;
@@ -201,4 +201,3 @@ class BaseFilter extends Filter
         });
     }
 }
-
