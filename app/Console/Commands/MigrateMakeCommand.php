@@ -2,9 +2,8 @@
 
 namespace Atnic\LaravelGenerator\Console\Commands;
 
-use Illuminate\Support\Composer;
-use Atnic\LaravelGenerator\Console\Commands\MigrationCreator;
 use Illuminate\Database\Console\Migrations\MigrateMakeCommand as BaseCommand;
+use Illuminate\Support\Composer;
 
 /**
  * Migration Make Command

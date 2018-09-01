@@ -2,10 +2,9 @@
 
 namespace Atnic\LaravelGenerator\Console\Commands;
 
-use Illuminate\Console\GeneratorCommand;
+use Illuminate\Foundation\Console\TestMakeCommand as Command;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Illuminate\Foundation\Console\TestMakeCommand as Command;
 
 class TestMakeCommand extends Command
 {
@@ -65,8 +64,6 @@ class TestMakeCommand extends Command
      */
     protected function buildClass($name)
     {
-        $testNamespace = $this->getNamespace($name);
-
         $replace = [];
 
         if ($this->option('parent')) {

@@ -2,6 +2,7 @@
 
 namespace Atnic\LaravelGenerator\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,10 +32,12 @@ class BaseFilter extends Filter
      */
     public function __construct(Request $request)
     {
-        $this->request = clone $request;
+        parent::__construct(clone $request);
         if (!$this->request->exists('sort') && $this->default_sort) {
             $this->request->merge([ 'sort' => $this->default_sort ]);
         }
+
+        $this->default_per_page = $this->default_per_page ? : config('filters.default_per_page', null);
         if (!$this->request->exists('per_page') && $this->default_per_page) {
             $this->request->merge([ 'per_page' => $this->default_per_page ]);
         }
@@ -48,8 +51,8 @@ class BaseFilter extends Filter
     public function search($value)
     {
         $validator = validator([ 'value' => $value ], [ 'value' => 'string' ]);
-        return $this->builder->when(!$validator->fails(), function ($query) use($value) {
-            $query->where(function ($query) use($value) {
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
+            $query->where(function (Builder $query) use($value) {
                 $this->buildSearch($query, $this->searchables, $value);
             });
         });
@@ -60,14 +63,13 @@ class BaseFilter extends Filter
      * @param  \Illuminate\Database\Eloquent\Builder $query
      * @param  array|string $searchables
      * @param  string $value
-     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function buildSearch($query, $searchables, $value)
     {
         foreach ($searchables as $key => $searchable) {
             if (is_array($searchable)) {
-                $query->orWhereHas($key, function ($query) use($searchable, $value) {
-                    $query->where(function ($query) use($searchable, $value) {
+                $query->orWhereHas($key, function (Builder $query) use($searchable, $value) {
+                    $query->where(function (Builder $query) use($searchable, $value) {
                         $this->buildSearch($query, $searchable, $value);
                     });
                 });
@@ -101,27 +103,29 @@ class BaseFilter extends Filter
             'sorts.*.column' => 'in:'.implode(',', $this->sortables),
             'sorts.*.dir' => 'in:asc,desc'
         ]);
-        return $this->builder->when(!$validator->fails(), function ($query) use($sorts) {
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($sorts) {
             $query->select($query->qualifyColumn('*'));
-            foreach ($sorts as $key => $sort) {
+            foreach ($sorts as $sort) {
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
                     $relation = Relation::noConstraints(function () use($query, $join) {
                         return $query->getModel()->{$join[0]}();
                     });
-                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne' ])) {
-                        foreach ($relation->getRelated()->getGlobalScopes() as $key => $scope) {
-                            $query->withGlobalScope($key, $scope);
-                        }
+                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedOwnerKeyName(), $relation->getQualifiedForeignKey());
+                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedOwnerKeyName(), $relation->getQualifiedForeignKey());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->getQuery()->addSelect([
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getQuery()->getQuery()->from.'.*' ,
                                     $relation->getForeignPivotKeyName() => $relation->getTable().'.'.$relation->getForeignPivotKeyName()
-                                ])->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
+                                ])->toSql()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
+                        } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
+                                    '*' => $relation->getQuery()->getQuery()->from.'.*' ,
+                                    $relation->getQualifiedSecondOwnerKeyName() => $relation->getQualifiedSecondOwnerKeyName()
+                                ])->toSql()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
                     } else {
                         continue;
@@ -136,6 +140,21 @@ class BaseFilter extends Filter
     }
 
     /**
+     * @param Builder $query
+     * @return null|string|string[]
+     */
+    protected function buildSql(Builder $query)
+    {
+        $sql = $query->toSql();
+        foreach($query->getBindings() as $binding)
+        {
+            $value = is_numeric($binding) ? $binding : "'".$binding."'";
+            $sql = preg_replace('/\?/', $value, $sql, 1);
+        }
+        return $sql;
+    }
+
+    /**
      * Total per page on pagination
      * @param  int $value
      * @return \Illuminate\Database\Eloquent\Builder
@@ -143,7 +162,7 @@ class BaseFilter extends Filter
     public function per_page($value)
     {
         $validator = validator([ 'value' => $value ], [ 'value' => 'numeric|min:1|max:1000' ]);
-        return $this->builder->when(!$validator->fails(), function ($query) use($value) {
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
             $model = $query->getModel();
             $model->setPerPage($value);
             $query->setModel($model);
@@ -160,7 +179,7 @@ class BaseFilter extends Filter
         $keys = explode(',', $values);
         $model = $this->builder->getModel();
         $validator = validator([ 'values' => $keys ], [ 'values.*' => 'exists:'.$model->getTable().','.$model->getKeyName() ]);
-        return $this->builder->when(!$validator->fails(), function ($query) use($keys) {
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($keys) {
             $query->whereKey($keys);
         });
     }
@@ -175,7 +194,7 @@ class BaseFilter extends Filter
         $keys = explode(',', $values);
         $model = $this->builder->getModel();
         $validator = validator([ 'values' => $keys ], [ 'values.*' => 'exists:'.$model->getTable().','.$model->getKeyName() ]);
-        return $this->builder->when(!$validator->fails(), function ($query) use($keys) {
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($keys) {
             $query->whereKeyNot($keys);
         });
     }
@@ -190,11 +209,70 @@ class BaseFilter extends Filter
         $withs = explode(',', $value);
         $model = $this->builder->getModel();
         $withs = collect($withs)->filter(function ($with) use($model) {
-            if (str_contains($with, '.')) return true;
+            if (str_contains($with, '.')) return ($model->{explode('.', $with)[0]}() instanceof Relation);
             return ($model->{$with}() instanceof Relation);
         })->toArray();
-        return $this->builder->when(count($withs), function ($query) use($withs) {
+        return $this->builder->when(count($withs), function (Builder $query) use($withs) {
             $query->with($withs);
+        });
+    }
+
+    /**
+     * Appends
+     * @param  mixed $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function appends($value)
+    {
+        $validator = validator([ 'value' => $value ], [ 'value' => 'string' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
+            $appends = explode(',', $value);
+            $model = $query->getModel();
+            $model->setPerPage($value);
+            $query->setModel($model);
+        });
+    }
+
+    /**
+     * Get collection of resources by has relation
+     * @param  string $values
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function has($values)
+    {
+        $hases = explode(',', $values);
+        $model = $this->builder->getModel();
+        $hases = collect($hases)->filter(function ($has) use($model) {
+            if (str_contains($has, '.')) return ($model->{explode('.', $has)[0]}() instanceof Relation);
+            return ($model->{$has}() instanceof Relation);
+        })->toArray();
+        $validator = validator([ 'values' => $hases ], [ 'values' => 'array|min:1' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($hases) {
+            foreach ($hases as $has) {
+                $query->has($has);
+            }
+        });
+    }
+
+
+    /**
+     * Get collection of resources by doesnt_have relation
+     * @param  string $values
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function doesnt_have($values)
+    {
+        $doesnt_haves = explode(',', $values);
+        $model = $this->builder->getModel();
+        $doesnt_haves = collect($doesnt_haves)->filter(function ($doesnt_have) use($model) {
+            if (str_contains($doesnt_have, '.')) return ($model->{explode('.', $doesnt_have)[0]}() instanceof Relation);
+            return ($model->{$doesnt_have}() instanceof Relation);
+        })->toArray();
+        $validator = validator([ 'values' => $doesnt_haves ], [ 'values' => 'array|min:1' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($doesnt_haves) {
+            foreach ($doesnt_haves as $doesnt_have) {
+                $query->doesntHave($doesnt_have);
+            }
         });
     }
 }

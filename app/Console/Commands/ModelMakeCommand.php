@@ -2,8 +2,8 @@
 
 namespace Atnic\LaravelGenerator\Console\Commands;
 
-use Illuminate\Support\Str;
 use Illuminate\Foundation\Console\ModelMakeCommand as Command;
+use Illuminate\Support\Str;
 
 /**
  * Model Make Command
@@ -13,7 +13,7 @@ class ModelMakeCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return bool
      */
     public function handle()
     {
@@ -22,6 +22,8 @@ class ModelMakeCommand extends Command
         if (parent::handle() === false) return false;
 
         $this->generateTranslation();
+
+        return true;
     }
 
     /**
@@ -82,6 +84,7 @@ class ModelMakeCommand extends Command
     /**
      * Generate Translation File
      * @return void
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function generateTranslation()
     {
@@ -127,8 +130,9 @@ class ModelMakeCommand extends Command
     /**
      * Build the translation with the given name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function buildTranslation($name)
     {
