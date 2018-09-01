@@ -112,23 +112,20 @@ class BaseFilter extends Filter
                         return $query->getModel()->{$join[0]}();
                     });
                     if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
-                        foreach ($relation->getRelated()->getGlobalScopes() as $key => $scope) {
-                            $query->withGlobalScope($key, $scope);
-                        }
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedOwnerKeyName(), $relation->getQualifiedForeignKey());
+                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedOwnerKeyName(), $relation->getQualifiedForeignKey());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->getQuery()->addSelect([
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getQuery()->getQuery()->from.'.*' ,
                                     $relation->getForeignPivotKeyName() => $relation->getTable().'.'.$relation->getForeignPivotKeyName()
-                                ])->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
+                                ])->toSql()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
-                            $query->leftJoin(DB::raw('('.$relation->getQuery()->addSelect([
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getQuery()->getQuery()->from.'.*' ,
                                     $relation->getQualifiedSecondOwnerKeyName() => $relation->getQualifiedSecondOwnerKeyName()
-                                ])->toSql().') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
+                                ])->toSql()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
                     } else {
                         continue;
@@ -140,6 +137,21 @@ class BaseFilter extends Filter
                 }
             }
         });
+    }
+
+    /**
+     * @param Builder $query
+     * @return null|string|string[]
+     */
+    protected function buildSql(Builder $query)
+    {
+        $sql = $query->toSql();
+        foreach($query->getBindings() as $binding)
+        {
+            $value = is_numeric($binding) ? $binding : "'".$binding."'";
+            $sql = preg_replace('/\?/', $value, $sql, 1);
+        }
+        return $sql;
     }
 
     /**
@@ -202,6 +214,22 @@ class BaseFilter extends Filter
         })->toArray();
         return $this->builder->when(count($withs), function (Builder $query) use($withs) {
             $query->with($withs);
+        });
+    }
+
+    /**
+     * Appends
+     * @param  mixed $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function appends($value)
+    {
+        $validator = validator([ 'value' => $value ], [ 'value' => 'string' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
+            $appends = explode(',', $value);
+            $model = $query->getModel();
+            $model->setPerPage($value);
+            $query->setModel($model);
         });
     }
 
