@@ -2,8 +2,8 @@
 
 namespace Atnic\LaravelGenerator\Console\Commands;
 
-use Illuminate\Support\Str;
 use Illuminate\Routing\Console\ControllerMakeCommand as Command;
+use Illuminate\Support\Str;
 
 /**
  * Controller Make Command
@@ -58,6 +58,7 @@ class ControllerMakeCommand extends Command
     /**
      * Generate Translation File
      * @return void
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function generateTranslation()
     {
@@ -102,8 +103,9 @@ class ControllerMakeCommand extends Command
     /**
      * Build the translation with the given name.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function buildTranslation($name)
     {
@@ -146,9 +148,10 @@ class ControllerMakeCommand extends Command
     /**
      * Build the view with the given name.
      *
-     * @param  string  $name
-     * @param  string|null  $method
+     * @param  string $name
+     * @param  string|null $method
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function buildView($name, $method = null)
     {
@@ -240,6 +243,7 @@ class ControllerMakeCommand extends Command
      * Execute the console command.
      *
      * @return bool|null
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function handle()
     {
@@ -249,6 +253,8 @@ class ControllerMakeCommand extends Command
         $this->generateView();
         $this->generateTranslation();
         $this->appendRouteFile();
+
+        return null;
     }
 
     /**
@@ -272,6 +278,7 @@ class ControllerMakeCommand extends Command
     /**
      * Generate View Files
      * @return void
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function generateView()
     {
@@ -364,7 +371,7 @@ class ControllerMakeCommand extends Command
             $names[$key] = snake_case($value);
         }
         if (count($names) >= 2) {
-            $model = str_plural(array_pop($names));
+            array_pop($names);
             $parent = str_plural(array_pop($names));
             array_push($names, $parent);
         }

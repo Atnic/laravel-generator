@@ -3,7 +3,6 @@
 namespace Atnic\LaravelGenerator\Console\Commands;
 
 use Illuminate\Database\Console\Factories\FactoryMakeCommand as Command;
-use Symfony\Component\Console\Input\InputOption;
 
 class FactoryMakeCommand extends Command
 {
