@@ -120,12 +120,12 @@ class BaseFilter extends Filter
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getQuery()->getQuery()->from.'.*' ,
                                     $relation->getForeignPivotKeyName() => $relation->getTable().'.'.$relation->getForeignPivotKeyName()
-                                ])->toSql()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
+                                ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getQuery()->getQuery()->from.'.*' ,
                                     $relation->getQualifiedSecondOwnerKeyName() => $relation->getQualifiedSecondOwnerKeyName()
-                                ])->toSql()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
+                                ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
                     } else {
                         continue;
