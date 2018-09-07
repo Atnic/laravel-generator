@@ -118,20 +118,20 @@ class BaseFilter extends Filter
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
-                                    '*' => $relation->getQuery()->getQuery()->from.'.*' ,
+                                    '*' => $relation->getRelated()->qualifyColumn('*') ,
                                     $relation->getForeignPivotKeyName() => $relation->getTable().'.'.$relation->getForeignPivotKeyName()
                                 ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
-                                    '*' => $relation->getQuery()->getQuery()->from.'.*' ,
+                                    '*' => $relation->getRelated()->qualifyColumn('*') ,
                                     $relation->getQualifiedSecondOwnerKeyName() => $relation->getQualifiedSecondOwnerKeyName()
                                 ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
                     } else {
                         continue;
                     }
-                    $query->orderBy($relation->getRelated()->qualifyColumn($join[1]), $sort['dir']);
-                    $query->addSelect(DB::raw($relation->getRelated()->qualifyColumn($join[1]).' as '.$join[0].'_'.$join[1]));
+                    $query->orderBy($relation->getQuery()->getQuery()->from.'.'.$join[1], $sort['dir']);
+                    $query->addSelect(DB::raw($relation->getQuery()->getQuery()->from.'.'.$join[1].' as '.$join[0].'_'.$join[1]));
                 } else {
                     $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
@@ -228,7 +228,7 @@ class BaseFilter extends Filter
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
             $appends = explode(',', $value);
             $model = $query->getModel();
-            $model->setPerPage($value);
+            $model->setAppends($appends);
             $query->setModel($model);
         });
     }
