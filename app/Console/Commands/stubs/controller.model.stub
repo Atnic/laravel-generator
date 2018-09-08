@@ -184,7 +184,8 @@ class DummyClass extends Controller
         else
             $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
 
-        return $response->withInput([ $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey() ]);
+        return $response->withInput([ $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey() ])
+            ->with('status', __('Success'));
     }
 
     /**
@@ -251,7 +252,8 @@ class DummyClass extends Controller
         else
             $response = response()->redirectToRoute('dummy_route.show', $dummy_model_variable->getKey());
 
-        return $response->withInput([ $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey() ]);
+        return $response->withInput([ $dummy_model_variable->getForeignKey() => $dummy_model_variable->getKey() ])
+            ->with('status', __('Success'));
     }
 
     /**
@@ -266,8 +268,10 @@ class DummyClass extends Controller
         $dummy_model_variable->delete();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()) && !str_contains(request()->redirect, '/dummy_route/'.$dummy_model_variable->getKey()))
-            return response()->redirectTo(request()->redirect);
+            $response = response()->redirectTo(request()->redirect);
         else
-            return response()->redirectToRoute('dummy_route.index');
+            $response = response()->redirectToRoute('dummy_route.index');
+
+        return $response->with('status', __('Success'));
     }
 }
