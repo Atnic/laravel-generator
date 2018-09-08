@@ -17,21 +17,30 @@
                     @endif
                 @endslot
 
-                <div class="row" style="margin-bottom:15px">
-                    <div class="col-sm-6 col-md-4">
-                        <form class="form" method="GET">
+                <form class="form" method="GET">
+                    <div class="row" style="margin-bottom:15px">
+                        <div class="col-xs-6 col-md-4">
                             <div class="input-group">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="submit">
+                                    <button class="btn btn-sm btn-default" type="submit">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </span>
                                 <input type="text" name="search" placeholder="{{ __('Search') }}"
                                        class="input-sm form-control" value="{{ request()->search }}" autofocus>
                             </div>
-                        </form>
+                        </div>
+                        <div class="col-xs-6 col-md-8">
+                            <div class="pull-right">
+                                <select class="form-control input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
+                                    @foreach ([ 15, 50, 100, 250, 1000 ] as $value)
+                                        <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="text-nowrap">

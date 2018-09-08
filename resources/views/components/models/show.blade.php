@@ -102,7 +102,7 @@
             <div class="col-md-8">
                 @component(config('generator.view_component').'components.tabs')
                     @slot('nav_tabs')
-                        <li role="presentation"
+                        <li role="presentation" style="display: inline-block; float: none"
                             class="{{ request()->routeIs($resource_route.'.show') ? 'active' : '' }}">
                             <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
                                style="cursor:pointer">{{ title_case(__($resource_route.'.singular')) }}</a>
@@ -110,7 +110,7 @@
                         @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
                             @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
                                 @if (Route::has($resource_route.'.'.$relation['name'].'.index'))
-                                    <li role="presentation"
+                                    <li role="presentation" style="display: inline-block; float: none"
                                         class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
                                         <a href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
                                            style="cursor:pointer">

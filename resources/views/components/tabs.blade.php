@@ -1,5 +1,5 @@
 <div class="panel panel-default">
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" style="white-space: nowrap; overflow-x: auto; overflow-y: hidden">
         {{ $nav_tabs }}
     </ul>
     <div class="tab-content">

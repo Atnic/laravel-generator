@@ -1,10 +1,10 @@
 @section('parent-content')
     <div class="row" style="margin-bottom:15px">
-        <div class="col-sm-6 col-md-4">
+        <div class="col-sm-6 col-md-4" style="margin-bottom: 10px">
             <form class="form" method="GET">
                 <div class="input-group">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">
+                        <button class="btn btn-sm btn-default" type="submit">
                             <i class="fa fa-search"></i>
                         </button>
                     </span>
@@ -13,7 +13,7 @@
                 </div>
             </form>
         </div>
-        <div class="col-sm-4 col-md-2 col-sm-offset-2 col-md-offset-6">
+        <div class="col-sm-6 col-md-2 col-md-offset-6">
             @if (Route::has($resource_route.'.create'))
                 <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
                    class="btn btn-default btn-block btn-sm">{{ __('Create') }}</a>
