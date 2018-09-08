@@ -27,6 +27,7 @@ class DummyClass extends Controller
             'dummy_model_variable' => [
                 'belongsToMany' => [], // also for morphToMany
                 'hasMany' => [], // also for morphMany, hasManyThrough
+                'hasOne' => [], // also for morphOne
             ]
         ];
     }

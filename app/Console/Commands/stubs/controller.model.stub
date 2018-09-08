@@ -25,6 +25,9 @@ class DummyClass extends Controller
                 'hasMany' => [
                     // [ 'name' => 'childs', 'label' => title_case(__('dummy_model_plural_variable.childs')) ], // Example
                 ], // also for morphMany, hasManyThrough
+                'hasOne' => [
+                    // [ 'name' => 'child', 'label' => title_case(__('dummy_model_plural_variable.child')) ], // Example
+                ], // also for morphOne
             ]
         ];
     }
