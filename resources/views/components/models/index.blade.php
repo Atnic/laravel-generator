@@ -33,7 +33,7 @@
                         <div class="col-xs-6 col-md-8">
                             <div class="pull-right">
                                 <select class="form-control input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
-                                    @foreach ([ 15, 50, 100, 250, 1000 ] as $value)
+                                    @foreach ([ 15, 50, 100, 250 ] as $value)
                                         <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
                                     @endforeach
                                 </select>
@@ -49,22 +49,22 @@
                                 @if (!empty($column['column']))
                                     <th class="text-center">
                                         {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
-                                        @if (array_search($column['name'].'.'.$column['column'].',desc', explode('|', request()->sort)) === false)
-                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',desc' ])) }}">
+                                        @if (array_search($column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',desc', explode('|', request()->sort)) === false)
+                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',desc' ])) }}">
                                                 <i class="fa fa-sort text-muted"></i></a>
                                         @else
-                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',asc' ])) }}">
+                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',asc' ])) }}">
                                                 <i class="fa fa-sort text-muted"></i></a>
                                         @endif
                                     </th>
                                 @else
                                     <th class="text-center">
                                         {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
-                                        @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
-                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].',desc' ])) }}">
+                                        @if (array_search((isset($column['sort']) ? $column['sort'] : $column['name']).',desc', explode('|', request()->sort)) === false)
+                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => (isset($column['sort']) ? $column['sort'] : $column['name']).',desc' ])) }}">
                                                 <i class="fa fa-sort text-muted"></i></a>
                                         @else
-                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].',asc' ])) }}">
+                                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => (isset($column['sort']) ? $column['sort'] : $column['name']).',asc' ])) }}">
                                                 <i class="fa fa-sort text-muted"></i></a>
                                         @endif
                                     </th>

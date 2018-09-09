@@ -199,7 +199,7 @@ class BelongsToThrough extends Relation
         // link them up with their children using the keyed dictionary to make the
         // matching very convenient and easy work. Then we'll just return them.
         foreach ($models as $model) {
-            if (isset($dictionary[$key = $model->getAttribute($this->firstKey)])) {
+            if (isset($dictionary[$key = $model->getAttribute($this->secondKey)])) {
                 $value = $dictionary[$key];
                 $model->setRelation(
                     $relation, reset($value)
@@ -224,7 +224,7 @@ class BelongsToThrough extends Relation
         // relationship as this will allow us to quickly access all of the related
         // models without having to do nested looping which will be quite slow.
         foreach ($results as $result) {
-            $dictionary[$result->{$this->ownerKey}][] = $result;
+            $dictionary[$result->{$this->secondOwnerKey}][] = $result;
         }
 
         return $dictionary;

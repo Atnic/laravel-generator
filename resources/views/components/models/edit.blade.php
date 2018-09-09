@@ -8,7 +8,11 @@
             @endif
             <form class="form"
                   action="{{ route($resource_route.'.update', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                  method="POST">
+                  method="POST"
+                  @if (array_first($fields[$model_variable], function ($field) { return isset($field['type']) && $field['type'] == 'file'; } ))
+                  enctype="multipart/form-data"
+                  @endif
+                >
                 {{ csrf_field() }}
                 @component(config('generator.view_component').'components.panel')
                     @slot('title')
