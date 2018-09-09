@@ -3,7 +3,12 @@
         $parent->getKey(), $model->getKey(),
         'redirect' => route($resource_route.'.index', [
             $parent->getKey(),
-            'redirect' => request()->filled('redirect') ? request()->redirect : null ]) ]) }}" method="POST">
+            'redirect' => request()->filled('redirect') ? request()->redirect : null ]) ]) }}"
+        method="POST"
+        @if (array_first($fields[$model_variable], function ($field) { return isset($field['type']) && $field['type'] == 'file'; } ))
+        enctype="multipart/form-data"
+        @endif
+        >
         {{ csrf_field() }}
         @foreach ($fields[$model_variable] as $key => $field)
             @component(config('generator.view_component').'components.fields.'.$field['field'], [
