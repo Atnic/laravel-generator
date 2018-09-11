@@ -105,13 +105,15 @@ class BaseFilter extends Filter
         ]);
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($sorts) {
             $query->select($query->qualifyColumn('*'));
+            $relations = [];
             foreach ($sorts as $sort) {
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
                     $relation = Relation::noConstraints(function () use($query, $join) {
                         return $query->getModel()->{$join[0]}();
                     });
-                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
+                    if (!in_array($relation, $relations) &&
+                        in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                             $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedOwnerKeyName(), $relation->getQualifiedForeignKey());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
@@ -127,11 +129,10 @@ class BaseFilter extends Filter
                                     $relation->getQualifiedSecondOwnerKeyName() => $relation->getQualifiedSecondOwnerKeyName()
                                 ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
-                    } else {
-                        continue;
+                        $query->orderBy($relation->getQuery()->getQuery()->from.'.'.$join[1], $sort['dir']);
+                        $query->addSelect(DB::raw($relation->getQuery()->getQuery()->from.'.'.$join[1].' as '.$join[0].'_'.$join[1]));
                     }
-                    $query->orderBy($relation->getQuery()->getQuery()->from.'.'.$join[1], $sort['dir']);
-                    $query->addSelect(DB::raw($relation->getQuery()->getQuery()->from.'.'.$join[1].' as '.$join[0].'_'.$join[1]));
+                    $relations[] = $relation;
                 } else {
                     $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
