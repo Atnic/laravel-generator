@@ -135,7 +135,11 @@ class BelongsToThrough extends Relation
 
         $ownerKey = $this->getQualifiedOwnerKeyName();
 
-        $query->join($this->throughChild->getTable(), $this->getQualifiedFirstKeyName(), '=', $ownerKey);
+        $query->join($this->throughChild->getTable(), $ownerKey , '=', $this->getQualifiedFirstKeyName());
+        $query->select([
+            '*' => $this->related->qualifyColumn('*'),
+            $this->secondKey => $this->throughChild->getQualifiedKeyName().' as '.$this->secondKey
+        ]);
 
         if ($this->throughChildSoftDeletes()) {
             $query->whereNull($this->throughChild->getQualifiedDeletedAtColumn());
@@ -224,7 +228,7 @@ class BelongsToThrough extends Relation
         // relationship as this will allow us to quickly access all of the related
         // models without having to do nested looping which will be quite slow.
         foreach ($results as $result) {
-            $dictionary[$result->{$this->secondOwnerKey}][] = $result;
+            $dictionary[$result->{$this->secondKey}][] = $result;
         }
 
         return $dictionary;
@@ -405,7 +409,7 @@ class BelongsToThrough extends Relation
      *
      * @return string
      */
-    public function getSecondOwnerKeyName() {
-        return $this->secondOwnerKey;
+    public function getSecondKeyName() {
+        return $this->secondKey;
     }
 }

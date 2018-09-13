@@ -126,7 +126,7 @@ class BaseFilter extends Filter
                         } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getRelated()->qualifyColumn('*') ,
-                                    $relation->getSecondOwnerKeyName() => $relation->getQualifiedSecondOwnerKeyName()
+                                    $relation->getSecondKeyName() => $relation->getQualifiedSecondOwnerKeyName().' as '.$relation->getSecondKeyName()
                                 ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
                         $query->orderBy($relation->getQuery()->getQuery()->from.'.'.$join[1], $sort['dir']);

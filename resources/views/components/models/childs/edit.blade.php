@@ -23,14 +23,32 @@
             </button>
         </div>
         @if (Route::has($resource_route.'.index'))
-            <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-               class="btn btn-default">{{ __('List') }}</a>
+            @auth
+                @can('index', $model)
+                    <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                       class="btn btn-default">{{ __('List') }}</a>
+                @endcan
+            @endauth
+            @guest
+                <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                   class="btn btn-default">{{ __('List') }}</a>
+            @endguest
         @endif
         @if (Route::has($resource_route.'.destroy'))
-            <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
-                    onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
-                {{ __('Delete') }}
-            </button>
+            @auth
+                @can('delete', $model)
+                    <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
+                            onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
+                        {{ __('Delete') }}
+                    </button>
+                @endcan
+            @endauth
+            @guest
+                <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
+                        onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
+                    {{ __('Delete') }}
+                </button>
+            @endguest
         @endif
     </form>
 @endsection

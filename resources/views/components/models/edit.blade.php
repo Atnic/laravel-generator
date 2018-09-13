@@ -36,10 +36,20 @@
                         <a href="{{ request()->filled('redirect') ? request()->redirect : route($resource_route.'.index') }}"
                            class="btn btn-default">{{{ __('Back') }}}</a>
                         @if (Route::has($resource_route.'.destroy'))
-                            <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
-                                    onclick="return confirm('{{ __('Are you sure you want to delete?') }}');">
-                                {{ __('Delete') }}
-                            </button>
+                            @auth
+                                @can('delete', $model)
+                                    <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
+                                            onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
+                                        {{ __('Delete') }}
+                                    </button>
+                                @endcan
+                            @endauth
+                            @guest
+                                <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
+                                        onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
+                                    {{ __('Delete') }}
+                                </button>
+                            @endguest
                         @endif
                     @endslot
                 @endcomponent

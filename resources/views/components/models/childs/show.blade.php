@@ -11,7 +11,7 @@
                     <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
                     <td>
                         @if ($model->{$column['name']})
-                            <a href="{{ Route::has(str_plural($column['name']).'.show') ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
+                            <a href="{{ Route::has(str_plural($column['name']).'.show') && (!auth()->check() || auth()->user()->can('view', $model->{$column['name']})) ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
                                 @if ($model->{$column['name']}->{$column['column']} instanceof \Illuminate\Support\HtmlString)
                                     {!! $model->{$column['name']}->{$column['column']} !!}
                                 @else
@@ -40,16 +40,40 @@
     </table>
     <div class="pull-right">
         @if (Route::has($resource_route.'.edit'))
-            <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-               class="btn btn-primary">{{ __('Edit') }}</a>
+            @auth
+                @can('update', $model)
+                    <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                       class="btn btn-primary">{{ __('Edit') }}</a>
+                @endcan
+            @endauth
+            @guest
+                <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                   class="btn btn-primary">{{ __('Edit') }}</a>
+            @endguest
         @endif
         @if (Route::has(array_last(explode('.', $resource_route)).'.show'))
-            <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-               class="btn btn-default">{{ __('Detail') }}</a>
+            @auth
+                @can('view', $model)
+                    <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                       class="btn btn-default">{{ __('Detail') }}</a>
+                @endcan
+            @endauth
+            @guest
+                <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                   class="btn btn-default">{{ __('Detail') }}</a>
+            @endguest
         @endif
     </div>
     @if (Route::has($resource_route.'.index'))
-        <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-           class="btn btn-default">{{ __('List') }}</a>
+        @auth
+            @can('index', $model)
+                <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                   class="btn btn-default">{{ __('List') }}</a>
+            @endcan
+        @endauth
+        @guest
+            <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+               class="btn btn-default">{{ __('List') }}</a>
+        @endguest
     @endif
 @endsection
