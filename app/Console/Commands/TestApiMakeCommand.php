@@ -159,7 +159,7 @@ class TestApiMakeCommand extends Command
             'ParentDummyModelClass' => class_basename($parentModelClass),
             'ParentDummyModelVariable' => lcfirst(class_basename($parentModelClass)),
             'parent_dummy_model_variable' => snake_case(class_basename($parentModelClass)),
-            'ParentDummyTitle' => title_case(snake_case(class_basename($parentModelClass), ' ')),
+            'ParentDummyTitle' => ucwords(snake_case(class_basename($parentModelClass), ' ')),
         ];
     }
 
@@ -185,7 +185,7 @@ class TestApiMakeCommand extends Command
             'dummyModelVariable' => camel_case(class_basename($modelClass)),
             'dummy_model_variable' => snake_case(class_basename($modelClass)),
             'dummy_model_plural_variable' => str_plural(snake_case(class_basename($modelClass))),
-            'DummyTitle' => title_case(snake_case(class_basename($modelClass), ' ')),
+            'DummyTitle' => ucwords(snake_case(class_basename($modelClass), ' ')),
         ]);
     }
 

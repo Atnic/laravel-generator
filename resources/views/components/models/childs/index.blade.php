@@ -27,7 +27,7 @@
                 @foreach ($visibles[$model_variable] as $key => $column)
                     @if (!empty($column['column']))
                         <th class="text-center">
-                            {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+                            {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
                             @if (array_search($column['name'].'.'.$column['column'].',desc', explode('|', request()->sort)) === false)
                                 <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',desc' ])) }}">
                                     <i class="fa fa-sort text-muted"></i></a>
@@ -38,7 +38,7 @@
                         </th>
                     @else
                         <th class="text-center">
-                            {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+                            {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
                             @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
                                 <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].',desc' ])) }}">
                                     <i class="fa fa-sort text-muted"></i></a>

@@ -8,7 +8,7 @@
         @foreach ($visibles[$model_variable] as $key => $column)
             @if (!empty($column['column']))
                 <tr>
-                    <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+                    <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
                     <td>
                         @if ($model->{$column['name']})
                             <a href="{{ Route::has(str_plural($column['name']).'.show') ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
@@ -25,7 +25,7 @@
                 </tr>
             @else
                 <tr>
-                    <th>{{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+                    <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
                     <td>
                         @if ($model->{$column['name']} instanceof \Illuminate\Support\HtmlString)
                             {!! $model->{$column['name']} !!}

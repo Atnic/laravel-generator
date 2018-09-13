@@ -8,7 +8,7 @@
             @endif
             @component(config('generator.view_component').'components.panel')
                 @slot('title')
-                    {{ __('List') }} {{ !empty($panel_title) ? $panel_title : title_case(__($resource_route.'.plural')) }}
+                    {{ __('List') }} {{ !empty($panel_title) ? $panel_title : ucwords(__($resource_route.'.plural')) }}
                 @endslot
                 @slot('tools')
                     @if (Route::has($resource_route.'.create'))
@@ -48,7 +48,7 @@
                             @foreach ($visibles[$model_variable] as $key => $column)
                                 @if (!empty($column['column']))
                                     <th class="text-center">
-                                        {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+                                        {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
                                         @if (array_search($column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',desc', explode('|', request()->sort)) === false)
                                             <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',desc' ])) }}">
                                                 <i class="fa fa-sort text-muted"></i></a>
@@ -59,7 +59,7 @@
                                     </th>
                                 @else
                                     <th class="text-center">
-                                        {{ !empty($column['label']) ? $column['label'] : title_case(str_replace('_', ' ', snake_case($column['name']))) }}
+                                        {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
                                         @if (array_search((isset($column['sort']) ? $column['sort'] : $column['name']).',desc', explode('|', request()->sort)) === false)
                                             <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => (isset($column['sort']) ? $column['sort'] : $column['name']).',desc' ])) }}">
                                                 <i class="fa fa-sort text-muted"></i></a>
