@@ -405,7 +405,7 @@ class BelongsToThrough extends Relation
      *
      * @return string
      */
-    public function getSecondOwnerKey() {
+    public function getSecondOwnerKeyName() {
         return $this->secondOwnerKey;
     }
 }
