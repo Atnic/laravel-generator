@@ -2,12 +2,12 @@
 
 namespace Atnic\LaravelGenerator\Database\Eloquent\Relations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Concerns\SupportsDefaultModels;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BelongsToThrough extends Relation
 {
@@ -307,8 +307,8 @@ class BelongsToThrough extends Relation
 
         $query->join($this->throughChild->getTable(), $this->getQualifiedParentKeyName(), '=', $hash.'.'.$this->ownerKey);
 
-        if ($this->throughParentSoftDeletes()) {
-            $query->whereNull($this->throughParent->getQualifiedDeletedAtColumn());
+        if ($this->throughChildSoftDeletes()) {
+            $query->whereNull($this->throughChild->getQualifiedDeletedAtColumn());
         }
 
         $query->getModel()->setTable($hash);
@@ -398,5 +398,14 @@ class BelongsToThrough extends Relation
     public function getQualifiedSecondOwnerKeyName()
     {
         return $this->parent->qualifyColumn($this->secondOwnerKey);
+    }
+
+    /**
+     * Get second owner key on the related model
+     *
+     * @return string
+     */
+    public function getSecondOwnerKey() {
+        return $this->secondOwnerKey;
     }
 }
