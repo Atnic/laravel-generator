@@ -1,5 +1,5 @@
 <div class="form-group{{ $errors->has($field['name']) ? ' has-error' : '' }}">
-    <label class="control-label">{{ !empty($field['label']) ? $field['label'] : title_case(str_replace('_', ' ', snake_case($field['name']))) }}{{ !empty($field['required']) ? '*' : '' }}</label>
+    <label class="control-label">{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}{{ !empty($field['required']) ? '*' : '' }}</label>
     <select class="form-control" name="{{ $field['name'] }}"
         title="{{ $field['name'] }}"
         {{ !empty($field['readonly']) ? 'readonly' : '' }}

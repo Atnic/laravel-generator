@@ -48,13 +48,13 @@ class DummyClass extends Controller
             'index' => [
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
-                    [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
+                    [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
-                    [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
+                    [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
         ];
@@ -73,13 +73,13 @@ class DummyClass extends Controller
             'create' => [
                 'dummy_model_variable' => [
                     // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')), 'required' => true ],
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')), 'required' => true ],
                 ]
             ],
             'edit' => [
                 'dummy_model_variable' => [
                     // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
         ];

@@ -23,10 +23,10 @@ class DummyClass extends Controller
             'dummy_model_variable' => [
                 'belongsToMany' => [], // also for morphToMany
                 'hasMany' => [
-                    // [ 'name' => 'childs', 'label' => title_case(__('dummy_model_plural_variable.childs')) ], // Example
+                    // [ 'name' => 'childs', 'label' => ucwords(__('dummy_model_plural_variable.childs')) ], // Example
                 ], // also for morphMany, hasManyThrough
                 'hasOne' => [
-                    // [ 'name' => 'child', 'label' => title_case(__('dummy_model_plural_variable.child')) ], // Example
+                    // [ 'name' => 'child', 'label' => ucwords(__('dummy_model_plural_variable.child')) ], // Example
                 ], // also for morphOne
             ]
         ];
@@ -44,15 +44,15 @@ class DummyClass extends Controller
             'index' => [
                 'dummy_model_variable' => [
                     // TODO: Index visibles, 'label' is optional. Ex:
-                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
-                    [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
+                    // [ 'name' => 'parent', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
+                    [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
                     // TODO: Show visibles, 'label' is optional. Ex:
-                    // [ 'name' => 'parent', 'label' => title_case(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
-                    [ 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
+                    // [ 'name' => 'parent', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
+                    [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
         ];
@@ -70,19 +70,19 @@ class DummyClass extends Controller
             'create' => [
                 'dummy_model_variable' => [
                     // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => title_case(__('bars.parent')), 'required' => true, 'options' => \App\Parent::filter()->get()->map(function ($parent) {
+                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'required' => true, 'options' => \App\Parent::filter()->get()->map(function ($parent) {
                     //     return [ 'value' => $parent->id, 'text' => $parent->name ];
                     // })->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
-                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')), 'required' => true ],
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')), 'required' => true ],
                 ]
             ],
             'edit' => [
                 'dummy_model_variable' => [
                     // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => title_case(__('bars.parent')), 'options' => \App\Parent::filter()->get()->map(function ($parent) {
+                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'options' => \App\Parent::filter()->get()->map(function ($parent) {
                     //     return [ 'value' => $parent->id, 'text' => $parent->name ];
                     // })->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
-                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => title_case(__('dummy_model_plural_variable.name')) ],
+                    [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
         ];

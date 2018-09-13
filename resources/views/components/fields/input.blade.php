@@ -9,7 +9,7 @@
                     {{ !empty($field['readonly']) ? 'readonly' : '' }}
                     {{ !empty($field['disabled']) ? 'disabled' : '' }}
                     >
-                {{ !empty($field['label']) ? $field['label'] : title_case(str_replace('_', ' ', snake_case($field['name']))) }}
+                {{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}
             </label>
         </div>
     @elseif (!empty($field['type']) && $field['type'] == 'radio')
@@ -25,7 +25,7 @@
             </div>
         @endforeach
     @else
-        <label class="control-label">{{ !empty($field['label']) ? $field['label'] : title_case(str_replace('_', ' ', snake_case($field['name']))) }}{{ !empty($field['required']) ? '*' : '' }}</label>
+        <label class="control-label">{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}{{ !empty($field['required']) ? '*' : '' }}</label>
         <input type="{{ !empty($field['type']) ? $field['type'] : 'text' }}"
             class="form-control"
             title="{{ $field['name'] }}"
