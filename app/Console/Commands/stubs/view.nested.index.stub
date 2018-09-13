@@ -3,6 +3,7 @@
 @include('generator::components.models.childs.index', [
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
+  'model_class' => \DummyFullModelClass::class,
   'parent' => $parent_dummy_model_variable,
   'models' => $dummy_model_plural_variable
 ])

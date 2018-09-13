@@ -12,8 +12,16 @@
                 @endslot
                 @slot('tools')
                     @if (Route::has($resource_route.'.create'))
-                        <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
-                           class="btn btn-default btn-xs">{{ __('Create') }}</a>
+                        @auth
+                            @can('create', isset($model_class) ? $model_class : 'App\Model')
+                                <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
+                                   class="btn btn-default btn-xs">{{ __('Create') }}</a>
+                            @endcan
+                        @endauth
+                        @guest
+                            <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
+                               class="btn btn-default btn-xs">{{ __('Create') }}</a>
+                        @endguest
                     @endif
                 @endslot
 
@@ -42,7 +50,7 @@
                     </div>
                 </form>
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-hover table-condensed">
                         <thead class="text-nowrap">
                         <tr>
                             @foreach ($visibles[$model_variable] as $key => $column)
@@ -74,13 +82,14 @@
                         </tr>
                         </thead>
                         <tbody>
+                        @stack('tbody-prepend')
                         @forelse ($models as $key => $model)
                             <tr>
                                 @foreach ($visibles[$model_variable] as $key => $column)
                                     @if (!empty($column['column']))
                                         <td class="{{ !empty($column['class']) ? $column['class'] : '' }}">
                                             @if ($model->{$column['name']})
-                                                <a href="{{ Route::has(str_plural($column['name']).'.show') ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
+                                                <a href="{{ Route::has(str_plural($column['name']).'.show') && (!auth()->check() || auth()->user()->can('view', $model->{$column['name']})) ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
                                                     @if ($model->{$column['name']}->{$column['column']} instanceof \Illuminate\Support\HtmlString)
                                                         {!! $model->{$column['name']}->{$column['column']} !!}
                                                     @else
@@ -101,24 +110,54 @@
                                         </td>
                                     @endif
                                 @endforeach
-                                <td class="action text-nowrap">
+                                <td class="action text-nowrap text-right">
                                     @if (Route::has($resource_route.'.show'))
-                                        <a href="{{ route($resource_route.'.show', [ $model->getKey() ]) }}"
-                                           class="btn btn-primary btn-xs">{{ __('Show') }}</a>
+                                        @auth
+                                            @can('view', $model)
+                                                <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                                                   class="btn btn-primary btn-xs">{{ __('Show') }}</a>
+                                            @endcan
+                                        @endauth
+                                        @guest
+                                            <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                                               class="btn btn-primary btn-xs">{{ __('Show') }}</a>
+                                        @endguest
                                     @endif
                                     @if (Route::has($resource_route.'.edit'))
-                                        <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                           class="btn btn-success btn-xs">{{ __('Edit') }}</a>
+                                        @auth
+                                            @can('update', $model)
+                                                <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                                                   class="btn btn-success btn-xs">{{ __('Edit') }}</a>
+                                            @endcan
+                                        @endauth
+                                        @guest
+                                            <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                                               class="btn btn-success btn-xs">{{ __('Edit') }}</a>
+                                        @endguest
                                     @endif
                                     @if (Route::has($resource_route.'.destroy'))
-                                        <form style="display:inline"
-                                              action="{{ route($resource_route.'.destroy', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                              method="POST"
-                                              onsubmit="return confirm('{{ __('Are you sure you want to delete?') }}');">
-                                            {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-danger btn-xs" name="_method"
-                                                    value="DELETE">{{ __('Delete') }}</button>
-                                        </form>
+                                        @auth
+                                            @can('delete', $model)
+                                                <form style="display:inline"
+                                                      action="{{ route($resource_route.'.destroy', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                                                      method="POST"
+                                                      onsubmit="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
+                                                    {{ csrf_field() }}
+                                                    <button type="submit" class="btn btn-danger btn-xs" name="_method"
+                                                            value="DELETE">{{ __('Delete') }}</button>
+                                                </form>
+                                            @endcan
+                                        @endauth
+                                        @guest
+                                            <form style="display:inline"
+                                                  action="{{ route($resource_route.'.destroy', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                                                  method="POST"
+                                                  onsubmit="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
+                                                {{ csrf_field() }}
+                                                <button type="submit" class="btn btn-danger btn-xs" name="_method"
+                                                        value="DELETE">{{ __('Delete') }}</button>
+                                            </form>
+                                        @endguest
                                     @endif
                                 </td>
                             </tr>
@@ -128,6 +167,7 @@
                                     colspan="{{ count($visibles[$model_variable]) + 1 }}">{{ __('Empty') }}</td>
                             </tr>
                         @endforelse
+                        @stack('tbody-append')
                         </tbody>
                     </table>
                 </div>
