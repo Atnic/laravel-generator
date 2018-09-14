@@ -104,7 +104,7 @@
                         @endif
                         @if (Route::has($resource_route.'.edit'))
                             @auth
-                                @can('edit', $model)
+                                @can('update', $model)
                                     <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
                                        class="btn btn-success btn-xs">{{ __('Edit') }}</a>
                                 @endcan
