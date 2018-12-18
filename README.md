@@ -2,7 +2,7 @@
 
 ## Installation
 ```bash
-composer reqiure atnic/laravel-generator
+composer require atnic/laravel-generator
 ```
 
 ## Make Module (CRUD)
