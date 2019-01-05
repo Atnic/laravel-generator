@@ -26,14 +26,14 @@
 
                     @slot('footer')
                         <div class="pull-right">
-                            <button type="submit" name="redirect" value="{{ request()->filled('redirect') ? request()->redirect : '' }}" class="btn btn-primary">
+                            <button type="submit" name="redirect" value="{{ request()->filled('redirect') ? url(request()->redirect) : '' }}" class="btn btn-primary">
                                 {{ __('Store') }}
                             </button>
                             <button type="submit" name="redirect" value="{{ request()->fullUrl() }}" class="btn btn-primary">
                                 {{ __('Store') }} & {{ __('Create') }}
                             </button>
                         </div>
-                        <a href="{{ request()->filled('redirect') ? request()->redirect : route($resource_route.'.index') }}"
+                        <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
                            class="btn btn-default">{{ __('Back') }}</a>
                     @endslot
                 @endcomponent

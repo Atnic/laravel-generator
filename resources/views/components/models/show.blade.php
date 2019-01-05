@@ -18,7 +18,7 @@
                 <tr>
                     <th>{{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
                     <td>
-                        <a href="{{ Route::has($resource_route.'.'.$relation['name'].'.index') && (!auth()->check() || auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) ? route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) : '#' }}">
+                        <a href="{{ Route::has($resource_route.'.'.$relation['name'].'.index') && (!auth()->check() || auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) ? route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) : '#' }}">
                             {{ $model->{$relation['name']}->count() }}
                         </a>
                     </td>
@@ -88,22 +88,14 @@
 
                 @slot('footer')
                     @if (Route::has($resource_route.'.edit'))
-                        @auth
-                            @can('update', $model)
-                                <div class="pull-right">
-                                    <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                       class="btn btn-primary">{{ __('Edit') }}</a>
-                                </div>
-                            @endcan
-                        @endauth
-                        @guest
+                        @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
                             <div class="pull-right">
                                 <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                                    class="btn btn-primary">{{ __('Edit') }}</a>
                             </div>
-                        @endguest
+                        @endif
                     @endif
-                    <a href="{{ request()->filled('redirect') ? request()->redirect : route($resource_route.'.index') }}"
+                    <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
                        class="btn btn-default">{{ __('Back') }}</a>
                 @endslot
             @endcomponent
@@ -114,58 +106,36 @@
                     @slot('nav_tabs')
                         <li role="presentation" style="display: inline-block; float: none"
                             class="{{ request()->routeIs($resource_route.'.show') ? 'active' : '' }}">
-                            <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                            <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                style="cursor:pointer">{{ ucwords(__($resource_route.'.singular')) }}</a>
                         </li>
                         @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
                             @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
                                 @if (Route::has($resource_route.'.'.$relation['name'].'.index'))
-                                    @auth
-                                        @can('index', $model->{$relation['name']}()->getRelated())
-                                            <li role="presentation" style="display: inline-block; float: none"
-                                                class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
-                                                <a href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                                                   style="cursor:pointer">
-                                                    {{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}
-                                                </a>
-                                            </li>
-                                        @endcan
-                                    @endauth
-                                    @guest
+                                    @if ((auth()->check() && auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) || auth()->guest())
                                         <li role="presentation" style="display: inline-block; float: none"
                                             class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
-                                            <a href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                                            <a href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                                style="cursor:pointer">
                                                 {{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}
                                             </a>
                                         </li>
-                                    @endguest
+                                    @endif
                                 @endif
                             @endforeach
                         @endforeach
                         @foreach ([ 'hasOne' ] as $key => $relation_type)
                             @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
                                 @if (Route::has($resource_route.'.'.$relation['name'].'.show'))
-                                    @auth
-                                        @can('view', $model->{$relation['name']})
-                                            <li role="presentation"
-                                                class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
-                                                <a href="{{ route($resource_route.'.'.$relation['name'].'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                                                   style="cursor:pointer">
-                                                    {{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}
-                                                </a>
-                                            </li>
-                                        @endcan
-                                    @endauth
-                                    @guest
+                                    @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
                                         <li role="presentation"
                                             class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
-                                            <a href="{{ route($resource_route.'.'.$relation['name'].'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                                            <a href="{{ route($resource_route.'.'.$relation['name'].'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                                style="cursor:pointer">
                                                 {{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}
                                             </a>
                                         </li>
-                                    @endguest
+                                    @endif
                                 @endif
                             @endforeach
                         @endforeach

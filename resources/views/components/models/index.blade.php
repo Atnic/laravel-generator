@@ -12,16 +12,10 @@
                 @endslot
                 @slot('tools')
                     @if (Route::has($resource_route.'.create'))
-                        @auth
-                            @can('create', isset($model_class) ? $model_class : 'App\Model')
-                                <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
-                                   class="btn btn-default btn-xs">{{ __('Create') }}</a>
-                            @endcan
-                        @endauth
-                        @guest
+                        @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
                             <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
                                class="btn btn-default btn-xs">{{ __('Create') }}</a>
-                        @endguest
+                        @endif
                     @endif
                 @endslot
 
@@ -112,43 +106,19 @@
                                 @endforeach
                                 <td class="action text-nowrap text-right">
                                     @if (Route::has($resource_route.'.show'))
-                                        @auth
-                                            @can('view', $model)
-                                                <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                                   class="btn btn-primary btn-xs">{{ __('Show') }}</a>
-                                            @endcan
-                                        @endauth
-                                        @guest
+                                        @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
                                             <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                                                class="btn btn-primary btn-xs">{{ __('Show') }}</a>
-                                        @endguest
+                                        @endif
                                     @endif
                                     @if (Route::has($resource_route.'.edit'))
-                                        @auth
-                                            @can('update', $model)
-                                                <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                                   class="btn btn-success btn-xs">{{ __('Edit') }}</a>
-                                            @endcan
-                                        @endauth
-                                        @guest
+                                        @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
                                             <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                                                class="btn btn-success btn-xs">{{ __('Edit') }}</a>
-                                        @endguest
+                                        @endif
                                     @endif
                                     @if (Route::has($resource_route.'.destroy'))
-                                        @auth
-                                            @can('delete', $model)
-                                                <form style="display:inline"
-                                                      action="{{ route($resource_route.'.destroy', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                                      method="POST"
-                                                      onsubmit="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
-                                                    {{ csrf_field() }}
-                                                    <button type="submit" class="btn btn-danger btn-xs" name="_method"
-                                                            value="DELETE">{{ __('Delete') }}</button>
-                                                </form>
-                                            @endcan
-                                        @endauth
-                                        @guest
+                                        @if ((auth()->check() && auth()->user()->can('delete', $model)) || auth()->guest())
                                             <form style="display:inline"
                                                   action="{{ route($resource_route.'.destroy', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                                                   method="POST"
@@ -157,7 +127,7 @@
                                                 <button type="submit" class="btn btn-danger btn-xs" name="_method"
                                                         value="DELETE">{{ __('Delete') }}</button>
                                             </form>
-                                        @endguest
+                                        @endif
                                     @endif
                                 </td>
                             </tr>

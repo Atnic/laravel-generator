@@ -12,7 +12,7 @@
         @endforeach
         <div class="pull-right">
             <button type="submit" name="redirect" value="{{ route($resource_route.'.index', [ $parent->getKey(),
-                'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}" class="btn btn-primary">
+                'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}" class="btn btn-primary">
                 {{ __('Store') }}
             </button>
             <button type="submit" name="redirect" value="{{ request()->fullUrl() }}" class="btn btn-primary">
@@ -20,7 +20,7 @@
             </button>
         </div>
         @if (Route::has($resource_route.'.index'))
-            <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+            <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                class="btn btn-default">{{ __('List') }}</a>
         @endif
     </form>

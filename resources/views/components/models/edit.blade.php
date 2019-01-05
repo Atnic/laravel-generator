@@ -7,7 +7,7 @@
                 </div>
             @endif
             <form class="form"
-                  action="{{ route($resource_route.'.update', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                  action="{{ route($resource_route.'.update', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                   method="POST"
                   @if (array_first($fields[$model_variable], function ($field) { return isset($field['type']) && $field['type'] == 'file'; } ))
                   enctype="multipart/form-data"
@@ -33,23 +33,15 @@
                                 {{ __('Update') }}
                             </button>
                         </div>
-                        <a href="{{ request()->filled('redirect') ? request()->redirect : route($resource_route.'.index') }}"
+                        <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
                            class="btn btn-default">{{{ __('Back') }}}</a>
                         @if (Route::has($resource_route.'.destroy'))
-                            @auth
-                                @can('delete', $model)
+                            @if ((auth()->check() && auth()->user()->can('delete', $model)) || auth()->guest())
                                     <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
                                             onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
                                         {{ __('Delete') }}
                                     </button>
-                                @endcan
-                            @endauth
-                            @guest
-                                <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
-                                        onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
-                                    {{ __('Delete') }}
-                                </button>
-                            @endguest
+                            @endif
                         @endif
                     @endslot
                 @endcomponent

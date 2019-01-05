@@ -40,40 +40,22 @@
     </table>
     <div class="pull-right">
         @if (Route::has($resource_route.'.edit'))
-            @auth
-                @can('update', $model)
-                    <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                       class="btn btn-primary">{{ __('Edit') }}</a>
-                @endcan
-            @endauth
-            @guest
-                <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+            @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
+                <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                    class="btn btn-primary">{{ __('Edit') }}</a>
-            @endguest
+            @endif
         @endif
         @if (Route::has(array_last(explode('.', $resource_route)).'.show'))
-            @auth
-                @can('view', $model)
-                    <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                       class="btn btn-default">{{ __('Detail') }}</a>
-                @endcan
-            @endauth
-            @guest
+            @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
                 <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                    class="btn btn-default">{{ __('Detail') }}</a>
-            @endguest
+            @endif
         @endif
     </div>
     @if (Route::has($resource_route.'.index'))
-        @auth
-            @can('index', $model)
-                <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                   class="btn btn-default">{{ __('List') }}</a>
-            @endcan
-        @endauth
-        @guest
-            <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+        @if ((auth()->check() && auth()->user()->can('view', $model->getClass())) || auth()->guest())
+            <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                class="btn btn-default">{{ __('List') }}</a>
-        @endguest
+        @endif
     @endif
 @endsection

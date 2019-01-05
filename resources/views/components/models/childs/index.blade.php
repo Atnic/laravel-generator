@@ -15,22 +15,17 @@
         </div>
         <div class="col-sm-6 col-md-3 col-md-offset-5">
             @if (Route::has($resource_route.'.create'))
-                @auth
-                    @can('create', isset($model_class) ? $model_class : 'App\Model')
-                        <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                           class="btn btn-default btn-block btn-sm">{{ __('Create') }}</a>
-                    @endcan
-                @endauth
-                @guest
-                    <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
+                    <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                        class="btn btn-default btn-block btn-sm">{{ __('Create') }}</a>
-                @endguest
+                @endif
             @endif
         </div>
     </div>
     <div class="table-responsive">
-        <table id="dummy_model_plural_variable" class="table table-striped table-hover">
+        <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover">
             <thead class="text-nowrap">
+            @stack('thead-prepend')
             <tr>
                 @foreach ($visibles[$model_variable] as $key => $column)
                     @if (!empty($column['column']))
@@ -59,6 +54,7 @@
                 @endforeach
                 <th class="text-center action" width="1px"></th>
             </tr>
+            @stack('thead-append')
             </thead>
             <tbody>
             @stack('tbody-prepend')
@@ -91,43 +87,19 @@
                     @endforeach
                     <td class="action text-nowrap">
                         @if (Route::has($resource_route.'.show'))
-                            @auth
-                                @can('view', $model)
-                                    <a href="{{ route($resource_route.'.show', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                                       class="btn btn-primary btn-xs">{{ __('Show') }}</a>
-                                @endcan
-                            @endauth
-                            @guest
-                                <a href="{{ route($resource_route.'.show', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                            @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
+                                <a href="{{ route($resource_route.'.show', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                    class="btn btn-primary btn-xs">{{ __('Show') }}</a>
-                            @endguest
+                            @endif
                         @endif
                         @if (Route::has($resource_route.'.edit'))
-                            @auth
-                                @can('update', $model)
-                                    <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-                                       class="btn btn-success btn-xs">{{ __('Edit') }}</a>
-                                @endcan
-                            @endauth
-                            @guest
-                                <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
+                            @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
+                                <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                    class="btn btn-success btn-xs">{{ __('Edit') }}</a>
-                            @endguest
+                            @endif
                         @endif
                         @if (Route::has($resource_route.'.destroy'))
-                            @auth
-                                @can('delete', $model)
-                                    <form style="display:inline"
-                                          action="{{ route($resource_route.'.destroy', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                          method="POST"
-                                          onsubmit="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
-                                        {{ csrf_field() }}
-                                        <button type="submit" class="btn btn-danger btn-xs" name="_method"
-                                                value="DELETE">{{ __('Delete') }}</button>
-                                    </form>
-                                @endcan
-                            @endauth
-                            @guest
+                            @if ((auth()->check() && auth()->user()->can('delete', $model)) || auth()->guest())
                                 <form style="display:inline"
                                       action="{{ route($resource_route.'.destroy', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                                       method="POST"
@@ -136,7 +108,7 @@
                                     <button type="submit" class="btn btn-danger btn-xs" name="_method"
                                             value="DELETE">{{ __('Delete') }}</button>
                                 </form>
-                            @endguest
+                            @endif
                         @endif
                     </td>
                 </tr>
