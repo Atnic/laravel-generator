@@ -1,8 +1,8 @@
 @section('panel-content')
     <table class="table">
         <colgroup>
-            <col class="col-xs-4">
-            <col class="col-xs-8">
+            <col class="col-xs-4" style="width: 33%">
+            <col class="col-xs-8" style="width: 66%">
         </colgroup>
         <tbody>
         @foreach ($visibles[$model_variable] as $key => $column)
@@ -67,22 +67,22 @@
 @section('panel-footer')
     @if (Route::has($resource_route.'.edit'))
         @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
-            <div class="pull-right">
+            <div class="pull-right float-right">
                 <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                    class="btn btn-primary">{{ __('Edit') }}</a>
             </div>
         @endif
     @endif
     <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
-       class="btn btn-default">{{ __('Back') }}</a>
+       class="btn btn-default btn-secondary">{{ __('Back') }}</a>
 @endsection
 
 @if (!empty($relations[$model_variable]['belongsToMany']) || !empty($relations[$model_variable]['hasMany']))
     @section('parent-content')
         <table class="table">
             <colgroup>
-                <col class="col-xs-4">
-                <col class="col-xs-8">
+                <col class="col-xs-4 col-4">
+                <col class="col-xs-8 col-8">
             </colgroup>
             <tbody>
             @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
@@ -107,9 +107,9 @@
         @if (session('status'))
             <div class="
                 @hasSection('parent-content')
-                    col-xs-12
+                    col-xs-12 col-12
                 @else
-                    col-md-8 col-md-offset-2
+                    col-md-8 col-md-offset-2 offset-md-2
                 @endif
                 ">
                 @component(config('generator.view_component').'components.alert')
@@ -126,7 +126,7 @@
             @hasSection('parent-content')
                 col-md-4
             @else
-                col-md-8 col-md-offset-2
+                col-md-8 col-md-offset-2 offset-md-2
             @endif
                 ">
             @component(config('generator.view_component').'components.panel')
@@ -146,8 +146,8 @@
                 @component(config('generator.view_component').'components.tabs')
                     @slot('nav_tabs')
                         <li role="presentation" style="display: inline-block; float: none"
-                            class="{{ request()->routeIs($resource_route.'.show') ? 'active' : '' }}">
-                            <a href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
+                            class="nav-item {{ request()->routeIs($resource_route.'.show') ? 'active' : '' }}">
+                            <a class="nav-link {{ request()->routeIs($resource_route.'.show') ? 'active' : '' }}" href="{{ route($resource_route.'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                style="cursor:pointer">{{ ucwords(__($resource_route.'.singular')) }}</a>
                         </li>
                         @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
@@ -155,8 +155,8 @@
                                 @if (Route::has($resource_route.'.'.$relation['name'].'.index'))
                                     @if ((auth()->check() && auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) || auth()->guest())
                                         <li role="presentation" style="display: inline-block; float: none"
-                                            class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
-                                            <a href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
+                                            class="nav-item {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
+                                            <a class="nav-link {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}" href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                                style="cursor:pointer">
                                                 {{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}
                                             </a>
@@ -170,8 +170,8 @@
                                 @if (Route::has($resource_route.'.'.$relation['name'].'.show'))
                                     @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
                                         <li role="presentation"
-                                            class="{{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
-                                            <a href="{{ route($resource_route.'.'.$relation['name'].'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
+                                            class="nav-item {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
+                                            <a class="nav-link {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}" href="{{ route($resource_route.'.'.$relation['name'].'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                                                style="cursor:pointer">
                                                 {{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}
                                             </a>
@@ -183,7 +183,7 @@
                     @endslot
 
                     <div class="tab-pane active">
-                        <div class="panel-body">
+                        <div class="panel-body card-body">
 
                             @yield('parent-content')
 

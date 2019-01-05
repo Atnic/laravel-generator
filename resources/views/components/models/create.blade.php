@@ -6,7 +6,7 @@
 @endsection
 
 @section('panel-footer')
-    <div class="pull-right">
+    <div class="pull-right float-right">
         <button type="submit" name="redirect" value="{{ request()->filled('redirect') ? url(request()->redirect) : '' }}" class="btn btn-primary">
             {{ __('Store') }}
         </button>
@@ -15,12 +15,12 @@
         </button>
     </div>
     <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
-       class="btn btn-default">{{ __('Back') }}</a>
+       class="btn btn-default btn-secondary">{{ __('Back') }}</a>
 @endsection
 
 @section('content')
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-8 col-md-offset-2 offset-md-2">
             @if (session('status'))
                 @component(config('generator.view_component').'components.alert')
                     @slot('type', session('status-type'))

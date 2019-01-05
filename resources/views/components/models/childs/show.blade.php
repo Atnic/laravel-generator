@@ -1,5 +1,5 @@
 @section('parent-content-footer')
-    <div class="pull-right">
+    <div class="pull-right float-right">
         @if (Route::has($resource_route.'.edit'))
             @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
                 <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
@@ -16,7 +16,7 @@
     @if (Route::has($resource_route.'.index'))
         @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
             <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
-               class="btn btn-default">{{ __('List') }}</a>
+               class="btn btn-default btn-secondary">{{ __('List') }}</a>
         @endif
     @endif
 @endsection
@@ -24,8 +24,8 @@
 @section('parent-content')
     <table class="table">
         <colgroup>
-            <col class="col-xs-4">
-            <col class="col-xs-8">
+            <col class="col-xs-4" style="width: 33%">
+            <col class="col-xs-8" style="width: 66%">
         </colgroup>
         <tbody>
         @foreach ($visibles[$model_variable] as $key => $column)

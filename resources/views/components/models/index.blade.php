@@ -2,7 +2,7 @@
     @if (Route::has($resource_route.'.create'))
         @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
             <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
-               class="btn btn-default btn-xs">{{ __('Create') }}</a>
+               class="btn btn-default btn-secondary btn-sm">{{ __('Create') }}</a>
         @endif
     @endif
 @endsection
@@ -114,18 +114,18 @@
 @section('panel-content')
     <form class="form" method="GET">
         <div class="row" style="margin-bottom:15px">
-            <div class="col-xs-6 col-md-4">
+            <div class="col-xs-6 col-6 col-md-4">
                 <div class="input-group">
-                    <span class="input-group-btn">
-                        <button class="btn btn-sm btn-default" type="submit">
+                    <span class="input-group-btn input-group-prepend">
+                        <button class="btn btn-default btn-secondary btn-sm" type="submit">
                             &nbsp;<i class="fa fa-search"></i>&nbsp;
                         </button>
                     </span>
                     <input type="text" name="search" placeholder="{{ __('Search') }}"
-                           class="input-sm form-control" value="{{ request()->search }}" autofocus>
+                           class="input-sm form-control form-control-sm" value="{{ request()->search }}" autofocus>
                 </div>
             </div>
-            <div class="col-xs-6 col-md-8">
+            <div class="col-xs-6 col-6 col-md-8">
                 <div class="text-right">
                     <span>
                         {{ ($models->count() ? 1 : 0) + ($models->perPage() * ($models->currentPage() - 1)) }} -
@@ -133,7 +133,7 @@
                         {{ $models->total() }}
                     </span>&nbsp;
                     <div style="display: inline-block">
-                        <select class="form-control input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
+                        <select class="form-control form-control-sm input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
                             @foreach ([ 15, 50, 100, 250 ] as $value)
                                 <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
                             @endforeach
@@ -144,7 +144,7 @@
         </div>
     </form>
     <div class="table-responsive">
-        <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed">
+        <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed table-sm">
             <thead class="text-nowrap">
             @stack('thead-prepend')
             @yield('thead')
@@ -164,7 +164,7 @@
 
 @section('content')
     <div class="row">
-        <div class="{{ !empty($col_class) ? $col_class : 'col-md-8 col-md-offset-2' }}">
+        <div class="{{ !empty($col_class) ? $col_class : 'col-md-8 col-md-offset-2 offset-md-2' }}">
             @if (session('status'))
                 @component(config('generator.view_component').'components.alert')
                     @slot('type', session('status-type'))

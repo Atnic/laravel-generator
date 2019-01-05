@@ -1,5 +1,5 @@
 @section('parent-content-footer')
-    <div class="pull-right">
+    <div class="pull-right float-right">
         <button type="submit" name="_method" value="PUT" class="btn btn-primary">
             {{ __('Update') }}
         </button>
@@ -7,7 +7,7 @@
     @if (Route::has($resource_route.'.index'))
         @if ((auth()->check() && auth()->user()->can('index', $model)) || auth()->guest())
             <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
-               class="btn btn-default">{{ __('List') }}</a>
+               class="btn btn-default btn-secondary">{{ __('List') }}</a>
         @endif
     @endif
     @if (Route::has($resource_route.'.destroy'))

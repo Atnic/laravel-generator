@@ -2,7 +2,7 @@
     @if (Route::has($resource_route.'.create'))
         @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
             <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
-               class="btn btn-default btn-xs">{{ __('Create') }}</a>
+               class="btn btn-default btn-secondary btn-sm btn-xs">{{ __('Create') }}</a>
         @endif
     @endif
 @endsection
@@ -97,30 +97,11 @@
                 @endif
             @endforeach
             <td class="action text-nowrap">
-                @if (Route::has($resource_route.'.show'))
-                    @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
-                        <a href="{{ route($resource_route.'.show', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
-                           class="btn btn-primary btn-xs">{{ __('Show') }}</a>
-                    @endif
-                @endif
-                @if (Route::has($resource_route.'.edit'))
-                    @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
-                        <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
-                           class="btn btn-success btn-xs">{{ __('Edit') }}</a>
-                    @endif
-                @endif
-                @if (Route::has($resource_route.'.destroy'))
-                    @if ((auth()->check() && auth()->user()->can('delete', $model)) || auth()->guest())
-                        <form style="display:inline"
-                              action="{{ route($resource_route.'.destroy', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                              method="POST"
-                              onsubmit="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
-                            {{ csrf_field() }}
-                            <button type="submit" class="btn btn-danger btn-xs" name="_method"
-                                    value="DELETE">{{ __('Delete') }}</button>
-                        </form>
-                    @endif
-                @endif
+                @component($action_buttons_view ?? 'generator::components.models.childs.index.action_buttons')
+                    @slot('resource_route', $resource_route)
+                    @slot('parent', $parent)
+                    @slot('model', $model)
+                @endcomponent
             </td>
         </tr>
     @empty
@@ -132,26 +113,26 @@
 
 @section('parent-content')
     <div class="row" style="margin-bottom:5px">
-        <div class="col-xs-12">
-            <div class="pull-right">
+        <div class="col-xs-12 col-12">
+            <div class="pull-right float-right">
                 @yield('parent-tools')
             </div>
         </div>
     </div>
     <form class="form" method="GET">
         <div class="row" style="margin-bottom:15px">
-            <div class="col-xs-6 col-md-4">
+            <div class="col-xs-6 col-6 col-md-4">
                 <div class="input-group">
-                    <span class="input-group-btn">
-                        <button class="btn btn-sm btn-default" type="submit">
+                    <span class="input-group-btn input-group-prepend">
+                        <button class="btn btn-sm btn-default btn-secondary" type="submit">
                             &nbsp;<i class="fa fa-search"></i>&nbsp;
                         </button>
                     </span>
                     <input type="text" name="search" placeholder="{{ __('Search') }}"
-                           class="input-sm form-control" value="{{ request()->search }}" autofocus>
+                           class="input-sm form-control form-control-sm" value="{{ request()->search }}" autofocus>
                 </div>
             </div>
-            <div class="col-xs-6 col-md-8">
+            <div class="col-xs-6 col-6 col-md-8">
                 <div class="text-right">
                     <span>
                         {{ ($models->count() ? 1 : 0) + ($models->perPage() * ($models->currentPage() - 1)) }} -
@@ -159,7 +140,7 @@
                         {{ $models->total() }}
                     </span>&nbsp;
                     <div style="display: inline-block">
-                        <select class="form-control input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
+                        <select class="form-control form-control-sm input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
                             @foreach ([ 15, 50, 100, 250 ] as $value)
                                 <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
                             @endforeach
@@ -170,7 +151,7 @@
         </div>
     </form>
     <div class="table-responsive">
-        <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed">
+        <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed table-sm">
             <thead class="text-nowrap">
             @stack('thead-prepend')
             @yield('thead')

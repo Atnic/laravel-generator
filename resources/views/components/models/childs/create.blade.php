@@ -1,5 +1,5 @@
 @section('parent-content-footer')
-    <div class="pull-right">
+    <div class="pull-right float-right">
         <button type="submit" name="redirect" value="{{ route($resource_route.'.index', [ $parent->getKey(),
                 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}" class="btn btn-primary">
             {{ __('Store') }}
@@ -10,7 +10,7 @@
     </div>
     @if (Route::has($resource_route.'.index'))
         <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
-           class="btn btn-default">{{ __('List') }}</a>
+           class="btn btn-default btn-secondary">{{ __('List') }}</a>
     @endif
 @endsection
 
