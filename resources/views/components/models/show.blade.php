@@ -1,106 +1,123 @@
-@php
-    $children = [];
-    foreach ([ 'belongsToMany', 'hasMany', 'hasOne' ] as $relation){
-        $relations[$model_variable][$relation] = !empty($relations[$model_variable][$relation]) ? $relations[$model_variable][$relation] : [];
-        $children = array_merge($children, $relations[$model_variable][$relation]);
-    }
-@endphp
-
-@section('parent-content')
+@section('panel-content')
     <table class="table">
         <colgroup>
             <col class="col-xs-4">
             <col class="col-xs-8">
         </colgroup>
         <tbody>
-        @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
-            @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
+        @foreach ($visibles[$model_variable] as $key => $column)
+            @if (!empty($column['column']))
                 <tr>
-                    <th>{{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+                    <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
                     <td>
-                        <a href="{{ Route::has($resource_route.'.'.$relation['name'].'.index') && (!auth()->check() || auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) ? route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) : '#' }}">
-                            {{ $model->{$relation['name']}->count() }}
-                        </a>
+                        @if ($model->{$column['name']})
+                            <a href="{{ Route::has(str_plural($column['name']).'.show') && (!auth()->check() || auth()->user()->can('view', $model->{$column['name']})) ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
+                                @if ($model->{$column['name']}->{$column['column']} instanceof \Illuminate\Support\HtmlString)
+                                    {!! $model->{$column['name']}->{$column['column']} !!}
+                                @else
+                                    {{ $model->{$column['name']}->{$column['column']} }}
+                                @endif
+                            </a>
+                        @else
+                            -
+                        @endif
                     </td>
                 </tr>
-            @endforeach
+            @else
+                <tr>
+                    <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
+                    <td>
+                        @if ($model->{$column['name']} instanceof \Illuminate\Support\HtmlString)
+                            {!! $model->{$column['name']} !!}
+                        @else
+                            {{ $model->{$column['name']} }}
+                        @endif
+                    </td>
+                </tr>
+            @endif
         @endforeach
         </tbody>
     </table>
 @endsection
 
+@section('panel-footer')
+    @if (Route::has($resource_route.'.edit'))
+        @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
+            <div class="pull-right">
+                <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
+                   class="btn btn-primary">{{ __('Edit') }}</a>
+            </div>
+        @endif
+    @endif
+    <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
+       class="btn btn-default">{{ __('Back') }}</a>
+@endsection
+
+@if (!empty($relations[$model_variable]['belongsToMany']) || !empty($relations[$model_variable]['hasMany']))
+    @section('parent-content')
+        <table class="table">
+            <colgroup>
+                <col class="col-xs-4">
+                <col class="col-xs-8">
+            </colgroup>
+            <tbody>
+            @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
+                @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
+                    <tr>
+                        <th>{{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
+                        <td>
+                            <a href="{{ Route::has($resource_route.'.'.$relation['name'].'.index') && (!auth()->check() || auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) ? route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) : '#' }}">
+                                {{ $model->{$relation['name']}->count() }}
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            @endforeach
+            </tbody>
+        </table>
+    @endsection
+@endif
+
 @section('content')
     <div class="row">
         @if (session('status'))
-            <div class="{{ empty($children) ?
-                'col-md-8 col-md-offset-2' : 'col-xs-12' }}">
-                <div class="alert alert-{{ session('status-type') ? : 'success' }}">
-                    {{ session('status') }}
-                </div>
+            <div class="
+                @hasSection('parent-content')
+                    col-xs-12
+                @else
+                    col-md-8 col-md-offset-2
+                @endif
+                ">
+                @component(config('generator.view_component').'components.alert')
+                    @slot('type', session('status-type'))
+                    @if (session('status') instanceof \Illuminate\Support\HtmlString)
+                        {!! session('status') !!}
+                    @else
+                        {{ session('status') }}
+                    @endif
+                @endcomponent
             </div>
         @endif
-        <div class="{{ (empty($children)) ?
-                'col-md-8 col-md-offset-2' : 'col-md-4' }}">
+        <div class="
+            @hasSection('parent-content')
+                col-md-4
+            @else
+                col-md-8 col-md-offset-2
+            @endif
+                ">
             @component(config('generator.view_component').'components.panel')
                 @slot('title')
                     {{ __('Detail') }} {{ !empty($panel_title) ? $panel_title : ucwords(__($resource_route.'.singular')) }}
                 @endslot
 
-                <table class="table">
-                    <colgroup>
-                        <col class="col-xs-4">
-                        <col class="col-xs-8">
-                    </colgroup>
-                    <tbody>
-                    @foreach ($visibles[$model_variable] as $key => $column)
-                        @if (!empty($column['column']))
-                            <tr>
-                                <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
-                                <td>
-                                    @if ($model->{$column['name']})
-                                        <a href="{{ Route::has(str_plural($column['name']).'.show') && (!auth()->check() || auth()->user()->can('view', $model->{$column['name']})) ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
-                                            @if ($model->{$column['name']}->{$column['column']} instanceof \Illuminate\Support\HtmlString)
-                                                {!! $model->{$column['name']}->{$column['column']} !!}
-                                            @else
-                                                {{ $model->{$column['name']}->{$column['column']} }}
-                                            @endif
-                                        </a>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                            </tr>
-                        @else
-                            <tr>
-                                <th>{{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}</th>
-                                <td>
-                                    @if ($model->{$column['name']} instanceof \Illuminate\Support\HtmlString)
-                                        {!! $model->{$column['name']} !!}
-                                    @else
-                                        {{ $model->{$column['name']} }}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endif
-                    @endforeach
-                    </tbody>
-                </table>
+                @yield('panel-content')
 
                 @slot('footer')
-                    @if (Route::has($resource_route.'.edit'))
-                        @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
-                            <div class="pull-right">
-                                <a href="{{ route($resource_route.'.edit', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
-                                   class="btn btn-primary">{{ __('Edit') }}</a>
-                            </div>
-                        @endif
-                    @endif
-                    <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
-                       class="btn btn-default">{{ __('Back') }}</a>
+                    @yield('panel-footer')
                 @endslot
             @endcomponent
         </div>
-        @if (!empty($children))
+        @hasSection('parent-content')
             <div class="col-md-8">
                 @component(config('generator.view_component').'components.tabs')
                     @slot('nav_tabs')
