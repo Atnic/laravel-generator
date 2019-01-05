@@ -14,23 +14,27 @@
             @if (!empty($column['column']))
                 <th class="text-center">
                     {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
-                    @if (array_search($column['name'].'.'.$column['column'].',desc', explode('|', request()->sort)) === false)
-                        <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',desc' ])) }}">
-                            <i class="fa fa-sort text-muted"></i></a>
-                    @else
-                        <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',asc' ])) }}">
-                            <i class="fa fa-sort text-muted"></i></a>
+                    @if(!isset($column['sortable']) || $column['sortable'])
+                        @if (array_search($column['name'].'.'.$column['column'].',desc', explode('|', request()->sort)) === false)
+                            <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',desc' ])) }}">
+                                <i class="fa fa-sort text-muted"></i></a>
+                        @else
+                            <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].'.'.$column['column'].',asc' ])) }}">
+                                <i class="fa fa-sort text-muted"></i></a>
+                        @endif
                     @endif
                 </th>
             @else
                 <th class="text-center">
                     {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
-                    @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
-                        <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].',desc' ])) }}">
-                            <i class="fa fa-sort text-muted"></i></a>
-                    @else
-                        <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].',asc' ])) }}">
-                            <i class="fa fa-sort text-muted"></i></a>
+                    @if(!isset($column['sortable']) || $column['sortable'])
+                        @if (array_search($column['name'].',desc', explode('|', request()->sort)) === false)
+                            <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].',desc' ])) }}">
+                                <i class="fa fa-sort text-muted"></i></a>
+                        @else
+                            <a href="{{ route($resource_route.'.index', array_merge([ $parent->getKey() ], request()->query(), [ 'sort' => $column['name'].',asc' ])) }}">
+                                <i class="fa fa-sort text-muted"></i></a>
+                        @endif
                     @endif
                 </th>
             @endif
@@ -50,6 +54,18 @@
                             <a href="{{ Route::has(str_plural($column['name']).'.show') && (!auth()->check() || auth()->user()->can('view', $model->{$column['name']})) ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
                                 @if ($model->{$column['name']}->{$column['column']} instanceof \Illuminate\Support\HtmlString)
                                     {!! $model->{$column['name']}->{$column['column']} !!}
+                                @elseif ($model->{$column['name']}->{$column['column']} instanceof \Carbon\Carbon)
+                                    <span title="{{ $model->{$column['name']}->{$column['column']}->toAtomString() }}">
+                                        <script>
+                                            date = new Date("{{ $model->{$column['name']}->{$column['column']}->toAtomString() }}");
+                                            document.write(date.toLocaleString("{{ app()->getLocale() }}", {
+                                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                            }));
+                                        </script>
+                                    </span>
+                                @elseif (is_bool($model->{$column['name']}->{$column['column']}))
+                                    <i class="fa fa-{{ $model->{$column['name']}->{$column['column']} ? 'check-' : '' }}square-o"></i>
                                 @else
                                     {{ $model->{$column['name']}->{$column['column']} }}
                                 @endif
@@ -62,6 +78,18 @@
                     <td class="{{ !empty($column['class']) ? $column['class'] : '' }}">
                         @if ($model->{$column['name']} instanceof \Illuminate\Support\HtmlString)
                             {!! $model->{$column['name']} !!}
+                        @elseif ($model->{$column['name']} instanceof \Carbon\Carbon)
+                            <span title="{{ $model->{$column['name']}->toAtomString() }}">
+                                <script>
+                                    date = new Date("{{ $model->{$column['name']}->toAtomString() }}");
+                                    document.write(date.toLocaleString("{{ app()->getLocale() }}", {
+                                        year: 'numeric', month: '2-digit', day: '2-digit',
+                                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                    }));
+                                </script>
+                            </span>
+                        @elseif (is_bool($model->{$column['name']}))
+                            <i class="fa fa-{{ $model->{$column['name']} ? 'check-' : '' }}square-o"></i>
                         @else
                             {{ $model->{$column['name']} }}
                         @endif

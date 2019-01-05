@@ -14,6 +14,18 @@
                             <a href="{{ Route::has(str_plural($column['name']).'.show') && (!auth()->check() || auth()->user()->can('view', $model->{$column['name']})) ? route(str_plural($column['name']).'.show', [ $model->{$column['name']}->getKey(), 'redirect' => request()->fullUrl() ]) : '#' }}">
                                 @if ($model->{$column['name']}->{$column['column']} instanceof \Illuminate\Support\HtmlString)
                                     {!! $model->{$column['name']}->{$column['column']} !!}
+                                @elseif ($model->{$column['name']}->{$column['column']} instanceof \Carbon\Carbon)
+                                    <span title="{{ $model->{$column['name']}->{$column['column']}->toAtomString() }}">
+                                        <script>
+                                            date = new Date("{{ $model->{$column['name']}->{$column['column']}->toAtomString() }}");
+                                            document.write(date.toLocaleString("{{ app()->getLocale() }}", {
+                                                year: 'numeric', month: '2-digit', day: '2-digit',
+                                                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                            }));
+                                        </script>
+                                    </span>
+                                @elseif (is_bool($model->{$column['name']}->{$column['column']}))
+                                    <i class="fa fa-{{ $model->{$column['name']}->{$column['column']} ? 'check-' : '' }}square-o"></i>
                                 @else
                                     {{ $model->{$column['name']}->{$column['column']} }}
                                 @endif
@@ -29,6 +41,18 @@
                     <td>
                         @if ($model->{$column['name']} instanceof \Illuminate\Support\HtmlString)
                             {!! $model->{$column['name']} !!}
+                        @elseif ($model->{$column['name']} instanceof \Carbon\Carbon)
+                            <span title="{{ $model->{$column['name']}->toAtomString() }}">
+                                <script>
+                                    date = new Date("{{ $model->{$column['name']}->toAtomString() }}");
+                                    document.write(date.toLocaleString("{{ app()->getLocale() }}", {
+                                        year: 'numeric', month: '2-digit', day: '2-digit',
+                                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                                    }));
+                                </script>
+                            </span>
+                        @elseif (is_bool($model->{$column['name']}))
+                            <i class="fa fa-{{ $model->{$column['name']} ? 'check-' : '' }}square-o"></i>
                         @else
                             {{ $model->{$column['name']} }}
                         @endif
