@@ -2,7 +2,7 @@
     @if (Route::has($resource_route.'.create'))
         @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
             <a href="{{ route($resource_route.'.create', [ 'redirect' => request()->fullUrlWithQuery([ 'search' => null ]) ]) }}"
-               class="btn btn-default btn-secondary btn-sm">{{ __('Create') }}</a>
+               class="btn btn-default btn-secondary btn-sm btn-xs">{{ __('Create') }}</a>
         @endif
     @endif
 @endsection
