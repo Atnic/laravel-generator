@@ -2,6 +2,8 @@
 
 namespace Atnic\LaravelGenerator\Providers;
 
+use Atnic\LaravelGenerator\Console\Commands\AppInstallCommand;
+use Atnic\LaravelGenerator\Console\Commands\AppUpdateCommand;
 use Atnic\LaravelGenerator\Console\Commands\ControllerApiMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\ControllerMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\FactoryMakeCommand;
@@ -29,6 +31,8 @@ class ConsoleServiceProvider extends ServiceProvider
      * @var array
      */
     protected $devCommands = [
+        'AppInstall' => 'command.app.install',
+        'AppUpdate' => 'command.app.update',
         'ControllerApiMake' => 'command.controller.api.make',
         'ControllerMake' => 'command.controller.make',
         'FactoryMake' => 'command.factory.make',
@@ -66,6 +70,29 @@ class ConsoleServiceProvider extends ServiceProvider
         $this->commands(array_values($commands));
     }
 
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerAppInstallCommand()
+    {
+        $this->app->singleton('command.app.install', function ($app) {
+            return new AppInstallCommand();
+        });
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerAppUpdateCommand()
+    {
+        $this->app->singleton('command.app.update', function ($app) {
+            return new AppUpdateCommand();
+        });
+    }
 
     /**
      * Register the command.
