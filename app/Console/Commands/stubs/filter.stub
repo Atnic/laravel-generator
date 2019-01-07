@@ -10,26 +10,35 @@ use Atnic\LaravelGenerator\Filters\BaseFilter;
 class DummyClass extends BaseFilter
 {
     /**
-     * Searchable Field
+     * Searchable Field,
+     * support relation also, ex: [ 'name', 'posts' => [ 'title' ] ]
      * @var array
      */
-    protected $searchables = [ 'name' ]; // TODO: List all searchables field, support relation also, ex: [ 'name', 'posts' => [ 'title' ] ]
+    protected $searchables = [
+        'name'
+    ];
 
     /**
      * Sortables Field
+     * support relation but belongsTo morhpTo hasOne morphOne only, ex: [ 'id', 'name', 'role.name' ]
      * @var array
      */
-    protected $sortables = [ 'id', 'name', 'created_at', 'updated_at' ]; // TODO: List all sortables field, support relation but belongsTo morhpTo hasOne morphOne only, ex: [ 'id', 'name', 'role.name' ]
+    protected $sortables = [
+        'id',
+        'name',
+        'created_at',
+        'updated_at'
+    ];
 
     /**
-     * Default Sort
+     * Default Sort, null if no default, ex: 'name,asc'
      * @var string|null
      */
-    protected $default_sort = null; // TODO: Default sort, null if no default, ex: 'name,asc'
+    protected $default_sort = null;
 
     /**
-     * Default per page
+     * Default per page, null if use model per page default, ex: 20
      * @var int|null
      */
-    protected $default_per_page = null; // TODO: Default per page, null if use model per page default, ex: 20
+    protected $default_per_page = null;
 }

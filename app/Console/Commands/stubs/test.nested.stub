@@ -3,6 +3,7 @@
 namespace DummyNamespace;
 
 use DummyFullModelClass;
+use Illuminate\Support\Facades\Route;
 use ParentDummyFullModelClass;
 use NamespacedDummyUserModel;
 use Tests\TestCase;
@@ -18,6 +19,7 @@ class DummyClass extends TestCase
      */
     public function testIndex()
     {
+        if (!Route::has('dummy_route.index')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
@@ -25,6 +27,11 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_index);
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertViewIs('dummy_view.index');
     }
 
@@ -35,12 +42,18 @@ class DummyClass extends TestCase
      */
     public function testCreate()
     {
+        if (!Route::has('dummy_route.create')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_create);
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertViewIs('dummy_view.create');
     }
 
@@ -51,12 +64,18 @@ class DummyClass extends TestCase
      */
     public function testStore()
     {
+        if (!Route::has('dummy_route.store')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
 
         $this->actingAs($user);
         $response = $this->post(dummy_action_store, factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertSessionMissing('errors');
         $response->assertStatus(302);
     }
@@ -68,6 +87,7 @@ class DummyClass extends TestCase
      */
     public function testShow()
     {
+        if (!Route::has('dummy_route.show')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
@@ -75,6 +95,11 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_show);
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertViewIs('dummy_view.show');
     }
 
@@ -85,6 +110,7 @@ class DummyClass extends TestCase
      */
     public function testEdit()
     {
+        if (!Route::has('dummy_route.edit')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
@@ -92,6 +118,11 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->get(dummy_action_edit);
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertViewIs('dummy_view.edit');
     }
 
@@ -102,6 +133,7 @@ class DummyClass extends TestCase
      */
     public function testUpdate()
     {
+        if (!Route::has('dummy_route.update')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
@@ -109,6 +141,11 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->put(dummy_action_update, factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertSessionMissing('errors');
         $response->assertStatus(302);
     }
@@ -120,6 +157,7 @@ class DummyClass extends TestCase
      */
     public function testDestroy()
     {
+        if (!Route::has('dummy_route.destroy')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
@@ -127,6 +165,11 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->delete(dummy_action_destroy);
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            return;
+        }
         $response->assertSessionMissing('errors');
         $response->assertStatus(302);
     }

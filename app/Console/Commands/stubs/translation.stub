@@ -6,8 +6,8 @@ return [
     'singular' => 'dummy_model_variable',
 
     'name' => 'name',
-    // TODO: List all column you need, and its translation
 
-    // 'parent' => 'parent',
-    // 'childs' => 'childs'
+    //'parent' => 'parent',
+    //'childs' => 'childs',
+
 ];
