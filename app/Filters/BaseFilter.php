@@ -2,7 +2,13 @@
 
 namespace Atnic\LaravelGenerator\Filters;
 
+use Atnic\LaravelGenerator\Database\Eloquent\Relations\BelongsToOne;
+use Atnic\LaravelGenerator\Database\Eloquent\Relations\BelongsToThrough;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,34 +111,38 @@ class BaseFilter extends Filter
         ]);
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($sorts) {
             $query->select($query->qualifyColumn('*'));
-            $relations = [];
             foreach ($sorts as $sort) {
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
+                    /** @var Relation $relation */
                     $relation = Relation::noConstraints(function () use($query, $join) {
                         return $query->getModel()->{$join[0]}();
                     });
-                    if (!in_array($relation, $relations) &&
-                        in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
+                    $related = clone $relation->getModel();
+                    $related->setTable('t'.strtolower(str_random(8)));
+                    if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
-                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedOwnerKeyName(), $relation->getQualifiedForeignKey());
+                            /** @var BelongsTo|MorphTo $relation */
+                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), $related->qualifyColumn($relation->getOwnerKey()), $relation->getQualifiedForeignKey());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
-                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedForeignKeyName(), $relation->getQualifiedParentKeyName());
+                            /** @var HasOne|MorphOne $relation */
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$related->getTable()), $related->qualifyColumn($relation->getForeignKeyName()), $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
+                            /** @var BelongsToOne $relation */
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getRelated()->qualifyColumn('*') ,
                                     $relation->getForeignPivotKeyName() => $relation->getTable().'.'.$relation->getForeignPivotKeyName()
-                                ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedParentKeyName(), $relation->getQuery()->getQuery()->from.'.'.$relation->getForeignPivotKeyName());
+                                ])).') as '.$related->getTable()), $relation->getQualifiedParentKeyName(), $related->getTable().'.'.$relation->getForeignPivotKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
+                            /** @var BelongsToThrough $relation */
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
                                     '*' => $relation->getRelated()->qualifyColumn('*') ,
                                     $relation->getSecondKeyName() => $relation->getQualifiedSecondOwnerKeyName().' as '.$relation->getSecondKeyName()
-                                ])).') as '.$relation->getQuery()->getQuery()->from), $relation->getQualifiedFarKeyName(), $relation->getQuery()->getQuery()->from.'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
+                                ])).') as '.$related->getTable()), $relation->getQualifiedFarKeyName(), $related->getTable().'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
-                        $query->orderBy($relation->getQuery()->getQuery()->from.'.'.$join[1], $sort['dir']);
-                        $query->addSelect(DB::raw($relation->getQuery()->getQuery()->from.'.'.$join[1].' as '.$join[0].'_'.$join[1]));
+                        $query->orderBy($related->getTable().'.'.$join[1], $sort['dir']);
+                        $query->addSelect(DB::raw($related->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]));
                     }
-                    $relations[] = $relation;
                 } else {
                     $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
@@ -215,22 +225,6 @@ class BaseFilter extends Filter
         })->toArray();
         return $this->builder->when(count($withs), function (Builder $query) use($withs) {
             $query->with($withs);
-        });
-    }
-
-    /**
-     * Appends
-     * @param  mixed $value
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function appends($value)
-    {
-        $validator = validator([ 'value' => $value ], [ 'value' => 'string' ]);
-        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
-            $appends = explode(',', $value);
-            $model = $query->getModel();
-            $model->setAppends($appends);
-            $query->setModel($model);
         });
     }
 
