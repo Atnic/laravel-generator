@@ -1,8 +1,8 @@
 @section('panel-content')
     <table class="table">
         <colgroup>
-            <col class="col-xs-4" style="width: 33%">
-            <col class="col-xs-8" style="width: 66%">
+            <col class="col-xs-4 col-4" style="width: 33%">
+            <col class="col-xs-8 col-8" style="width: 66%">
         </colgroup>
         <tbody>
         @foreach ($visibles[$model_variable] as $key => $column)
@@ -81,8 +81,8 @@
     @section('parent-content')
         <table class="table">
             <colgroup>
-                <col class="col-xs-4 col-4">
-                <col class="col-xs-8 col-8">
+                <col class="col-xs-4 col-4" style="width: 33%">
+                <col class="col-xs-8 col-8" style="width: 66%">
             </colgroup>
             <tbody>
             @foreach ([ 'belongsToMany', 'hasMany' ] as $key => $relation_type)
