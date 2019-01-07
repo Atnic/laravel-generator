@@ -18,19 +18,18 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Add/Remove middleware as needed
         $this->middleware('auth:api');
     }
 
     /**
      * Invoke single action controller.
      *
-     * @return \Illuminate\Http\Response
+     * @return Resource
      */
     public function __invoke()
     {
         // TODO: Controller logic
 
-        return new Resource(/* object */); // TODO: Object
+        return new Resource(/* object */);
     }
 }

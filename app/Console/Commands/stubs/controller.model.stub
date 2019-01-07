@@ -13,8 +13,8 @@ class DummyClass extends Controller
 {
     /**
      * Relations
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function relations(Request $request = null, DummyModelClass $dummy_model_variable = null)
@@ -23,10 +23,10 @@ class DummyClass extends Controller
             'dummy_model_variable' => [
                 'belongsToMany' => [], // also for morphToMany
                 'hasMany' => [
-                    // [ 'name' => 'childs', 'label' => ucwords(__('dummy_model_plural_variable.childs')) ], // Example
+                    //[ 'name' => 'childs', 'label' => ucwords(__('dummy_model_plural_variable.childs')) ],
                 ], // also for morphMany, hasManyThrough
                 'hasOne' => [
-                    // [ 'name' => 'child', 'label' => ucwords(__('dummy_model_plural_variable.child')) ], // Example
+                    //[ 'name' => 'child', 'label' => ucwords(__('dummy_model_plural_variable.child')) ],
                 ], // also for morphOne
             ]
         ];
@@ -34,8 +34,8 @@ class DummyClass extends Controller
 
     /**
      * Visibles
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function visibles(Request $request = null, DummyModelClass $dummy_model_variable = null)
@@ -43,15 +43,13 @@ class DummyClass extends Controller
         return [
             'index' => [
                 'dummy_model_variable' => [
-                    // TODO: Index visibles, 'label' is optional. Ex:
-                    // [ 'name' => 'parent', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
+                    //[ 'name' => 'parent', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
                     [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
-                    // TODO: Show visibles, 'label' is optional. Ex:
-                    // [ 'name' => 'parent', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
+                    //[ 'name' => 'parent', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'column' => 'name' ], // Only support belongsTo, hasOne
                     [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
@@ -60,8 +58,8 @@ class DummyClass extends Controller
 
     /**
      * Fields
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
@@ -69,19 +67,17 @@ class DummyClass extends Controller
         return [
             'create' => [
                 'dummy_model_variable' => [
-                    // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'required' => true, 'options' => \App\Parent::filter()->get()->map(function ($parent) {
-                    //     return [ 'value' => $parent->id, 'text' => $parent->name ];
-                    // })->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
+                    //[ 'field' => 'select', 'name' => 'parent_id', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'required' => true, 'options' => \App\Parent::filter()->get()->map(function ($parent) {
+                    //    return [ 'value' => $parent->id, 'text' => $parent->name ];
+                    //})->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
                     [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')), 'required' => true ],
                 ]
             ],
             'edit' => [
                 'dummy_model_variable' => [
-                    // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
-                    // [ 'field' => 'select', 'name' => 'parent_id', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'options' => \App\Parent::filter()->get()->map(function ($parent) {
-                    //     return [ 'value' => $parent->id, 'text' => $parent->name ];
-                    // })->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
+                    //[ 'field' => 'select', 'name' => 'parent_id', 'label' => ucwords(__('dummy_model_plural_variable.parent')), 'options' => \App\Parent::filter()->get()->map(function ($parent) {
+                    //    return [ 'value' => $parent->id, 'text' => $parent->name ];
+                    //})->prepend([ 'value' => '', 'text' => '-' ])->toArray() ],
                     [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
@@ -90,21 +86,19 @@ class DummyClass extends Controller
 
     /**
      * Rules
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
-                // TODO: Store rules
-                // 'parent_id' => 'required|exists:parents,id',
+                //'parent_id' => 'required|exists:parents,id',
                 'name' => 'required|string|max:255',
             ],
             'update' => [
-                // TODO: Update rules
-                // 'parent_id' => 'exists:parents,id',
+                //'parent_id' => 'exists:parents,id',
                 'name' => 'string|max:255',
             ]
         ];
@@ -117,7 +111,6 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Add/Remove middleware as needed
         $this->middleware('auth');
     }
 
@@ -125,6 +118,7 @@ class DummyClass extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index()
     {
@@ -143,6 +137,7 @@ class DummyClass extends Controller
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function create()
     {
@@ -158,6 +153,7 @@ class DummyClass extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request)
     {
@@ -176,7 +172,6 @@ class DummyClass extends Controller
                 $dummy_model_variable->{$key} = $request->{$key};
             }
         }
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
@@ -191,8 +186,9 @@ class DummyClass extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(DummyModelClass $dummy_model_variable)
     {
@@ -208,8 +204,9 @@ class DummyClass extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function edit(DummyModelClass $dummy_model_variable)
     {
@@ -224,9 +221,10 @@ class DummyClass extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param  \Illuminate\Http\Request $request
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, DummyModelClass $dummy_model_variable)
     {
@@ -244,7 +242,6 @@ class DummyClass extends Controller
                 $dummy_model_variable->{$key} = $request->{$key};
             }
         }
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
@@ -259,8 +256,9 @@ class DummyClass extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(DummyModelClass $dummy_model_variable)
     {

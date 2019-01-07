@@ -15,19 +15,17 @@ class DummyClass extends Controller
 {
     /**
      * Rules
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
-                // TODO: Store rules
                 'name' => 'required|string|max:255',
             ],
             'update' => [
-                // TODO: Update rules
                 'name' => 'string|max:255',
             ]
         ];
@@ -40,14 +38,14 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Add/Remove middleware as needed
         $this->middleware('auth:api');
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index()
     {
@@ -61,12 +59,12 @@ class DummyClass extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request)
     {
-        // TODO: Add authorize for relation if any
         $this->authorize('create', 'DummyFullModelClass');
         $request->validate(self::rules($request)['store']);
 
@@ -82,7 +80,6 @@ class DummyClass extends Controller
                 $dummy_model_variable->{$key} = $request->{$key};
             }
         }
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         return (new Resource($dummy_model_variable))->response()->setStatusCode(201);
@@ -91,8 +88,9 @@ class DummyClass extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param DummyModelClass $dummy_model_variable
+     * @return Resource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(DummyModelClass $dummy_model_variable)
     {
@@ -104,13 +102,13 @@ class DummyClass extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param DummyModelClass $dummy_model_variable
+     * @return Resource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, DummyModelClass $dummy_model_variable)
     {
-        // TODO: Add authorize for relation if any
         $this->authorize('update', $dummy_model_variable);
         $request->validate(self::rules($request, $dummy_model_variable)['update']);
 
@@ -125,7 +123,6 @@ class DummyClass extends Controller
                 $dummy_model_variable->{$key} = $request->{$key};
             }
         }
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         return new Resource($dummy_model_variable);
@@ -134,8 +131,9 @@ class DummyClass extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param DummyModelClass $dummy_model_variable
+     * @return Resource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(DummyModelClass $dummy_model_variable)
     {

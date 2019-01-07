@@ -16,58 +16,58 @@ class DummyClass
     /**
      * Determine whether the user can view list of model.
      *
-     * @param  \NamespacedDummyUserModel  $user
+     * @param DummyUser $user
      * @return mixed
      */
     public function index(DummyUser $user)
     {
-        return true; // TODO: Change as needed, but leave it true if no policy
+        return true;
     }
 
     /**
      * Determine whether the user can view the dummyModel.
      *
-     * @param  \NamespacedDummyUserModel  $user
-     * @param  \NamespacedDummyModel  $dummyModel
+     * @param DummyUser $user
+     * @param DummyModel $dummyModel
      * @return mixed
      */
     public function view(DummyUser $user, DummyModel $dummyModel)
     {
-        return true; // TODO: Change as needed, but leave it true if no policy
+        return true;
     }
 
     /**
      * Determine whether the user can create dummyPluralModel.
      *
-     * @param  \NamespacedDummyUserModel  $user
+     * @param DummyUser $user
      * @return mixed
      */
     public function create(DummyUser $user)
     {
-        return true; // TODO: Change as needed, but leave it true if no policy
+        return true;
     }
 
     /**
      * Determine whether the user can update the dummyModel.
      *
-     * @param  \NamespacedDummyUserModel  $user
-     * @param  \NamespacedDummyModel  $dummyModel
+     * @param DummyUser $user
+     * @param DummyModel $dummyModel
      * @return mixed
      */
     public function update(DummyUser $user, DummyModel $dummyModel)
     {
-        return true; // TODO: Change as needed, but leave it true if no policy
+        return true;
     }
 
     /**
      * Determine whether the user can delete the dummyModel.
      *
-     * @param  \NamespacedDummyUserModel  $user
-     * @param  \NamespacedDummyModel  $dummyModel
+     * @param DummyUser $user
+     * @param DummyModel $dummyModel
      * @return mixed
      */
     public function delete(DummyUser $user, DummyModel $dummyModel)
     {
-        return true; // TODO: Change as needed, but leave it true if no policy
+        return true;
     }
 }

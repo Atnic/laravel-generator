@@ -16,20 +16,18 @@ class DummyClass extends Controller
 {
     /**
      * Rules
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
-                // TODO: Store rules
                 'name' => 'required|string|max:255',
             ],
             'update' => [
-                // TODO: Update rules
                 'name' => 'string|max:255',
             ]
         ];
@@ -43,15 +41,15 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Add/Remove middleware as needed
         $this->middleware('auth:api');
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(ParentDummyModelClass $parent_dummy_model_variable)
     {
@@ -67,13 +65,13 @@ class DummyClass extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
     {
-        // TODO: Add authorize for relation if any
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('create', 'DummyFullModelClass');
         $request->validate(self::rules($request, $parent_dummy_model_variable)['store']);
@@ -91,7 +89,6 @@ class DummyClass extends Controller
             }
         }
         $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         return (new Resource($dummy_model_variable))->response()->setStatusCode(201);
@@ -100,9 +97,10 @@ class DummyClass extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
+     * @return Resource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
@@ -116,16 +114,16 @@ class DummyClass extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
+     * @return Resource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
 
-        // TODO: Add authorize for relation if any
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('update', $dummy_model_variable);
         $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
@@ -142,7 +140,6 @@ class DummyClass extends Controller
             }
         }
         $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         return new Resource($dummy_model_variable);
@@ -151,9 +148,10 @@ class DummyClass extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
-     * @return \Illuminate\Http\Response
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
+     * @return Resource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {

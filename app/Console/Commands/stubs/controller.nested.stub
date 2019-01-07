@@ -15,9 +15,9 @@ class DummyClass extends Controller
 {
     /**
      * Relations
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function relations(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
@@ -34,9 +34,9 @@ class DummyClass extends Controller
 
     /**
      * Visibles
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function visibles(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
@@ -47,13 +47,11 @@ class DummyClass extends Controller
             ],
             'index' => [
                 'dummy_model_variable' => [
-                    // TODO: Index visibles, 'label' is optional. Ex:
                     [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ],
             'show' => [
                 'dummy_model_variable' => [
-                    // TODO: Index visibles, 'label' is optional. Ex:
                     [ 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
@@ -62,9 +60,9 @@ class DummyClass extends Controller
 
     /**
      * Fields
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function fields(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
@@ -72,13 +70,11 @@ class DummyClass extends Controller
         return [
             'create' => [
                 'dummy_model_variable' => [
-                    // TODO: Create input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
                     [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')), 'required' => true ],
                 ]
             ],
             'edit' => [
                 'dummy_model_variable' => [
-                    // TODO: Edit input fields, 'label' is optional,'options' is required when 'type' is select. Ex:
                     [ 'field' => 'input', 'type' => 'text', 'name' => 'name', 'label' => ucwords(__('dummy_model_plural_variable.name')) ],
                 ]
             ]
@@ -87,20 +83,18 @@ class DummyClass extends Controller
 
     /**
      * Rules
-     * @param  \Illuminate\Http\Request|null  $request
-     * @param  \ParentDummyFullModelClass|null  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass|null  $dummy_model_variable
+     * @param  \Illuminate\Http\Request|null $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return array
      */
     public static function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
-                // TODO: Store rules
                 'name' => 'required|string|max:255',
             ],
             'update' => [
-                // TODO: Update rules
                 'name' => 'string|max:255',
             ]
         ];
@@ -113,15 +107,15 @@ class DummyClass extends Controller
     */
     public function __construct()
     {
-        // TODO: Add/Remove middleware as needed
         $this->middleware('auth');
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index(ParentDummyModelClass $parent_dummy_model_variable)
     {
@@ -142,8 +136,9 @@ class DummyClass extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function create(ParentDummyModelClass $parent_dummy_model_variable)
     {
@@ -161,9 +156,10 @@ class DummyClass extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
+     * @param  \Illuminate\Http\Request $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
     {
@@ -184,7 +180,6 @@ class DummyClass extends Controller
             }
         }
         $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
@@ -201,9 +196,10 @@ class DummyClass extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
@@ -222,9 +218,10 @@ class DummyClass extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function edit(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
@@ -244,16 +241,16 @@ class DummyClass extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
-     * @param  \DummyFullModelClass  $dummy_model_variable
+     * @param  \Illuminate\Http\Request $request
+     * @param ParentDummyModelClass $parent_dummy_model_variable
+     * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
 
-        // TODO: Add authorize for relation if any
         $this->authorize('update', $parent_dummy_model_variable);
         $this->authorize('update', $dummy_model_variable);
         $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
@@ -270,7 +267,6 @@ class DummyClass extends Controller
             }
         }
         $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
-        // TODO: Add custom logic if any
         $dummy_model_variable->save();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()))
@@ -290,6 +286,7 @@ class DummyClass extends Controller
      * @param  \ParentDummyFullModelClass  $parent_dummy_model_variable
      * @param  \DummyFullModelClass  $dummy_model_variable
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
