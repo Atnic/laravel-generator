@@ -2,6 +2,7 @@
 
 namespace DummyNamespace;
 
+use Illuminate\Support\Facades\Route;
 use NamespacedDummyUserModel;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -12,14 +13,19 @@ class DummyClass extends TestCase
     /**
      * Invoke single action controller.
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function test()
     {
+        if (!Route::has('dummy_route')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
         $this->actingAs($user, 'api');
         $response = $this->getJson(route('dummy_route'));
+        if ($response->exception) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return $response->exception; });
+        }
         $response->assertSuccessful();
     }
 }
