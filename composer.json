@@ -6,9 +6,9 @@
     "type": "package",
     "require": {
         "php": ">=7.0",
+        "atnic/eloquent-filters": "^2.2",
         "laravel/framework": "^5.5",
-        "laravel/passport": ">=4.0",
-        "mohd-isa/eloquent-filters": "^2.1"
+        "laravel/passport": ">=4.0"
     },
     "require-dev": {
         "fideloper/proxy": "~3.3",
