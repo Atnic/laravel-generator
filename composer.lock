@@ -4,8 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2116d9027b431385d6b37197563988ef",
+    "content-hash": "5d9afe5f55461ddd6a7f31b1f5a362bb",
     "packages": [
+        {
+            "name": "atnic/eloquent-filters",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Atnic/eloquent-filters.git",
+                "reference": "2f92a7155926f71607ead5142a643ee846f412f1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Atnic/eloquent-filters/zipball/2f92a7155926f71607ead5142a643ee846f412f1",
+                "reference": "2f92a7155926f71607ead5142a643ee846f412f1",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^5.5",
+                "illuminate/database": "^5.5",
+                "illuminate/support": "^5.5",
+                "php": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Smartisan\\Filters\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mohammed Isa",
+                    "email": "mohd.itcs@gmail.com"
+                }
+            ],
+            "description": "Laravel 5 Filterable Eloquents.",
+            "homepage": "https://github.com/atnic/eloquent-filters",
+            "keywords": [
+                "eloquent-filters",
+                "laravel"
+            ],
+            "time": "2019-01-10T07:43:48+00:00"
+        },
         {
             "name": "defuse/php-encryption",
             "version": "v2.2.1",
@@ -1168,50 +1212,6 @@
                 "server"
             ],
             "time": "2018-11-21T21:42:43+00:00"
-        },
-        {
-            "name": "mohd-isa/eloquent-filters",
-            "version": "2.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mohd-isa/eloquent-filters.git",
-                "reference": "03fc074e6543210f4726551975583cc97c2f4aa3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mohd-isa/eloquent-filters/zipball/03fc074e6543210f4726551975583cc97c2f4aa3",
-                "reference": "03fc074e6543210f4726551975583cc97c2f4aa3",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/contracts": "^5.5",
-                "illuminate/database": "^5.5",
-                "illuminate/support": "^5.5",
-                "php": "^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Smartisan\\Filters\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mohammed Isa",
-                    "email": "mohd.itcs@gmail.com"
-                }
-            ],
-            "description": "Laravel 5 Filterable Eloquents.",
-            "homepage": "https://github.com/mohd-isa/eloquent-filters",
-            "keywords": [
-                "eloquent-filters",
-                "laravel"
-            ],
-            "time": "2018-11-09T16:57:59+00:00"
         },
         {
             "name": "monolog/monolog",
