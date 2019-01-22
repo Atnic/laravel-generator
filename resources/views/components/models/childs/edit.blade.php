@@ -33,8 +33,8 @@
 @section('parent-content')
     <form class="form" action="{{ route($resource_route.'.update', [
         $parent->getKey(), $model->getKey(),
-        'redirect' => route($resource_route.'.index', [
-            $parent->getKey(),
+        'redirect' => route(Route::has($resource_route.'.index') ? $resource_route.'.index' : $resource_route.'.show', [
+            $parent->getKey(), null,
             'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) ]) }}"
         method="POST"
         @if (array_first($fields[$model_variable], function ($field) { return isset($field['type']) && $field['type'] == 'file'; } ))
@@ -45,6 +45,9 @@
 
         @yield('parent-content-content')
 
-        @yield('parent-content-footer')
+        <div class="clearfix">
+            @yield('parent-content-footer')
+        </div>
+
     </form>
 @endsection
