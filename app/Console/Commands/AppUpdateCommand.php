@@ -11,7 +11,7 @@ class AppUpdateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:update'.
+    protected $signature = 'app:update '.
         '{--production : Run config:cache and route:cache}'.
         '{--seed= : Run seeder}';
 
