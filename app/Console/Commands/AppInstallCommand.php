@@ -51,9 +51,9 @@ class AppInstallCommand extends Command
             $this->info('Storage Link...');
             $this->call('storage:link');
         }
-        if (!file_exists(storage_path('oauth-private.key')) || !file_exists(storage_path('oauth-public.key'))) {
-            $this->info('Passport Key Generate...');
-            $this->call('passport:key');
+        if (!file_exists(app_path('Http/Controllers/HomeController.php')) && $this->confirm('Do you want to run make:auth?')) {
+            $this->info('Make Auth...');
+            $this->call('make:auth');
         }
         $this->info('Migrate and Seeding...');
         if ($this->option('migrate-fresh')) {
@@ -62,6 +62,10 @@ class AppInstallCommand extends Command
             $this->call('migrate:refresh', [ '--seed' => true ]);
         } else {
             $this->call('migrate', [ '--seed' => true ]);
+        }
+        if (!file_exists(storage_path('oauth-private.key')) || !file_exists(storage_path('oauth-public.key'))) {
+            $this->info('Passport Key Generate...');
+            $this->call('passport:install');
         }
 
         return true;
