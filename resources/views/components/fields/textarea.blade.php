@@ -12,7 +12,7 @@
         {{ !empty($field['readonly']) ? 'readonly' : '' }}
         {{ !empty($field['disabled']) ? 'disabled' : '' }}
         {{ !empty($field['required']) ? 'required' : '' }}
-        >{{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'])) }}</textarea>
+        >{{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) }}</textarea>
     @if ($errors->has($field['name']))
         <span class="help-block invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif

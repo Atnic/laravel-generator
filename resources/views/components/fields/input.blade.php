@@ -9,7 +9,7 @@
         <div class="form-check">
             <input id="{{ $field['name'] }}" type="checkbox" name="{{ $name }}" class="form-check-input i-checks {{ $errors->has($field['name']) ? 'is-invalid' : '' }}"
                    value="{{ !empty($field['value']) ? $field['value'] : 1 }}"
-                    {{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'])) == (!empty($field['value']) ? $field['value'] : 0) ? 'checked' : '' }}
+                    {{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) == (!empty($field['value']) ? $field['value'] : 0) ? 'checked' : '' }}
                     {{ !empty($field['readonly']) ? 'readonly' : '' }}
                     {{ !empty($field['disabled']) ? 'disabled' : '' }}
                   title="{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}">
@@ -21,10 +21,10 @@
             @endif
         </div>
     @elseif (!empty($field['type']) && $field['type'] == 'radio')
-        @foreach ($field['options'] as $key => $option)
+        @foreach ($field['options'] ?? [] as $key => $option)
             <div class="form-check">
                 <input id="{{ $field['name'] }}" type="radio" name="{{ $name }}" class="form-check-input i-checks {{ $errors->has($field['name']) ? 'is-invalid' : '' }}"
-                       value="{{ $option['value'] }}" {{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'])) == $option['value'] ? 'selected' : '' }}
+                       value="{{ $option['value'] }}" {{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) == $option['value'] ? 'selected' : '' }}
                         {{ !empty($field['readonly']) ? 'readonly' : '' }}
                         {{ !empty($field['disabled']) ? 'disabled' : '' }}
                        title="{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}">
@@ -43,7 +43,7 @@
             title="{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}"
             name="{{ $name }}"
             @if (empty($field['type']) || $field['type'] != 'file')
-            value="{{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'])) }}"
+            value="{{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) }}"
             @endif
             @if (!empty($field['type']) && $field['type'] == 'number')
             step="{{ !empty($field['step']) ? $field['step'] : 'any' }}"

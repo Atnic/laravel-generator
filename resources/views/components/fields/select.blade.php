@@ -11,8 +11,8 @@
         {{ !empty($field['disabled']) ? 'disabled' : '' }}
         {{ !empty($field['required']) ? 'required' : '' }}
         >
-        @foreach ($field['options'] as $option)
-            <option value="{{ $option['value'] }}" {{ $option['value'] == old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'])) ? 'selected' : '' }}>{{ $option['text'] }}</option>
+        @foreach ($field['options'] ?? [] as $option)
+            <option value="{{ $option['value'] }}" {{ $option['value'] == old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) ? 'selected' : '' }}>{{ $option['text'] }}</option>
         @endforeach
     </select>
     @if ($errors->has($field['name']))
