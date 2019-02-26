@@ -36,9 +36,9 @@ class BaseFilter extends Filter
      *
      * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request = null)
     {
-        parent::__construct(clone $request);
+        parent::__construct(clone ($request ?? request()));
         if (!$this->request->exists('sort') && $this->default_sort) {
             $this->request->merge([ 'sort' => $this->default_sort ]);
         }
@@ -49,17 +49,56 @@ class BaseFilter extends Filter
         }
     }
 
+    public function __call($name, $arguments)
+    {
+        if (isset($this->searchables[$name]) || in_array($name, $this->searchables))
+            return $this->search($arguments[0], isset($this->searchables[$name]) ? [ $name => $this->searchables[$name] ] : [ $name ]);
+    }
+
+    /**
+     * Fetch all relevant filters from the request.
+     *
+     * @return array
+     */
+    protected function getFilters()
+    {
+        $filters = array_diff(get_class_methods($this), [
+            '__construct', '__call', 'apply', 'getFilters', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql'
+        ]);
+        $filters = array_merge($filters, array_map(function ($searchable, $key) {
+            return is_array($searchable) ? $key : $searchable;
+        }, $this->searchables, array_keys($this->searchables)));
+
+        return array_only($this->request->query(), $filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function getSearchables()
+    {
+        return $this->searchables;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSortables()
+    {
+        return $this->sortables;
+    }
+
     /**
      * Search
      * @param  mixed $value
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function search($value)
+    public function search($value, $searchables = [])
     {
         $validator = validator([ 'value' => $value ], [ 'value' => 'string' ]);
-        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
-            $query->where(function (Builder $query) use($value) {
-                $this->buildSearch($query, $this->searchables, $value);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value, $searchables) {
+            $query->where(function (Builder $query) use($value, $searchables) {
+                $this->buildSearch($query, empty($searchables) ? $this->searchables : $searchables, $value);
             });
         });
     }
@@ -110,7 +149,7 @@ class BaseFilter extends Filter
             'sorts.*.dir' => 'in:asc,desc'
         ]);
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($sorts) {
-            $query->select($query->qualifyColumn('*'));
+            if (empty($query->getQuery()->columns)) $query->select([ '*' => $query->qualifyColumn('*') ]);
             foreach ($sorts as $sort) {
                 if (str_contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
@@ -225,6 +264,45 @@ class BaseFilter extends Filter
         })->toArray();
         return $this->builder->when(count($withs), function (Builder $query) use($withs) {
             $query->with($withs);
+        });
+    }
+
+    /**
+     * With Count
+     * @param  mixed $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function with_count($value)
+    {
+        $with_counts = explode(',', $value);
+        $model = $this->builder->getModel();
+        $with_counts = collect($with_counts)->filter(function ($with_count) use($model) {
+            if (str_contains($with_count, '.')) return ($model->{explode('.', $with_count)[0]}() instanceof Relation);
+            return ($model->{$with_count}() instanceof Relation);
+        })->toArray();
+        return $this->builder->when(count($with_counts), function (Builder $query) use($with_counts) {
+            if (is_null($query->getQuery()->columns)) $query->select([ '*' => $query->qualifyColumn('*') ]);
+            $query->withCount($with_counts);
+        });
+    }
+
+    /**
+     * With
+     * @param  mixed $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function appends($value)
+    {
+        $appends = explode(',', $value);
+        $validator = validator([ 'values' => $appends ], [ 'values.*' => 'string' ]);
+        $appends = collect($appends)->mapWithKeys(function ($append) {
+            return [ $append => DB::raw("NULL as $append") ];
+        })->toArray();
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($appends) {
+            if (is_null($query->getQuery()->columns)) {
+                $query->select([ '*' => $query->qualifyColumn('*') ]);
+                $query->addSelect($appends);
+            }
         });
     }
 

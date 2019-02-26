@@ -17,7 +17,7 @@
         {{ !empty($body) ? $body : $slot }}
     </div>
     @isset($footer)
-        <div class="panel-footer card-footer">
+        <div class="panel-footer card-footer clearfix">
             {{ $footer }}
         </div>
     @endisset

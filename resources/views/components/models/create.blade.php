@@ -14,8 +14,10 @@
             {{ __('Store') }} & {{ __('Create') }}
         </button>
     </div>
-    <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
-       class="btn btn-default btn-secondary">{{ __('Back') }}</a>
+    @if(Route::has($resource_route.'.index') || request()->filled('redirect'))
+        <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
+           class="btn btn-default btn-secondary">{{ __('Back') }}</a>
+    @endif
 @endsection
 
 @section('content')

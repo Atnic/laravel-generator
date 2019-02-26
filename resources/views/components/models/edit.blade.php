@@ -14,8 +14,10 @@
             {{ __('Update') }}
         </button>
     </div>
-    <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
-       class="btn btn-default btn-secondary">{{{ __('Back') }}}</a>
+    @if(Route::has($resource_route.'.index') || request()->filled('redirect'))
+        <a href="{{ request()->filled('redirect') ? url(request()->redirect) : route($resource_route.'.index') }}"
+           class="btn btn-default btn-secondary">{{{ __('Back') }}}</a>
+    @endif
     @if (Route::has($resource_route.'.destroy'))
         @if ((auth()->check() && auth()->user()->can('delete', $model)) || auth()->guest())
             <button type="submit" name="_method" value="DELETE" class="btn btn-danger"

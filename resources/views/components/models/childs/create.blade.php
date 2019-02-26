@@ -1,7 +1,12 @@
 @section('parent-content-footer')
     <div class="pull-right float-right">
-        <button type="submit" name="redirect" value="{{ route($resource_route.'.index', [ $parent->getKey(),
-                'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}" class="btn btn-primary">
+        <button type="submit" name="redirect"
+                @if (Route::has($resource_route.'.index'))
+                    value="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
+                @elseif (Route::has($resource_route.'.show'))
+                    value="{{ route($resource_route.'.show', [ $parent->getKey(), null, 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
+                @endif
+                class="btn btn-primary">
             {{ __('Store') }}
         </button>
         <button type="submit" name="redirect" value="{{ request()->fullUrl() }}" class="btn btn-primary">
@@ -32,7 +37,9 @@
 
         @yield('parent-content-content')
 
-        @yield('parent-content-footer')
+        <div class="clearfix">
+            @yield('parent-content-footer')
+        </div>
 
     </form>
 @endsection

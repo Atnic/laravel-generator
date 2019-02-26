@@ -119,11 +119,10 @@ class DummyClass extends Controller
      */
     public function index(ParentDummyModelClass $parent_dummy_model_variable)
     {
-        $this->authorize('view', $parent_dummy_model_variable);
         $dummy_model_plural_variable = DummyModelClass::filter()
-            ->where($parent_dummy_model_variable->getForeignKey(), $parent_dummy_model_variable->getKey())
+            ->where((new DummyModelClass)->qualifyColumn($parent_dummy_model_variable->getForeignKey()), $parent_dummy_model_variable->getKey())
             ->paginate()->appends(request()->query());
-        $this->authorize('index', 'DummyFullModelClass');
+        $this->authorize('index', [ 'DummyFullModelClass', $parent_dummy_model_variable ]);
 
         return response()->view('dummy_view.index', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
@@ -142,8 +141,7 @@ class DummyClass extends Controller
      */
     public function create(ParentDummyModelClass $parent_dummy_model_variable)
     {
-        $this->authorize('update', $parent_dummy_model_variable);
-        $this->authorize('create', 'DummyFullModelClass');
+        $this->authorize('create', [ 'DummyFullModelClass', $parent_dummy_model_variable ]);
 
         return response()->view('dummy_view.create', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
@@ -163,8 +161,7 @@ class DummyClass extends Controller
      */
     public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
     {
-        $this->authorize('update', $parent_dummy_model_variable);
-        $this->authorize('create', 'DummyFullModelClass');
+        $this->authorize('create', [ 'DummyFullModelClass', $parent_dummy_model_variable ]);
         $request->validate(self::rules($request, $parent_dummy_model_variable)['store']);
 
         $dummy_model_variable = new DummyModelClass;
@@ -204,8 +201,7 @@ class DummyClass extends Controller
     public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        $this->authorize('view', $parent_dummy_model_variable);
-        $this->authorize('view', $dummy_model_variable);
+        $this->authorize('view', [ $dummy_model_variable, $parent_dummy_model_variable ]);
 
         return response()->view('dummy_view.show', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
@@ -226,8 +222,7 @@ class DummyClass extends Controller
     public function edit(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        $this->authorize('update', $parent_dummy_model_variable);
-        $this->authorize('update', $dummy_model_variable);
+        $this->authorize('update', [ $dummy_model_variable, $parent_dummy_model_variable ]);
 
         return response()->view('dummy_view.edit', [
             'parent_dummy_model_variable' => $parent_dummy_model_variable,
@@ -251,8 +246,7 @@ class DummyClass extends Controller
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
 
-        $this->authorize('update', $parent_dummy_model_variable);
-        $this->authorize('update', $dummy_model_variable);
+        $this->authorize('update', [ $dummy_model_variable, $parent_dummy_model_variable ]);
         $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
 
         foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
@@ -291,8 +285,7 @@ class DummyClass extends Controller
     public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {
         $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        $this->authorize('update', $parent_dummy_model_variable);
-        $this->authorize('delete', $dummy_model_variable);
+        $this->authorize('delete', [ $dummy_model_variable, $parent_dummy_model_variable ]);
         $dummy_model_variable->delete();
 
         if (request()->filled('redirect') && starts_with(request()->redirect, request()->root()) && !str_contains(request()->redirect, '/'.array_last(explode('.', 'dummy_route')).'/'.$dummy_model_variable->getKey()))

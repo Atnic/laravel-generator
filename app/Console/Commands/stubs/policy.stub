@@ -17,9 +17,10 @@ class DummyClass
      * Determine whether the user can view list of model.
      *
      * @param DummyUser $user
+     * @param null $parent
      * @return mixed
      */
-    public function index(DummyUser $user)
+    public function index(DummyUser $user, $parent = null)
     {
         return true;
     }
@@ -29,9 +30,10 @@ class DummyClass
      *
      * @param DummyUser $user
      * @param DummyModel $dummyModel
+     * @param null $parent
      * @return mixed
      */
-    public function view(DummyUser $user, DummyModel $dummyModel)
+    public function view(DummyUser $user, DummyModel $dummyModel, $parent = null)
     {
         return true;
     }
@@ -40,9 +42,10 @@ class DummyClass
      * Determine whether the user can create dummyPluralModel.
      *
      * @param DummyUser $user
+     * @param null $parent
      * @return mixed
      */
-    public function create(DummyUser $user)
+    public function create(DummyUser $user, $parent = null)
     {
         return true;
     }
@@ -52,9 +55,10 @@ class DummyClass
      *
      * @param DummyUser $user
      * @param DummyModel $dummyModel
+     * @param null $parent
      * @return mixed
      */
-    public function update(DummyUser $user, DummyModel $dummyModel)
+    public function update(DummyUser $user, DummyModel $dummyModel, $parent = null)
     {
         return true;
     }
@@ -64,9 +68,10 @@ class DummyClass
      *
      * @param DummyUser $user
      * @param DummyModel $dummyModel
+     * @param null $parent
      * @return mixed
      */
-    public function delete(DummyUser $user, DummyModel $dummyModel)
+    public function delete(DummyUser $user, DummyModel $dummyModel, $parent = null)
     {
         return true;
     }

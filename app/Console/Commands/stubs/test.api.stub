@@ -53,9 +53,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.show')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user, 'api');
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user, 'api');
         // $response = $this->getJson(dummy_action_show);
         // if ($response->exception) {
         //     $this->expectOutputString('');
@@ -76,9 +77,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.update')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user, 'api');
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user, 'api');
         // $response = $this->putJson(dummy_action_update, [
         //     'name' => 'Test'
         // ]);
@@ -101,9 +103,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.destroy')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user, 'api');
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user, 'api');
         // $response = $this->deleteJson(dummy_action_destroy);
         // if ($response->exception) {
         //     $this->expectOutputString('');

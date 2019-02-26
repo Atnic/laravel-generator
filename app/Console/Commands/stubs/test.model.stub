@@ -21,10 +21,11 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.index')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         $dummy_model_plural_variable = factory(DummyModelClass::class, 5)->create();
 
-        $this->actingAs($user);
-        $response = $this->get(dummy_action_index);
+        $response = $this->get(dummy_action_index."?search=lorem");
         if ($response->exception) {
             $this->expectOutputString('');
             $this->setOutputCallback(function () use($response) { return $response->exception; });
@@ -65,6 +66,11 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->post(dummy_action_store, factory(DummyModelClass::class)->make()->toArray());
+        if ($response->getStatusCode() == 422) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return json_encode(session()->all(), JSON_PRETTY_PRINT); });
+            return;
+        }
         if ($response->exception) {
             $this->expectOutputString('');
             $this->setOutputCallback(function () use($response) { return $response->exception; });
@@ -84,9 +90,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.show')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         $response = $this->get(dummy_action_show);
         if ($response->exception) {
             $this->expectOutputString('');
@@ -106,9 +113,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.edit')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         $response = $this->get(dummy_action_edit);
         if ($response->exception) {
             $this->expectOutputString('');
@@ -128,10 +136,16 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.update')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         $response = $this->put(dummy_action_update, factory(DummyModelClass::class)->make()->toArray());
+        if ($response->getStatusCode() == 422) {
+            $this->expectOutputString('');
+            $this->setOutputCallback(function () use($response) { return json_encode(session()->all(), JSON_PRETTY_PRINT); });
+            return;
+        }
         if ($response->exception) {
             $this->expectOutputString('');
             $this->setOutputCallback(function () use($response) { return $response->exception; });
@@ -145,15 +159,17 @@ class DummyClass extends TestCase
      * Remove the specified resource from storage.
      *
      * @return void
+     * @throws \Exception
      */
     public function testDestroy()
     {
         if (!Route::has('dummy_route.destroy')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         $response = $this->delete(dummy_action_destroy);
         if ($response->exception) {
             $this->expectOutputString('');
