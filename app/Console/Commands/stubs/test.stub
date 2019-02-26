@@ -69,9 +69,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.show')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         // $response = $this->get(dummy_action_show);
         // if ($response->exception) {
         //     $this->expectOutputString('');
@@ -92,9 +93,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.edit')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         // $response = $this->get(dummy_action_edit);
         // if ($response->exception) {
         //     $this->expectOutputString('');
@@ -115,9 +117,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.update')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         // $response = $this->put(dummy_action_update, [
         //     'name' => 'Test'
         // ]);
@@ -136,9 +139,10 @@ class DummyClass extends TestCase
         if (!Route::has('dummy_route.destroy')) { $this->expectNotToPerformAssertions(); return; }
         $user = factory(User::class)->create();
 
+        $this->actingAs($user);
+
         // $dummy_model_variable = factory(DummyModelClass::class)->create();
 
-        $this->actingAs($user);
         // $response = $this->delete(dummy_action_destroy);
         // $response->assertSessionMissing('errors');
         // $response->assertStatus(302);
