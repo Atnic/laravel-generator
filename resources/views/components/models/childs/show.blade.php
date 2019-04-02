@@ -1,20 +1,20 @@
 @section('parent-content-footer')
     <div class="pull-right float-right">
         @if (Route::has($resource_route.'.edit'))
-            @if ((auth()->check() && auth()->user()->can('update', $model)) || auth()->guest())
+            @if ((auth()->check() && auth()->user()->can('update', [ $model, $parent ])) || auth()->guest())
                 <a href="{{ route($resource_route.'.edit', [ $parent->getKey(), $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                    class="btn btn-primary">{{ __('Edit') }}</a>
             @endif
         @endif
         @if (Route::has(array_last(explode('.', $resource_route)).'.show'))
-            @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
+            @if ((auth()->check() && auth()->user()->can('view', [ $model, $parent ])) || auth()->guest())
                 <a href="{{ route(array_last(explode('.', $resource_route)).'.show', [ $model->getKey(), 'redirect' => request()->fullUrl() ]) }}"
                    class="btn btn-default">{{ __('Detail') }}</a>
             @endif
         @endif
     </div>
     @if (Route::has($resource_route.'.index'))
-        @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
+        @if ((auth()->check() && auth()->user()->can('view', [ $model, $parent ])) || auth()->guest())
             <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                class="btn btn-default btn-secondary">{{ __('List') }}</a>
         @endif
