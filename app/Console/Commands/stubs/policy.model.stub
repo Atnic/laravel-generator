@@ -1,0 +1,78 @@
+<?php
+
+namespace DummyNamespace;
+
+use NamespacedDummyUserModel;
+use NamespacedDummyModel;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+/**
+ * DummyModel Policy
+ */
+class ModelPolicy
+{
+    use HandlesAuthorization;
+
+    /**
+     * Determine whether the user can view list of model.
+     *
+     * @param DummyUser $user
+     * @param null $parent
+     * @return mixed
+     */
+    public function index(DummyUser $user, $parent = null)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param DummyUser $user
+     * @param $model
+     * @param null $parent
+     * @return mixed
+     */
+    public function view(DummyUser $user, $model, $parent = null)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can create model.
+     *
+     * @param DummyUser $user
+     * @param null $parent
+     * @return mixed
+     */
+    public function create(DummyUser $user, $parent = null)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param DummyUser $user
+     * @param $model
+     * @param null $parent
+     * @return mixed
+     */
+    public function update(DummyUser $user, $model, $parent = null)
+    {
+        return true;
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param DummyUser $user
+     * @param $model
+     * @param null $parent
+     * @return mixed
+     */
+    public function delete(DummyUser $user, $model, $parent = null)
+    {
+        return true;
+    }
+}
