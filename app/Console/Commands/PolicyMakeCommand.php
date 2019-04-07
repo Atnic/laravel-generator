@@ -38,7 +38,7 @@ class PolicyMakeCommand extends Command
         // stub files so that it gets the correctly formatted namespace and class name.
         $this->makeDirectory($path);
 
-        if (!$this->alreadyExists('ModelPolicy')) {
+        if (!$this->alreadyExists('ModelPolicy') && $this->hasOption('model')) {
             $this->files->put($this->getPath($this->qualifyClass('ModelPolicy')), $this->buildClass($this->qualifyClass('ModelPolicy')));
         }
         $this->files->put($path, $this->buildClass($name));
@@ -71,6 +71,7 @@ class PolicyMakeCommand extends Command
     /**
      * Get the stub file for the generator.
      *
+     * @param null $name
      * @return string
      */
     protected function getStub($name = null)
