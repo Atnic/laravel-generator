@@ -1,0 +1,13 @@
+<?php
+
+namespace DummyNamespace;
+
+use Atnic\LaravelGenerator\Filters\BaseFilter as Filter;
+
+/**
+ * BaseFilter Filter
+ */
+class BaseFilter extends Filter
+{
+
+}
