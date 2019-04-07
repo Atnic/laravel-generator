@@ -2,6 +2,7 @@
 
 namespace Atnic\LaravelGenerator\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,5 +37,15 @@ class AppServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../../config/filters.php', 'filters'
         );
+
+        Gate::before(function ($user, $ability, $arguments) {
+            $policy = Gate::getPolicyFor($arguments[0]);
+            if (is_null($policy) && is_string($class = (is_object($arguments[0]) ? get_class($arguments[0]) : $arguments[0]))) {
+                $classDirname = str_replace('/', '\\', dirname(str_replace('\\', '/', $class)));
+                $guessedPolicy = $classDirname.'\\Policies\\'.class_basename($class).'Policy';
+                if (class_exists($guessedPolicy))
+                    Gate::policy($class, $guessedPolicy);
+            }
+        });
     }
 }
