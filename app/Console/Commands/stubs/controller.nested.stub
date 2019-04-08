@@ -281,6 +281,7 @@ class DummyClass extends Controller
      * @param  \DummyFullModelClass  $dummy_model_variable
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
     public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
     {

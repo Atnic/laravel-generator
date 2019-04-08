@@ -1,10 +1,1 @@
-@extends('layouts.app')
-
-@section('content-title', ucwords(__('dummy_route.plural')))
-
-@include('generator::components.models.show', [
-  'panel_title' => ucwords(__('dummy_route.singular')),
-  'resource_route' => 'dummy_route',
-  'model_variable' => 'dummy_model_variable',
-  'model' => $dummy_model_variable
-])
+@extends('generator::components.models.show')

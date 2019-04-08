@@ -23,7 +23,7 @@ class DummyClass extends Controller
             'dummy_model_variable' => [
                 'belongsToMany' => [], // also for morphToMany
                 'hasMany' => [
-                    //[ 'name' => 'childs', 'label' => ucwords(__('dummy_model_plural_variable.childs')) ],
+                    //[ 'name' => 'children', 'label' => ucwords(__('dummy_model_plural_variable.children')) ],
                 ], // also for morphMany, hasManyThrough
                 'hasOne' => [
                     //[ 'name' => 'child', 'label' => ucwords(__('dummy_model_plural_variable.child')) ],
@@ -259,6 +259,7 @@ class DummyClass extends Controller
      * @param DummyModelClass $dummy_model_variable
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
     public function destroy(DummyModelClass $dummy_model_variable)
     {

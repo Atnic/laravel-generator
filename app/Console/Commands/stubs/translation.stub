@@ -8,6 +8,6 @@ return [
     'name' => 'name',
 
     //'parent' => 'parent',
-    //'childs' => 'childs',
+    //'children' => 'children',
 
 ];

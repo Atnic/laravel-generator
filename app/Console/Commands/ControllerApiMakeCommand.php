@@ -39,14 +39,90 @@ class ControllerApiMakeCommand extends Command
     protected function getStub()
     {
         if ($this->option('parent')) {
-            return __DIR__.'/stubs/controller.api.nested.stub';
+            return __DIR__.'/stubs/controller.nested.api.stub';
         } elseif ($this->option('model')) {
-            return __DIR__.'/stubs/controller.api.model.stub';
+            return __DIR__.'/stubs/controller.model.api.stub';
         } elseif ($this->option('resource')) {
             return __DIR__.'/stubs/controller.api.stub';
         }
 
-        return __DIR__.'/stubs/controller.api.plain.stub';
+        return __DIR__.'/stubs/controller.plain.api.stub';
+    }
+
+    /**
+     * Get the stub file for the generator.
+     *
+     * @return string
+     */
+    protected function getTranslationStub()
+    {
+        return __DIR__.'/stubs/translation.stub';
+    }
+
+    /**
+     * Generate Translation File
+     * @return void
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function generateTranslation()
+    {
+        $name = $this->qualifyClass($this->getNameInput());
+        $path = $this->getTranslationPath($name);
+
+        $this->makeDirectory($path);
+        if (!$this->files->exists($path)) {
+            $this->files->put($path, $this->buildTranslation($name));
+            $this->info('Controller translation also generated successfully.');
+            $this->warn($path);
+        }
+    }
+
+    /**
+     * Get the translation path.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getTranslationPath($name)
+    {
+        $name = $this->getTranslationName($name);
+
+        return base_path().'/resources/lang/en/'.$name.'.php';
+    }
+
+    /**
+     * Get the translation name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getTranslationName($name)
+    {
+        $name = $this->getRouteName($name);
+        $name = array_last(explode('.', $name));
+
+        return $name;
+    }
+
+    /**
+     * Build the translation with the given name.
+     *
+     * @param  string $name
+     * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function buildTranslation($name)
+    {
+        $name = $this->getRouteName($name);
+        $name = array_last(explode('.', $name));
+        $name = str_replace('_', ' ', $name);
+
+        $replace = [
+            'dummy_model_plural_variable' => $name,
+            'dummy_model_variable' => str_singular($name),
+        ];
+
+        return str_replace(array_keys($replace), array_values($replace), $this->files->get($this->getTranslationStub()));
     }
 
     /**
@@ -144,12 +220,14 @@ class ControllerApiMakeCommand extends Command
      * Execute the console command.
      *
      * @return bool|null
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function handle()
     {
         if (parent::handle() === false) return false;
 
         $this->createTest();
+        $this->generateTranslation();
         $this->appendRouteFile();
     }
 

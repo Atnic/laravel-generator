@@ -1,10 +1,10 @@
 @extends('parent_dummy_view.show')
 
-@include('generator::components.models.childs.index', [
+@include('models.children.index', [
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
   'model_class' => \DummyFullModelClass::class,
   'parent' => $parent_dummy_model_variable,
   'models' => $dummy_model_plural_variable,
-  'action_buttons_view' => 'generator::components.models.childs.index.action_buttons',
+  'action_buttons_view' => 'generator::components.models.children.index.action_buttons',
 ])

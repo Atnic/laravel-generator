@@ -97,7 +97,7 @@
                 @endif
             @endforeach
             <td class="action text-nowrap text-right">
-                @component($action_buttons_view ?? 'generator::components.models.childs.index.action_buttons')
+                @component($action_buttons_view ?? 'generator::components.models.children.index.action_buttons')
                     @slot('resource_route', $resource_route)
                     @slot('parent', $parent)
                     @slot('model', $model)

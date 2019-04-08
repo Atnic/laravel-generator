@@ -1,7 +1,8 @@
 @extends('parent_dummy_view.show')
 
-@include('generator::components.models.childs.create', [
+@include('models.children.create', [
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
+  'model_class' => \DummyFullModelClass::class,
   'parent' => $parent_dummy_model_variable
 ])
