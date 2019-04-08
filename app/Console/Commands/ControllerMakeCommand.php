@@ -4,6 +4,7 @@ namespace Atnic\LaravelGenerator\Console\Commands;
 
 use Illuminate\Routing\Console\ControllerMakeCommand as Command;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Controller Make Command
@@ -471,5 +472,21 @@ class ControllerMakeCommand extends Command
             $routePath = str_replace_last('/', '.', $routePath);
         }
         return $routePath;
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['model', 'm', InputOption::VALUE_OPTIONAL, 'Generate a resource controller for the given model.'],
+            ['resource', 'r', InputOption::VALUE_NONE, 'Generate a resource controller class.'],
+            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate a single method, invokable controller class.'],
+            ['parent', 'p', InputOption::VALUE_OPTIONAL, 'Generate a nested resource controller class.'],
+            ['api', null, InputOption::VALUE_NONE, 'Exclude the create and edit methods from the controller.'],
+        ];
     }
 }
