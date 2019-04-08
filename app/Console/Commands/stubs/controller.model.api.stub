@@ -3,7 +3,6 @@
 namespace DummyNamespace;
 
 use DummyFullModelClass;
-use ParentDummyFullModelClass;
 use Illuminate\Http\Request;
 use DummyRootNamespaceHttp\Controllers\Controller;
 use Illuminate\Http\Resources\Json\Resource;
@@ -17,11 +16,10 @@ class DummyClass extends Controller
     /**
      * Rules
      * @param  \Illuminate\Http\Request|null $request
-     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @param DummyModelClass $dummy_model_variable
      * @return array
      */
-    public static function rules(Request $request = null, ParentDummyModelClass $parent_dummy_model_variable = null, DummyModelClass $dummy_model_variable = null)
+    public static function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
     {
         return [
             'store' => [
@@ -32,7 +30,6 @@ class DummyClass extends Controller
             ]
         ];
     }
-
 
     /**
     * Instantiate a new controller instance.
@@ -47,16 +44,14 @@ class DummyClass extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index(ParentDummyModelClass $parent_dummy_model_variable)
+    public function index()
     {
         $dummy_model_plural_variable = DummyModelClass::filter()
-            ->where((new DummyModelClass)->qualifyColumn($parent_dummy_model_variable->getForeignKey()), $parent_dummy_model_variable->getKey())
             ->paginate()->appends(request()->query());
-        $this->authorize('index', [ 'DummyFullModelClass', $parent_dummy_model_variable ]);
+        $this->authorize('index', 'DummyFullModelClass');
 
         return Resource::collection($dummy_model_plural_variable);
     }
@@ -65,17 +60,16 @@ class DummyClass extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Request $request, ParentDummyModelClass $parent_dummy_model_variable)
+    public function store(Request $request)
     {
-        $this->authorize('create', [ 'DummyFullModelClass', $parent_dummy_model_variable ]);
-        $request->validate(self::rules($request, $parent_dummy_model_variable)['store']);
+        $this->authorize('create', 'DummyFullModelClass');
+        $request->validate(self::rules($request)['store']);
 
         $dummy_model_variable = new DummyModelClass;
-        foreach (self::rules($request, $parent_dummy_model_variable)['store'] as $key => $value) {
+        foreach (self::rules($request)['store'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -86,7 +80,6 @@ class DummyClass extends Controller
                 $dummy_model_variable->{$key} = $request->{$key};
             }
         }
-        $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
         $dummy_model_variable->save();
 
         return (new Resource($dummy_model_variable))->response()->setStatusCode(201);
@@ -95,15 +88,13 @@ class DummyClass extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @param DummyModelClass $dummy_model_variable
      * @return Resource
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function show(DummyModelClass $dummy_model_variable)
     {
-        $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        $this->authorize('view', [ $dummy_model_variable, $parent_dummy_model_variable ]);
+        $this->authorize('view', $dummy_model_variable);
 
         return new Resource($dummy_model_variable);
     }
@@ -112,19 +103,16 @@ class DummyClass extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @param DummyModelClass $dummy_model_variable
      * @return Resource
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function update(Request $request, DummyModelClass $dummy_model_variable)
     {
-        $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
+        $this->authorize('update', $dummy_model_variable);
+        $request->validate(self::rules($request, $dummy_model_variable)['update']);
 
-        $this->authorize('update', [ $dummy_model_variable, $parent_dummy_model_variable ]);
-        $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
-
-        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
+        foreach (self::rules($request, $dummy_model_variable)['update'] as $key => $value) {
             if (str_contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
                     $dummy_model_variable->{$key} = $request->file($key)->store('dummy_model_plural_variable');
@@ -135,7 +123,6 @@ class DummyClass extends Controller
                 $dummy_model_variable->{$key} = $request->{$key};
             }
         }
-        $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
         $dummy_model_variable->save();
 
         return new Resource($dummy_model_variable);
@@ -144,15 +131,14 @@ class DummyClass extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ParentDummyModelClass $parent_dummy_model_variable
      * @param DummyModelClass $dummy_model_variable
      * @return Resource
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
      */
-    public function destroy(ParentDummyModelClass $parent_dummy_model_variable, DummyModelClass $dummy_model_variable)
+    public function destroy(DummyModelClass $dummy_model_variable)
     {
-        $parent_dummy_model_variable->dummy_model_plural_variable()->findOrFail($dummy_model_variable->getKey());
-        $this->authorize('delete', [ $dummy_model_variable, $parent_dummy_model_variable ]);
+        $this->authorize('delete', $dummy_model_variable);
         $dummy_model_variable->delete();
 
         return new Resource($dummy_model_variable);

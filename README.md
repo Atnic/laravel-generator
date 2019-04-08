@@ -20,7 +20,7 @@ Then do this steps:
 - [x] Check lang en `resources/lang/en` and copy from en to lang id `resources/lang/id`, add language as needed.
 - [x] Check new controller in `app/Http/Controllers/`, complete returned array in method `relations()` `visibles()` `fields()` `rules()`, do all `TODO:`, and remove comment if done.
 - [x] Check new policy in `app/Policies/`, do all `TODO:` and remove the comment if done.
-- [x] Append new Policy to `$policies` attribute in `app/Providers/AuthServiceProvider.php`.
+- [x] No need to append new Policy to `$policies` attribute in `app/Providers/AuthServiceProvider.php`. This package handle policy auto discovery, even for Laravel < 5.8.
 - [x] Check new views (index, create, show, edit) in `resources/views/`, add/extend section for title or anything.
 - [x] Check new tests in `tests/Feature/`, do all `TODO:` and remove the comment if done.
 

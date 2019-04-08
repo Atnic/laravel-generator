@@ -1,6 +1,6 @@
 @extends('parent_dummy_view.show')
 
-@include('generator::components.models.childs.show', [
+@include('models.children.show', [
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
   'parent' => $parent_dummy_model_variable,

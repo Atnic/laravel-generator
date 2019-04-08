@@ -2,8 +2,6 @@
 
 namespace DummyNamespace;
 
-use Atnic\LaravelGenerator\Filters\BaseFilter;
-
 /**
  * DummyClass Filter
  */

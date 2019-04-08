@@ -188,7 +188,7 @@ class BelongsToThrough extends Relation
     }
 
     /**
-     * Match the eagerly loaded results to their childs.
+     * Match the eagerly loaded results to their children.
      *
      * @param  array   $models
      * @param  \Illuminate\Database\Eloquent\Collection  $results
@@ -199,7 +199,7 @@ class BelongsToThrough extends Relation
     {
         $dictionary = $this->buildDictionary($results);
 
-        // Once we have the dictionary we can simply spin through the childs models to
+        // Once we have the dictionary we can simply spin through the children models to
         // link them up with their children using the keyed dictionary to make the
         // matching very convenient and easy work. Then we'll just return them.
         foreach ($models as $model) {

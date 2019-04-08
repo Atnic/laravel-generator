@@ -1,3 +1,24 @@
+@php
+    $filter = 'App\\Filters\\'.class_basename($model_class).'Filter';
+@endphp
+
+@section('content-alert')
+    <div class="row">
+        <div class="{{ !empty($col_class) ? $col_class : 'col-md-8 col-md-offset-2 offset-md-2' }}">
+            @if (session('status'))
+                @component(config('generator.view_component').'components.alert')
+                    @slot('type', session('status-type'))
+                    @if (session('status') instanceof \Illuminate\Support\HtmlString)
+                        {!! session('status') !!}
+                    @else
+                        {{ session('status') }}
+                    @endif
+                @endcomponent
+            @endif
+        </div>
+    </div>
+@endsection
+
 @section('panel-tools')
     @if (Route::has($resource_route.'.create'))
         @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
@@ -15,12 +36,14 @@
                 <th class="text-center">
                     {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
                     @if(!isset($column['sortable']) || $column['sortable'])
-                        @if (array_search($column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',desc', explode('|', request()->sort)) === false)
-                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',desc' ])) }}">
-                                <i class="fa fa-sort text-muted"></i></a>
-                        @else
-                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.(isset($column['sort']) ? $column['sort'] : $column['column']).',asc' ])) }}">
-                                <i class="fa fa-sort text-muted"></i></a>
+                        @if(in_array($column['sort'] ?? $column['name'].'.'.($column['sort'] ?? $column['column']), (new $filter)->getSortables()))
+                            @if (array_search($column['name'].'.'.($column['sort'] ?? $column['column']).',desc', explode('|', request()->sort)) === false)
+                                <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.($column['sort'] ?? $column['column']).',desc' ])) }}">
+                                    <i class="fa fa-sort text-muted"></i></a>
+                            @else
+                                <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => $column['name'].'.'.($column['sort'] ?? $column['column']).',asc' ])) }}">
+                                    <i class="fa fa-sort text-muted"></i></a>
+                            @endif
                         @endif
                     @endif
                 </th>
@@ -28,18 +51,35 @@
                 <th class="text-center">
                     {{ !empty($column['label']) ? $column['label'] : ucwords(str_replace('_', ' ', snake_case($column['name']))) }}
                     @if(!isset($column['sortable']) || $column['sortable'])
-                        @if (array_search((isset($column['sort']) ? $column['sort'] : $column['name']).',desc', explode('|', request()->sort)) === false)
-                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => (isset($column['sort']) ? $column['sort'] : $column['name']).',desc' ])) }}">
-                                <i class="fa fa-sort text-muted"></i></a>
-                        @else
-                            <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => (isset($column['sort']) ? $column['sort'] : $column['name']).',asc' ])) }}">
-                                <i class="fa fa-sort text-muted"></i></a>
+                        @if(in_array($column['sort'] ?? $column['name'], (new $filter)->getSortables()))
+                            @if (array_search(($column['sort'] ?? $column['name']).',desc', explode('|', request()->sort)) === false)
+                                <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => ($column['sort'] ?? $column['name']).',desc' ])) }}">
+                                    <i class="fa fa-sort text-muted"></i></a>
+                            @else
+                                <a href="{{ route($resource_route.'.index', array_merge(request()->query(), [ 'sort' => ($column['sort'] ?? $column['name']).',asc' ])) }}">
+                                    <i class="fa fa-sort text-muted"></i></a>
+                            @endif
                         @endif
                     @endif
                 </th>
             @endif
         @endforeach
         <th class="text-center action" width="1px"></th>
+    </tr>
+@endsection
+
+@section('tbody-prepend')
+    <tr>
+        <td></td>
+        @foreach ($visibles[$model_variable] as $key => $column)
+            <td>
+                @component($column_filter_views ?? 'generator::components.models.index.column_filters')
+                    @slot('column', $column)
+                    @slot('model_class', $model_class ?? 'App\Model')
+                @endcomponent
+            </td>
+        @endforeach
+        <td></td>
     </tr>
 @endsection
 
@@ -112,7 +152,7 @@
 @endsection
 
 @section('panel-content')
-    <form class="form" method="GET">
+    <form id="search" class="form" method="GET">
         <div class="row" style="margin-bottom:15px">
             <div class="col-xs-6 col-6 col-md-4">
                 <div class="input-group">
@@ -146,14 +186,14 @@
     <div class="table-responsive">
         <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed table-sm">
             <thead class="text-nowrap">
-            @stack('thead-prepend')
+            @yield('thead-prepend')
             @yield('thead')
-            @stack('thead-append')
+            @yield('thead-append')
             </thead>
             <tbody>
-            @stack('tbody-prepend')
+            @yield('tbody-prepend')
             @yield('tbody')
-            @stack('tbody-append')
+            @yield('tbody-append')
             </tbody>
         </table>
     </div>
@@ -163,18 +203,9 @@
 @endsection
 
 @section('content')
+    @yield('content-alert')
     <div class="row">
         <div class="{{ !empty($col_class) ? $col_class : 'col-md-8 col-md-offset-2 offset-md-2' }}">
-            @if (session('status'))
-                @component(config('generator.view_component').'components.alert')
-                    @slot('type', session('status-type'))
-                    @if (session('status') instanceof \Illuminate\Support\HtmlString)
-                        {!! session('status') !!}
-                    @else
-                        {{ session('status') }}
-                    @endif
-                @endcomponent
-            @endif
             @component(config('generator.view_component').'components.panel')
                 @slot('title')
                     {{ __('List') }} {{ !empty($panel_title) ? $panel_title : ucwords(__($resource_route.'.plural')) }}

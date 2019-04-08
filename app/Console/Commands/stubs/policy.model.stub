@@ -1,0 +1,116 @@
+<?php
+
+namespace DummyNamespace;
+
+use NamespacedDummyUserModel;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+/**
+ * DummyModel Policy
+ */
+class ModelPolicy
+{
+    use HandlesAuthorization;
+
+    /**
+     * Determine whether the user can view list of model.
+     *
+     * @param DummyUser $user
+     * @param null $parent
+     * @return mixed
+     */
+    public function index(DummyUser $user, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('view', $parent);
+        return $allow;
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param DummyUser $user
+     * @param Model $model
+     * @param null $parent
+     * @return mixed
+     */
+    public function view(DummyUser $user, $model, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('view', $parent);
+        return $allow;
+    }
+
+    /**
+     * Determine whether the user can create model.
+     *
+     * @param DummyUser $user
+     * @param null $parent
+     * @return mixed
+     */
+    public function create(DummyUser $user, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('update', $parent);
+        return $allow;
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param DummyUser $user
+     * @param Model $model
+     * @param null $parent
+     * @return mixed
+     */
+    public function update(DummyUser $user, $model, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('update', $parent);
+        return $allow;
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param DummyUser $user
+     * @param Model $model
+     * @param null $parent
+     * @return mixed
+     */
+    public function delete(DummyUser $user, $model, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('update', $parent);
+        return $allow;
+    }
+
+    /**
+     * Determine whether the user can restore the contact.
+     *
+     * @param DummyUser $user
+     * @param Model $model
+     * @return mixed
+     */
+    public function restore(DummyUser $user, $model, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('update', $parent);
+        return $allow;
+    }
+
+    /**
+     * Determine whether the user can permanently delete the contact.
+     *
+     * @param DummyUser $user
+     * @param Model $model
+     * @return mixed
+     */
+    public function forceDelete(DummyUser $user, $model, $parent = null)
+    {
+        $allow = true;
+        if ($parent) $allow = $allow && $user->can('update', $parent);
+        return $allow;
+    }
+}

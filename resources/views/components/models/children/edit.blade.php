@@ -5,13 +5,13 @@
         </button>
     </div>
     @if (Route::has($resource_route.'.index'))
-        @if ((auth()->check() && auth()->user()->can('index', $model)) || auth()->guest())
+        @if ((auth()->check() && auth()->user()->can('index', [ $model, $parent ])) || auth()->guest())
             <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                class="btn btn-default btn-secondary">{{ __('List') }}</a>
         @endif
     @endif
     @if (Route::has($resource_route.'.destroy'))
-        @if ((auth()->check() && auth()->user()->can('delete', $model)) || auth()->guest())
+        @if ((auth()->check() && auth()->user()->can('delete', [ $model, $parent ])) || auth()->guest())
             <button type="submit" name="_method" value="DELETE" class="btn btn-danger"
                     onclick="return confirm('{{ __('Are you sure you want to :do?', [ 'do' => ucwords(__('Delete')) ]) }}');">
                 {{ __('Delete') }}

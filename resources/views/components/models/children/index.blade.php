@@ -1,6 +1,6 @@
 @section('parent-tools')
     @if (Route::has($resource_route.'.create'))
-        @if ((auth()->check() && auth()->user()->can('create', $model_class ?? 'App\Model')) || auth()->guest())
+        @if ((auth()->check() && auth()->user()->can('create', [ $model_class ?? 'App\Model', $parent ])) || auth()->guest())
             <a href="{{ route($resource_route.'.create', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? request()->redirect : null ]) }}"
                class="btn btn-default btn-secondary btn-sm btn-xs">{{ __('Create') }}</a>
         @endif
@@ -96,8 +96,8 @@
                     </td>
                 @endif
             @endforeach
-            <td class="action text-nowrap">
-                @component($action_buttons_view ?? 'generator::components.models.childs.index.action_buttons')
+            <td class="action text-nowrap text-right">
+                @component($action_buttons_view ?? 'generator::components.models.children.index.action_buttons')
                     @slot('resource_route', $resource_route)
                     @slot('parent', $parent)
                     @slot('model', $model)

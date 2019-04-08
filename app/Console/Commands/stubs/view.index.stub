@@ -1,0 +1,13 @@
+@extends('layouts.app')
+
+@section('content-title', ucwords(__('dummy_route.plural')))
+
+@include('models.index', [
+  'col_class' => 'col-md-8 col-md-offset-2 offset-md-2',
+  'panel_title' => ucwords(__('dummy_route.plural')),
+  'resource_route' => 'dummy_route',
+  'model_variable' => 'dummy_model_variable',
+  'model_class' => \DummyFullModelClass::class,
+  'models' => $dummy_model_plural_variable,
+  'action_buttons_view' => 'generator::components.models.index.action_buttons',
+])
