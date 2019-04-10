@@ -28,6 +28,40 @@
     @endif
 @endsection
 
+@section('panel-content-prepend')
+    <form id="search" class="form" method="GET">
+        <div class="row" style="margin-bottom:15px">
+            <div class="col-xs-6 col-6 col-md-4">
+                <div class="input-group">
+                    <span class="input-group-btn input-group-prepend">
+                        <button class="btn btn-default btn-secondary btn-sm" type="submit">
+                            &nbsp;<i class="fa fa-search"></i>&nbsp;
+                        </button>
+                    </span>
+                    <input type="text" name="search" placeholder="{{ __('Search') }}"
+                           class="input-sm form-control form-control-sm" value="{{ request()->search }}" autofocus>
+                </div>
+            </div>
+            <div class="col-xs-6 col-6 col-md-8">
+                <div class="text-right">
+                    <span>
+                        {{ ($models->count() ? 1 : 0) + ($models->perPage() * ($models->currentPage() - 1)) }} -
+                        {{ $models->count() + ($models->perPage() * ($models->currentPage() - 1)) }} {{ strtolower(__('Of')) }}
+                        {{ $models->total() }}
+                    </span>&nbsp;
+                    <div style="display: inline-block">
+                        <select class="form-control form-control-sm input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
+                            @foreach ([ 15, 50, 100, 250 ] as $value)
+                                <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+@endsection
+
 @section('thead')
     <tr>
         <th class="text-center" width="1px">No</th>
@@ -73,7 +107,7 @@
         <td></td>
         @foreach ($visibles[$model_variable] as $key => $column)
             <td>
-                @component($column_filter_views ?? 'generator::components.models.index.column_filters')
+                @component($column_filters_view ?? 'generator::components.models.index.column_filters')
                     @slot('column', $column)
                     @slot('model_class', $model_class ?? 'App\Model')
                 @endcomponent
@@ -152,37 +186,6 @@
 @endsection
 
 @section('panel-content')
-    <form id="search" class="form" method="GET">
-        <div class="row" style="margin-bottom:15px">
-            <div class="col-xs-6 col-6 col-md-4">
-                <div class="input-group">
-                    <span class="input-group-btn input-group-prepend">
-                        <button class="btn btn-default btn-secondary btn-sm" type="submit">
-                            &nbsp;<i class="fa fa-search"></i>&nbsp;
-                        </button>
-                    </span>
-                    <input type="text" name="search" placeholder="{{ __('Search') }}"
-                           class="input-sm form-control form-control-sm" value="{{ request()->search }}" autofocus>
-                </div>
-            </div>
-            <div class="col-xs-6 col-6 col-md-8">
-                <div class="text-right">
-                    <span>
-                        {{ ($models->count() ? 1 : 0) + ($models->perPage() * ($models->currentPage() - 1)) }} -
-                        {{ $models->count() + ($models->perPage() * ($models->currentPage() - 1)) }} {{ strtolower(__('Of')) }}
-                        {{ $models->total() }}
-                    </span>&nbsp;
-                    <div style="display: inline-block">
-                        <select class="form-control form-control-sm input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
-                            @foreach ([ 15, 50, 100, 250 ] as $value)
-                                <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
     <div class="table-responsive">
         <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed table-sm">
             <thead class="text-nowrap">
@@ -214,7 +217,9 @@
                     @yield('panel-tools')
                 @endslot
 
+                @yield('panel-content-prepend')
                 @yield('panel-content')
+                @yield('panel-content-append')
 
             @endcomponent
         </div>
