@@ -197,8 +197,19 @@
 
                     <div class="tab-pane active">
                         <div class="panel-body card-body">
+                            @hasSection('parent-tools')
+                            <div class="row" style="margin-bottom:5px">
+                                <div class="col-xs-12 col-12">
+                                    <div class="pull-right float-right">
+                                        @yield('parent-tools')
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
+                            @yield('parent-content-prepend')
                             @yield('parent-content')
+                            @yield('parent-content-append')
 
                         </div>
                     </div>

@@ -7,6 +7,40 @@
     @endif
 @endsection
 
+@section('parent-content-prepend')
+    <form class="form" method="GET">
+        <div class="row" style="margin-bottom:15px">
+            <div class="col-xs-6 col-6 col-md-4">
+                <div class="input-group">
+                    <span class="input-group-btn input-group-prepend">
+                        <button class="btn btn-sm btn-default btn-secondary" type="submit">
+                            &nbsp;<i class="fa fa-search"></i>&nbsp;
+                        </button>
+                    </span>
+                    <input type="text" name="search" placeholder="{{ __('Search') }}"
+                           class="input-sm form-control form-control-sm" value="{{ request()->search }}" autofocus>
+                </div>
+            </div>
+            <div class="col-xs-6 col-6 col-md-8">
+                <div class="text-right">
+                    <span>
+                        {{ ($models->count() ? 1 : 0) + ($models->perPage() * ($models->currentPage() - 1)) }} -
+                        {{ $models->count() + ($models->perPage() * ($models->currentPage() - 1)) }} {{ strtolower(__('Of')) }}
+                        {{ $models->total() }}
+                    </span>&nbsp;
+                    <div style="display: inline-block">
+                        <select class="form-control form-control-sm input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
+                            @foreach ([ 15, 50, 100, 250 ] as $value)
+                                <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+@endsection
+
 @section('thead')
     <tr>
         <th class="text-center" width="1px">No</th>
@@ -112,44 +146,6 @@
 @endsection
 
 @section('parent-content')
-    <div class="row" style="margin-bottom:5px">
-        <div class="col-xs-12 col-12">
-            <div class="pull-right float-right">
-                @yield('parent-tools')
-            </div>
-        </div>
-    </div>
-    <form class="form" method="GET">
-        <div class="row" style="margin-bottom:15px">
-            <div class="col-xs-6 col-6 col-md-4">
-                <div class="input-group">
-                    <span class="input-group-btn input-group-prepend">
-                        <button class="btn btn-sm btn-default btn-secondary" type="submit">
-                            &nbsp;<i class="fa fa-search"></i>&nbsp;
-                        </button>
-                    </span>
-                    <input type="text" name="search" placeholder="{{ __('Search') }}"
-                           class="input-sm form-control form-control-sm" value="{{ request()->search }}" autofocus>
-                </div>
-            </div>
-            <div class="col-xs-6 col-6 col-md-8">
-                <div class="text-right">
-                    <span>
-                        {{ ($models->count() ? 1 : 0) + ($models->perPage() * ($models->currentPage() - 1)) }} -
-                        {{ $models->count() + ($models->perPage() * ($models->currentPage() - 1)) }} {{ strtolower(__('Of')) }}
-                        {{ $models->total() }}
-                    </span>&nbsp;
-                    <div style="display: inline-block">
-                        <select class="form-control form-control-sm input-sm" name="per_page" id="per_page" onchange="this.form.submit()" title="per page">
-                            @foreach ([ 15, 50, 100, 250 ] as $value)
-                                <option value="{{ $value }}" {{ $value == $models->perPage() ? 'selected' : '' }}>{{ $value }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
     <div class="table-responsive">
         <table id="{{ str_plural($model_variable) }}" class="table table-striped table-hover table-condensed table-sm">
             <thead class="text-nowrap">
