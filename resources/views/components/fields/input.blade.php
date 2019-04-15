@@ -9,7 +9,7 @@
         <div class="form-check">
             <input id="{{ $field['name'] }}" type="checkbox" name="{{ $name }}" class="form-check-input i-checks {{ $errors->has($field['name']) ? 'is-invalid' : '' }}"
                    value="{{ !empty($field['value']) ? $field['value'] : 1 }}"
-                    {{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) == (!empty($field['value']) ? $field['value'] : 0) ? 'checked' : '' }}
+                    {{ old($field['name'], isset($model) ? data_get($model, $field['name']) : data_get(request(), $field['name'], isset($field['value']) ? $field['value'] : null)) == (!empty($field['value']) ? $field['value'] : 1) ? 'checked' : '' }}
                     {{ !empty($field['readonly']) ? 'readonly' : '' }}
                     {{ !empty($field['disabled']) ? 'disabled' : '' }}
                   title="{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}">
@@ -21,6 +21,7 @@
             @endif
         </div>
     @elseif (!empty($field['type']) && $field['type'] == 'radio')
+        <label class="control-label" for="{{ $field['name'] }}">{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}{{ !empty($field['required']) ? '*' : '' }}</label>
         @foreach ($field['options'] ?? [] as $key => $option)
             <div class="form-check">
                 <input id="{{ $field['name'] }}" type="radio" name="{{ $name }}" class="form-check-input i-checks {{ $errors->has($field['name']) ? 'is-invalid' : '' }}"
