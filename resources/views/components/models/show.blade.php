@@ -116,7 +116,7 @@
                     <tr>
                         <th>{{ !empty($relation['label']) ? $relation['label'] : ucwords(str_replace('_', ' ', snake_case($relation['name']))) }}</th>
                         <td>
-                            <a href="{{ Route::has($resource_route.'.'.$relation['name'].'.index') && (!auth()->check() || auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) ? route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) : '#' }}">
+                            <a href="{{ Route::has($resource_route.'.'.$relation['name'].'.index') && (!auth()->check() || auth()->user()->can('index', [ get_class($model->{$relation['name']}()->getRelated()), $model ])) ? route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) : '#' }}">
                                 {{ $model->{$relation['name']}->count() }}
                             </a>
                         </td>
@@ -163,7 +163,7 @@
                             @isset($relations[$model_variable][$relation_type])
                                 @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
                                     @if (Route::has($resource_route.'.'.$relation['name'].'.index'))
-                                        @if ((auth()->check() && auth()->user()->can('index', $model->{$relation['name']}()->getRelated())) || auth()->guest())
+                                        @if ((auth()->check() && auth()->user()->can('index', [ get_class($model->{$relation['name']}()->getRelated()), $model ])) || auth()->guest())
                                             <li role="presentation" style="display: inline-block; float: none"
                                                 class="nav-item {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
                                                 <a class="nav-link {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}" href="{{ route($resource_route.'.'.$relation['name'].'.index', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
@@ -180,7 +180,7 @@
                             @isset($relations[$model_variable][$relation_type])
                                 @foreach ($relations[$model_variable][$relation_type] as $key => $relation)
                                     @if (Route::has($resource_route.'.'.$relation['name'].'.show'))
-                                        @if ((auth()->check() && auth()->user()->can('view', $model)) || auth()->guest())
+                                        @if ((auth()->check() && auth()->user()->can('view', [ $model->{$relation['name']}, $model ])) || auth()->guest())
                                             <li role="presentation"
                                                 class="nav-item {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}">
                                                 <a class="nav-link {{ request()->routeIs($resource_route.'.'.$relation['name'].'.*') ? 'active' : '' }}" href="{{ route($resource_route.'.'.$relation['name'].'.show', [ $model->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"

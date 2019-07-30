@@ -1,12 +1,16 @@
 @php
     $names = explode('.', $field['name']);
-    $name = array_shift($names).(count($names) > 0 ? '['.collect($names)->map(function ($name) { return $name == '*' ? $name : ''; })->implode('][').']' : '');
+    $name = array_shift($names).(count($names) > 0 ? '['.collect($names)->map(function ($name) { return $name == '*' ? '' : $name; })->implode('][').']' : '');
 @endphp
 
 <div class="form-group{{ $errors->has($field['name']) ? ' has-error' : '' }}">
     <label class="control-label" for="{{ $field['name'] }}">{{ !empty($field['label']) ? $field['label'] : ucwords(str_replace('_', ' ', snake_case($field['name']))) }}{{ !empty($field['required']) ? '*' : '' }}</label>
-    <select id="{{ $field['name'] }}" class="form-control{{ $errors->has($field['name']) ? ' is-invalid' : '' }}" name="{{ $field['name'] }}"
+    @if (isset($field['multiple']) && $field['multiple'])
+        <br><small class="text-muted hidden-sm hidden-xs">Ctrl + Click for multiple select</small>
+    @endif
+    <select id="{{ $field['name'] }}" class="form-control{{ $errors->has($field['name']) ? ' is-invalid' : '' }}" name="{{ $name.(isset($field['multiple']) && $field['multiple'] ? '[]' : '') }}"
         title="{{ $field['name'] }}"
+        {{ !empty($field['multiple']) ? 'multiple' : '' }}
         {{ !empty($field['readonly']) ? 'readonly' : '' }}
         {{ !empty($field['disabled']) ? 'disabled' : '' }}
         {{ !empty($field['required']) ? 'required' : '' }}

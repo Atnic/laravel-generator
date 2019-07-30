@@ -5,7 +5,7 @@
         </button>
     </div>
     @if (Route::has($resource_route.'.index'))
-        @if ((auth()->check() && auth()->user()->can('index', [ $model, $parent ])) || auth()->guest())
+        @if ((auth()->check() && auth()->user()->can('index', [ get_class($model), $parent ])) || auth()->guest())
             <a href="{{ route($resource_route.'.index', [ $parent->getKey(), 'redirect' => request()->filled('redirect') ? url(request()->redirect) : null ]) }}"
                class="btn btn-default btn-secondary">{{ __('List') }}</a>
         @endif

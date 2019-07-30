@@ -66,9 +66,9 @@ class DummyClass extends TestCase
 
         $this->actingAs($user);
         $response = $this->post(dummy_action_store, factory(DummyModelClass::class)->make()->toArray());
-        if ($response->getStatusCode() == 422) {
+        if (($errors = session()->get('errors')) && !$errors->isEmpty()) {
             $this->expectOutputString('');
-            $this->setOutputCallback(function () use($response) { return json_encode(session()->all(), JSON_PRETTY_PRINT); });
+            $this->setOutputCallback(function () use($response, $errors) { return json_encode($errors->toArray(), JSON_PRETTY_PRINT); });
             return;
         }
         if ($response->exception) {
@@ -141,9 +141,9 @@ class DummyClass extends TestCase
         $dummy_model_variable = factory(DummyModelClass::class)->create();
 
         $response = $this->put(dummy_action_update, factory(DummyModelClass::class)->make()->toArray());
-        if ($response->getStatusCode() == 422) {
+        if (($errors = session()->get('errors')) && !$errors->isEmpty()) {
             $this->expectOutputString('');
-            $this->setOutputCallback(function () use($response) { return json_encode(session()->all(), JSON_PRETTY_PRINT); });
+            $this->setOutputCallback(function () use($response, $errors) { return json_encode($errors->toArray(), JSON_PRETTY_PRINT); });
             return;
         }
         if ($response->exception) {
