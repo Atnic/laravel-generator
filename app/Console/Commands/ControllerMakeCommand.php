@@ -357,8 +357,8 @@ class ControllerMakeCommand extends Command
                 array_pop($asExploded);
                 $as = implode('.', $asExploded);
                 if ($this->option('api'))
-                    $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
-                else $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\');'.PHP_EOL;
+                    $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \'api.'.$as.'\' ]);'.PHP_EOL;
+                else $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
             } else {
                 if ($this->option('api'))
                     $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \'api\' ]);'.PHP_EOL;

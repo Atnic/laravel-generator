@@ -179,10 +179,12 @@ class BaseFilter extends Filter
                                     $relation->getSecondKeyName() => $relation->getQualifiedSecondOwnerKeyName().' as '.$relation->getSecondKeyName()
                                 ])).') as '.$related->getTable()), $relation->getQualifiedFarKeyName(), $related->getTable().'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
                         }
+                        $query->orderByRaw("({$related->getTable()}.{$join[1]} IS NULL)");
                         $query->orderBy($related->getTable().'.'.$join[1], $sort['dir']);
                         $query->addSelect(DB::raw($related->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]));
                     }
                 } else {
+                    $query->orderByRaw("({$query->qualifyColumn($sort['column'])} IS NULL)");
                     $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
             }
