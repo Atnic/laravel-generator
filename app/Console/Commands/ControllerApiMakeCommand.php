@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
  */
 class ControllerApiMakeCommand extends Command
 {
+    protected $base_police = 'Policies';
     /**
      * The console command name.
      *
@@ -167,10 +168,10 @@ class ControllerApiMakeCommand extends Command
             }
         }
 
-        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', $parentModelClass).'Policy';
-        if (!$this->files->exists($this->getPath($policyClass))) {
+        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', class_basename($parentModelClass)).'Policy';
+        if (!$this->files->exists($this->getPath($this->base_police."\\".$policyClass))) {
             if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($parentModelClass)]);
+                $this->call('make:policy', ['name' => $policyClass, '--model' => $parentModelClass]);
             }
         }
 
@@ -179,6 +180,7 @@ class ControllerApiMakeCommand extends Command
             'ParentDummyModelClass' => class_basename($parentModelClass),
             'ParentDummyModelVariable' => lcfirst(class_basename($parentModelClass)),
             'parent_dummy_model_variable' => snake_case(class_basename($parentModelClass)),
+            'parent_dummy_model_plural_variable' => str_plural(snake_case(class_basename($parentModelClass))),
             'ParentDummyTitle' => ucwords(snake_case(class_basename($parentModelClass), ' ')),
         ];
     }
@@ -198,10 +200,10 @@ class ControllerApiMakeCommand extends Command
             }
         }
 
-        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', $modelClass).'Policy';
+        $policyClass = $this->rootNamespace().'Policies\\'.class_basename($modelClass).'Policy';
         if (!$this->files->exists($this->getPath($policyClass))) {
             if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($modelClass)]);
+                $this->call('make:policy', ['name' => $policyClass, '--model' => $modelClass]);
             }
         }
 
