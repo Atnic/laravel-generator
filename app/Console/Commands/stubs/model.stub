@@ -13,7 +13,7 @@ class DummyClass extends Model
     use Filterable;
 
     /** @var string Filter Class */
-    protected $filters = 'DummyNamespace\Filters\DummyClassFilter';
+    protected $filters = 'DummyRootNamespaceFilters\DummyClassFilter';
 
     /** @var string $table */
     //protected $table = '';
