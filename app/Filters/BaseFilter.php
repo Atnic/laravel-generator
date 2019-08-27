@@ -4,12 +4,14 @@ namespace Atnic\LaravelGenerator\Filters;
 
 use Atnic\LaravelGenerator\Database\Eloquent\Relations\BelongsToOne;
 use Atnic\LaravelGenerator\Database\Eloquent\Relations\BelongsToThrough;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Smartisan\Filters\Filter;
@@ -19,6 +21,9 @@ use Smartisan\Filters\Filter;
  */
 class BaseFilter extends Filter
 {
+    /** @var array Array Findable */
+    protected $findables = [];
+
     /** @var array Array Searchable */
     protected $searchables = [];
 
@@ -51,7 +56,9 @@ class BaseFilter extends Filter
 
     public function __call($name, $arguments)
     {
-        if (isset($this->searchables[$name]) || in_array($name, $this->searchables))
+        if (isset($this->findables[$name]) || in_array($name, $this->findables))
+            return $this->find("{$name}:{$arguments[0]}");
+        elseif (isset($this->searchables[$name]) || in_array($name, $this->searchables))
             return $this->search($arguments[0], isset($this->searchables[$name]) ? [ $name => $this->searchables[$name] ] : [ $name ]);
     }
 
@@ -63,13 +70,24 @@ class BaseFilter extends Filter
     protected function getFilters()
     {
         $filters = array_diff(get_class_methods($this), [
-            '__construct', '__call', 'apply', 'getFilters', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql'
+            '__construct', '__call', 'apply', 'getFilters', 'getFindables', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql'
         ]);
+        $filters = array_merge($filters, array_map(function ($findable, $key) {
+            return is_array($findable) ? $key : $findable;
+        }, $this->findables, array_keys($this->findables)));
         $filters = array_merge($filters, array_map(function ($searchable, $key) {
             return is_array($searchable) ? $key : $searchable;
         }, $this->searchables, array_keys($this->searchables)));
 
-        return array_only($this->request->query(), $filters);
+        return array_only($this->request->query(), array_unique($filters));
+    }
+
+    /**
+     * @return array
+     */
+    public function getFindables()
+    {
+        return $this->findables;
     }
 
     /**
@@ -86,6 +104,34 @@ class BaseFilter extends Filter
     public function getSortables()
     {
         return $this->sortables;
+    }
+
+    /**
+     * Sort
+     * @param  mixed $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function find($value)
+    {
+        $finded_columns = $value ? explode('|', $value) : [];
+        $finds = [];
+        foreach ($finded_columns as $key => $finded_column) {
+            $find = $finded_column ? explode(':', $finded_column) : [];
+            if (!is_array($find) || !in_array($find[0], $this->findables) || !$find[1]) continue;
+            array_push($finds, [
+                'column' => $find[0],
+                'values' => explode(',', $find[1])
+            ]);
+        }
+        $validator = validator(['finds' => $finds], [
+            'finds.*.column' => 'in:' . implode(',', $this->findables),
+            'finds.*.values' => 'array'
+        ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($finds) {
+            foreach ($finds as $find) {
+                $query->whereIn($query->qualifyColumn($find['column']), $find['values']);
+            };
+        });
     }
 
     /**
@@ -111,6 +157,8 @@ class BaseFilter extends Filter
      */
     protected function buildSearch($query, $searchables, $value)
     {
+        /** @var Connection $connection */
+        $connection = $query->getConnection();
         foreach ($searchables as $key => $searchable) {
             if (is_array($searchable)) {
                 $query->orWhereHas($key, function (Builder $query) use($searchable, $value) {
@@ -119,7 +167,7 @@ class BaseFilter extends Filter
                     });
                 });
             } else {
-                if ($query->getConnection()->getDriverName() == 'pgsql')
+                if ($connection->getDriverName() == 'pgsql')
                     $query->orWhere($query->qualifyColumn($searchable), 'ilike', '%'.str_replace(' ', '%', $value).'%');
                 else
                     $query->orWhere($query->qualifyColumn($searchable), 'like', '%'.str_replace(' ', '%', $value).'%');
@@ -305,6 +353,26 @@ class BaseFilter extends Filter
                 $query->select([ '*' => $query->qualifyColumn('*') ]);
                 $query->addSelect($appends);
             }
+        });
+    }
+
+    /**
+     * Select
+     * @param $values
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function select($values)
+    {
+        $selects = explode(',', $values);
+        $selects = collect($selects)->flatMap(function ($select) {
+            if (str_contains($select, '.')) return [ $select => $select ];
+            $column = $this->builder->qualifyColumn($select);
+            if ($column instanceof Expression) return [ $select => DB::raw("{$column} as $select") ];
+            else return [ $select => $column ];
+        })->toArray();
+        $validator = validator([ 'values' => $selects ], [ 'values' => 'array|min:1' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($selects) {
+            $query->select($selects);
         });
     }
 
