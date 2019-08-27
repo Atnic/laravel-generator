@@ -116,5 +116,4 @@ class PolicyMakeCommand extends Command
 
         return str_replace('DocDummyPluralModel', snake_case(str_plural($dummyModel), ' '), $stub);
     }
-    
 }
