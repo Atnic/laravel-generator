@@ -2,6 +2,7 @@
 
 namespace Atnic\LaravelGenerator\Traits;
 
+use Illuminate\Support\Str;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
 trait HasPhoneAttribute
@@ -16,7 +17,7 @@ trait HasPhoneAttribute
             $this->attributes['phone'] = $value;
         elseif ($value instanceof PhoneNumber)
             $this->attributes['phone'] = $value->serialize();
-        elseif (is_string($value) && str_contains($value, '+'))
+        elseif (is_string($value) && Str::contains($value, '+'))
             $this->attributes['phone'] = phone($value)->serialize();
         else {
             $this->attributes['phone'] = phone($value, $this->phone_country)->serialize();
@@ -30,8 +31,11 @@ trait HasPhoneAttribute
     public function getPhoneCountryAttribute($value = null)
     {
         if ($value) return $value;
-        $this->attributes['phone_country'] = $value ? : 'ID';
-        $this->syncOriginalAttribute('phone_country');
+        if ($this->isDirty([ 'phone_country' ])) $sync = false;
+        else $sync = true;
+        $this->attributes['phone_country'] = $value ? : ($this->default_phone_country ?? 'US');
+        if ($sync)
+            $this->syncOriginalAttribute('phone_country');
         return $this->attributes['phone_country'];
     }
 
@@ -41,10 +45,13 @@ trait HasPhoneAttribute
      */
     public function getPhoneAttribute($value = null)
     {
-        if ($value && str_contains($value, '+')) return phone($value)->serialize();
+        if ($value && Str::contains($value, '+')) return phone($value)->serialize();
         try {
+            if ($this->isDirty([ 'phone' ])) $sync = false;
+            else $sync = true;
             $this->attributes['phone'] = empty($value) ? null : phone($value, $this->phone_country)->serialize();
-            $this->syncOriginalAttribute('phone');
+            if ($sync)
+                $this->syncOriginalAttribute('phone');
             return $this->attributes['phone'];
         } catch (\Exception $exception) {
             return null;

@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Smartisan\Filters\Filter;
 
 /**
@@ -56,7 +58,11 @@ class BaseFilter extends Filter
 
     public function __call($name, $arguments)
     {
-        if (isset($this->findables[$name]) || in_array($name, $this->findables))
+        if (Str::contains($name, '__')) {
+            $operations = explode('__', $name, 2);
+            return $this->{$operations[1]}($operations[0], $arguments[0]);
+        }
+        elseif (isset($this->findables[$name]) || in_array($name, $this->findables))
             return $this->find("{$name}:{$arguments[0]}");
         elseif (isset($this->searchables[$name]) || in_array($name, $this->searchables))
             return $this->search($arguments[0], isset($this->searchables[$name]) ? [ $name => $this->searchables[$name] ] : [ $name ]);
@@ -70,7 +76,8 @@ class BaseFilter extends Filter
     protected function getFilters()
     {
         $filters = array_diff(get_class_methods($this), [
-            '__construct', '__call', 'apply', 'getFilters', 'getFindables', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql'
+            '__construct', '__call', 'apply', 'getFilters', 'getFindables', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql',
+            'eq', 'ne', 'lt', 'lte', 'gt', 'gte', 'between', 'in', 'null', 'not_null', 'begins_with', 'contains'
         ]);
         $filters = array_merge($filters, array_map(function ($findable, $key) {
             return is_array($findable) ? $key : $findable;
@@ -78,8 +85,11 @@ class BaseFilter extends Filter
         $filters = array_merge($filters, array_map(function ($searchable, $key) {
             return is_array($searchable) ? $key : $searchable;
         }, $this->searchables, array_keys($this->searchables)));
+        $filters = array_merge($filters, array_filter($this->request->keys(), function ($key) {
+            return Str::contains($key, '__');
+        }));
 
-        return array_only($this->request->query(), array_unique($filters));
+        return Arr::only($this->request->query(), array_unique($filters));
     }
 
     /**
@@ -116,7 +126,7 @@ class BaseFilter extends Filter
         $finded_columns = $value ? explode('|', $value) : [];
         $finds = [];
         foreach ($finded_columns as $key => $finded_column) {
-            $find = $finded_column ? explode(':', $finded_column) : [];
+            $find = $finded_column ? explode('=', $finded_column) : [];
             if (!is_array($find) || !in_array($find[0], $this->findables) || !$find[1]) continue;
             array_push($finds, [
                 'column' => $find[0],
@@ -309,8 +319,8 @@ class BaseFilter extends Filter
         $withs = explode(',', $value);
         $model = $this->builder->getModel();
         $withs = collect($withs)->filter(function ($with) use($model) {
-            if (str_contains($with, '.')) return ($model->{explode('.', $with)[0]}() instanceof Relation);
-            return ($model->{$with}() instanceof Relation);
+            if (Str::contains($with, '.')) return method_exists($model, explode('.', $with)[0]) && ($model->{explode('.', $with)[0]}() instanceof Relation);
+            return method_exists($model, $with) && $model->{$with}() instanceof Relation;
         })->toArray();
         return $this->builder->when(count($withs), function (Builder $query) use($withs) {
             $query->with($withs);
@@ -327,11 +337,11 @@ class BaseFilter extends Filter
         $with_counts = explode(',', $value);
         $model = $this->builder->getModel();
         $with_counts = collect($with_counts)->filter(function ($with_count) use($model) {
-            if (str_contains($with_count, '.')) return ($model->{explode('.', $with_count)[0]}() instanceof Relation);
-            return ($model->{$with_count}() instanceof Relation);
+            if (Str::contains($with_count, '.')) return method_exists($model, explode('.', $with_count)[0]) && ($model->{explode('.', $with_count)[0]}() instanceof Relation);
+            return method_exists($model, $with_count) && $model->{$with_count}() instanceof Relation;
         })->toArray();
         return $this->builder->when(count($with_counts), function (Builder $query) use($with_counts) {
-            if (is_null($query->getQuery()->columns)) $query->select([ '*' => $query->qualifyColumn('*') ]);
+            if (empty($query->getQuery()->columns)) $query->select([ '*' => $query->qualifyColumn('*') ]);
             $query->withCount($with_counts);
         });
     }
@@ -349,10 +359,8 @@ class BaseFilter extends Filter
             return [ $append => DB::raw("NULL as $append") ];
         })->toArray();
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($appends) {
-            if (is_null($query->getQuery()->columns)) {
-                $query->select([ '*' => $query->qualifyColumn('*') ]);
-                $query->addSelect($appends);
-            }
+            if (empty($query->getQuery()->columns)) $query->select([ '*' => $query->qualifyColumn('*') ]);
+            $query->addSelect($appends);
         });
     }
 
@@ -365,7 +373,7 @@ class BaseFilter extends Filter
     {
         $selects = explode(',', $values);
         $selects = collect($selects)->flatMap(function ($select) {
-            if (str_contains($select, '.')) return [ $select => $select ];
+            if (Str::contains($select, '.')) return [ $select => $select ];
             $column = $this->builder->qualifyColumn($select);
             if ($column instanceof Expression) return [ $select => DB::raw("{$column} as $select") ];
             else return [ $select => $column ];
@@ -386,8 +394,8 @@ class BaseFilter extends Filter
         $hases = explode(',', $values);
         $model = $this->builder->getModel();
         $hases = collect($hases)->filter(function ($has) use($model) {
-            if (str_contains($has, '.')) return ($model->{explode('.', $has)[0]}() instanceof Relation);
-            return ($model->{$has}() instanceof Relation);
+            if (Str::contains($has, '.')) return method_exists($model, explode('.', $has)[0]) && ($model->{explode('.', $has)[0]}() instanceof Relation);
+            return method_exists($model, $has) && $model->{$has}() instanceof Relation;
         })->toArray();
         $validator = validator([ 'values' => $hases ], [ 'values' => 'array|min:1' ]);
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($hases) {
@@ -408,8 +416,8 @@ class BaseFilter extends Filter
         $doesnt_haves = explode(',', $values);
         $model = $this->builder->getModel();
         $doesnt_haves = collect($doesnt_haves)->filter(function ($doesnt_have) use($model) {
-            if (str_contains($doesnt_have, '.')) return ($model->{explode('.', $doesnt_have)[0]}() instanceof Relation);
-            return ($model->{$doesnt_have}() instanceof Relation);
+            if (Str::contains($doesnt_have, '.')) return method_exists($model, explode('.', $doesnt_have)[0]) && ($model->{explode('.', $doesnt_have)[0]}() instanceof Relation);
+            return method_exists($model, $doesnt_have) && $model->{$doesnt_have}() instanceof Relation;
         })->toArray();
         $validator = validator([ 'values' => $doesnt_haves ], [ 'values' => 'array|min:1' ]);
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($doesnt_haves) {
@@ -417,5 +425,145 @@ class BaseFilter extends Filter
                 $query->doesntHave($doesnt_have);
             }
         });
+    }
+
+    /**
+     * @param $value
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function without_global_scopes($value)
+    {
+        $validator = validator([ 'value' => $value ], [ 'value' => 'boolean' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($value) {
+            if ($value) $query->withoutGlobalScopes()->byUser();
+        });
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function eq($column, $value)
+    {
+        return $this->builder->where($this->builder->qualifyColumn($column), '=', $value);
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function ne($column, $value)
+    {
+        return $this->builder->where($this->builder->qualifyColumn($column), '<>', $value);
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function lt($column, $value)
+    {
+        return $this->builder->where($this->builder->qualifyColumn($column), '<', $value);
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function lte($column, $value)
+    {
+        return $this->builder->where($this->builder->qualifyColumn($column), '<=', $value);
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function gt($column, $value)
+    {
+        return $this->builder->where($this->builder->qualifyColumn($column), '>', $value);
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function gte($column, $value)
+    {
+        return $this->builder->where($this->builder->qualifyColumn($column), '>=', $value);
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function between($column, $value)
+    {
+        return $this->builder->whereBetween($this->builder->qualifyColumn($column), explode(',', $value));
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function in($column, $value)
+    {
+        return $this->builder->whereIn($this->builder->qualifyColumn($column), explode(',', $value));
+    }
+
+    /**
+     * @param string $column
+     * @return Builder
+     */
+    public function null($column)
+    {
+        return $this->builder->whereNull($this->builder->qualifyColumn($column));
+    }
+
+    /**
+     * @param string $column
+     * @return Builder
+     */
+    public function not_null($column)
+    {
+        return $this->builder->whereNotNull($this->builder->qualifyColumn($column));
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function begins_with($column, $value)
+    {
+        /** @var Connection $connection */
+        $connection = $this->builder->getConnection();
+        if ($connection->getDriverName() == 'pgsql')
+            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value");
+        else
+            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value");
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function contains($column, $value)
+    {
+        /** @var Connection $connection */
+        $connection = $this->builder->getConnection();
+        if ($connection->getDriverName() == 'pgsql')
+            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value%");
+        else
+            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value%");
     }
 }

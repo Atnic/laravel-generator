@@ -19,11 +19,42 @@ class ModelMakeCommand extends Command
     {
         $this->createFilter();
 
+        if (!$this->alreadyExists('BaseModel')) {
+            $name = $this->qualifyClass('BaseModel');
+
+            $path = $this->getPath($name);
+
+            // Next, we will generate the path to the location where this class' file should get
+            // written. Then, we will build the class and make the proper replacements on the
+            // stub files so that it gets the correctly formatted namespace and class name.
+            $this->makeDirectory($path);
+
+            $this->files->put($path, $this->buildClass($name));
+        }
+
         if (parent::handle() === false) return false;
 
         $this->generateTranslation();
 
         return true;
+    }
+
+    /**
+     * Build the class with the given name.
+     *
+     * @param  string  $name
+     * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function buildClass($name)
+    {
+        if ($name == $this->qualifyClass('BaseModel')) {
+            $stub = $this->files->get($this->getStub($name));
+
+            return $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
+        }
+
+        return parent::buildClass($name);
     }
 
     /**
@@ -60,10 +91,12 @@ class ModelMakeCommand extends Command
     /**
      * Get the stub file for the generator.
      *
+     * @param string|null $name
      * @return string
      */
-    protected function getStub()
+    protected function getStub($name = null)
     {
+        if ($name == $this->qualifyClass('BaseModel')) return __DIR__.'/stubs/model.base.stub';
         if ($this->option('pivot')) {
             return __DIR__.'/stubs/pivot.model.stub';
         }
@@ -121,7 +154,7 @@ class ModelMakeCommand extends Command
     {
         $name = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
         $name = Str::replaceLast('Models\\', '', $name);
-        $name = str_plural(snake_case($name));
+        $name = Str::plural(Str::snake($name));
 
         return $name;
     }
@@ -137,8 +170,8 @@ class ModelMakeCommand extends Command
     protected function buildTranslation($name)
     {
         $replace = [
-            'dummy_model_plural_variable' => str_plural(snake_case(class_basename($name), ' ')),
-            'dummy_model_variable' => snake_case(class_basename($name), ' '),
+            'dummy_model_plural_variable' => Str::plural(Str::snake(class_basename($name), ' ')),
+            'dummy_model_variable' => Str::snake(class_basename($name), ' '),
         ];
 
         return str_replace(array_keys($replace), array_values($replace), $this->files->get($this->getTranslationStub()));
