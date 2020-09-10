@@ -87,9 +87,9 @@ class DummyClass extends Controller
     {
         $this->authorize('create', [ 'DummyFullModelClass', $parent_dummy_model_variable ]);
         $request->validate(self::rules($request, $parent_dummy_model_variable)['store']);
-        foreach (self::rules($request)['hasMany'] as $key => $rule)
+        foreach (self::rules($request, $parent_dummy_model_variable)['hasMany'] as $key => $rule)
             $request->validate(array_merge([ $key => 'array' ], $rule));
-        foreach (self::rules($request)['hasOne'] as $key => $rule)
+        foreach (self::rules($request, $parent_dummy_model_variable)['hasOne'] as $key => $rule)
             $request->validate(array_merge([ $key => 'array' ], $rule));
 
         $dummy_model_variable = new DummyModelClass;
@@ -107,7 +107,7 @@ class DummyClass extends Controller
 
         $deletedModels = [];
         $hasMany = [];
-        foreach (self::rules($request)['hasMany'] as $key => $rule) {
+        foreach (self::rules($request, $parent_dummy_model_variable)['hasMany'] as $key => $rule) {
             $hasMany[$key] = [];
             if ($request->exists($key)) {
                 /** @var Model $model */
@@ -127,9 +127,9 @@ class DummyClass extends Controller
                     foreach ($rule as $k => $value) {
                         $attribute = last(explode('.*.', $k));
                         $k = str_replace('*', $index, $k);
-                        if (str_contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
+                        if (Str::contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
                             if ($request->hasFile($k)) {
-                                $model->{$attribute} = $request->file($k)->storePublicly($key);
+                                $model->{$attribute} = $request->file($k)->store($key);
                             } elseif ($request->exists($k)) {
                                 $model->{$attribute} = $request->input($k);
                             }
@@ -142,7 +142,7 @@ class DummyClass extends Controller
             }
         }
         $hasOne = [];
-        foreach (self::rules($request)['hasOne'] as $key => $rule) {
+        foreach (self::rules($request, $parent_dummy_model_variable)['hasOne'] as $key => $rule) {
             if ($request->exists($key)) {
                 /** @var Model $model */
                 $model = $dummy_model_variable->{$key}()->getRelated();
@@ -155,9 +155,9 @@ class DummyClass extends Controller
                 }
                 foreach ($rule as $k => $value) {
                     $attribute = last(explode('.', $k));
-                    if (str_contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
+                    if (Str::contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
                         if ($request->hasFile($k)) {
-                            $model->{$attribute} = $request->file($k)->storePublicly($key);
+                            $model->{$attribute} = $request->file($k)->store($key);
                         } elseif ($request->exists($k)) {
                             $model->{$attribute} = $request->input($k);
                         }
@@ -173,12 +173,12 @@ class DummyClass extends Controller
             DB::beginTransaction();
             $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
             $dummy_model_variable->save();
-            foreach (self::rules($request)['hasMany'] as $key => $rule) {
+            foreach (self::rules($request, $parent_dummy_model_variable)['hasMany'] as $key => $rule) {
                 if (!$request->exists($key)) continue;
                 $models = $dummy_model_variable->{$key}()->saveMany($hasMany[$key]);
                 $dummy_model_variable->setRelation($key, new Collection($models));
             }
-            foreach (self::rules($request)['hasOne'] as $key => $rule) {
+            foreach (self::rules($request, $parent_dummy_model_variable)['hasOne'] as $key => $rule) {
                 if (!$request->exists($key) || empty($hasOne[$key])) continue;
                 $model = $dummy_model_variable->{$key}()->save($hasOne[$key]);
                 $dummy_model_variable->setRelation($key, $model);
@@ -224,9 +224,9 @@ class DummyClass extends Controller
 
         $this->authorize('update', [ $dummy_model_variable, $parent_dummy_model_variable ]);
         $request->validate(self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update']);
-        foreach (self::rules($request, $dummy_model_variable)['hasMany'] as $key => $rule)
+        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['hasMany'] as $key => $rule)
             $request->validate(array_merge([ $key => 'array' ], $rule));
-        foreach (self::rules($request, $dummy_model_variable)['hasOne'] as $key => $rule)
+        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['hasOne'] as $key => $rule)
             $request->validate(array_merge([ $key => 'array' ], $rule));
 
         foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['update'] as $key => $value) {
@@ -243,7 +243,7 @@ class DummyClass extends Controller
 
         $deletedModels = [];
         $hasMany = [];
-        foreach (self::rules($request)['hasMany'] as $key => $rule) {
+        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['hasMany'] as $key => $rule) {
             $hasMany[$key] = [];
             if ($request->exists($key)) {
                 /** @var Model $model */
@@ -263,9 +263,9 @@ class DummyClass extends Controller
                     foreach ($rule as $k => $value) {
                         $attribute = last(explode('.*.', $k));
                         $k = str_replace('*', $index, $k);
-                        if (str_contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
+                        if (Str::contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
                             if ($request->hasFile($k)) {
-                                $model->{$attribute} = $request->file($k)->storePublicly($key);
+                                $model->{$attribute} = $request->file($k)->store($key);
                             } elseif ($request->exists($k)) {
                                 $model->{$attribute} = $request->input($k);
                             }
@@ -278,7 +278,7 @@ class DummyClass extends Controller
             }
         }
         $hasOne = [];
-        foreach (self::rules($request)['hasOne'] as $key => $rule) {
+        foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['hasOne'] as $key => $rule) {
             if ($request->exists($key)) {
                 /** @var Model $model */
                 $model = $dummy_model_variable->{$key}()->getRelated();
@@ -291,9 +291,9 @@ class DummyClass extends Controller
                 }
                 foreach ($rule as $k => $value) {
                     $attribute = last(explode('.', $k));
-                    if (str_contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
+                    if (Str::contains($value, ['file', 'image', 'mimetypes', 'mimes'])) {
                         if ($request->hasFile($k)) {
-                            $model->{$attribute} = $request->file($k)->storePublicly($key);
+                            $model->{$attribute} = $request->file($k)->store($key);
                         } elseif ($request->exists($k)) {
                             $model->{$attribute} = $request->input($k);
                         }
@@ -309,12 +309,12 @@ class DummyClass extends Controller
             DB::beginTransaction();
             $dummy_model_variable->parent_dummy_model_variable()->associate($parent_dummy_model_variable);
             $dummy_model_variable->save();
-            foreach (self::rules($request)['hasMany'] as $key => $rule) {
+            foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['hasMany'] as $key => $rule) {
                 if (!$request->exists($key)) continue;
                 $models = $dummy_model_variable->{$key}()->saveMany($hasMany[$key]);
                 $dummy_model_variable->setRelation($key, new Collection($models));
             }
-            foreach (self::rules($request)['hasOne'] as $key => $rule) {
+            foreach (self::rules($request, $parent_dummy_model_variable, $dummy_model_variable)['hasOne'] as $key => $rule) {
                 if (!$request->exists($key) || empty($hasOne[$key])) continue;
                 $model = $dummy_model_variable->{$key}()->save($hasOne[$key]);
                 $dummy_model_variable->setRelation($key, $model);
