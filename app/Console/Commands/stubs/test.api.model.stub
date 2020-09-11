@@ -48,7 +48,9 @@ class DummyClass extends TestCase
         $response = $this->postJson(dummy_action_store, factory(DummyModelClass::class)->make()->toArray());
         if ($response->exception) {
             $this->expectOutputString('');
-            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            if ($response->status() == 422)
+                $this->setOutputCallback(function () use($response) { return json_encode(json_decode($response->content(), true)['errors'], JSON_PRETTY_PRINT); });
+            else $this->setOutputCallback(function () use($response) { return $response->exception; });
             return;
         }
         $response->assertSuccessful();
@@ -94,7 +96,9 @@ class DummyClass extends TestCase
         $response = $this->putJson(dummy_action_update, factory(DummyModelClass::class)->make()->toArray());
         if ($response->exception) {
             $this->expectOutputString('');
-            $this->setOutputCallback(function () use($response) { return $response->exception; });
+            if ($response->status() == 422)
+                $this->setOutputCallback(function () use($response) { return json_encode(json_decode($response->content(), true)['errors'], JSON_PRETTY_PRINT); });
+            else $this->setOutputCallback(function () use($response) { return $response->exception; });
             return;
         }
         $response->assertSuccessful();
