@@ -126,7 +126,7 @@ class BaseFilter extends Filter
         $finded_columns = $value ? explode('|', $value) : [];
         $finds = [];
         foreach ($finded_columns as $key => $finded_column) {
-            $find = $finded_column ? explode('=', $finded_column) : [];
+            $find = $finded_column ? explode(':', $finded_column) : [];
             if (!is_array($find) || !in_array($find[0], $this->findables) || !$find[1]) continue;
             array_push($finds, [
                 'column' => $find[0],
