@@ -12,6 +12,10 @@ This is example to make Foo module in this project
 ```bash
 php artisan make:controller --model=Foo FooController
 ```
+If create custom directory for model like this:
+```
+php artisan make:controller --model=App\\Models\\Foo FooController
+```
 Then do this steps:
 - [x] Check new migration in `database/migrations/`, add column needed.
 - [x] Check new factory in `database/factories/`, add atrribute needed.
@@ -30,12 +34,23 @@ Then do this steps:
 #Creating Nested Controller
 php artisan make:controller --parent=Foo --model=Bar Foo/BarController
 
+#Creating Nested Controller with custom directory for model
+php artisan make:controller --parent=App\\Models\\Foo --model=App\\Models\\Bar Foo/BarController
+
 #Create Single Action Controller
 php artisan make:controller DashboardController
 
 #Creating Api Controller
 php artisan make:controller-api --model=Foo FooController
+
+#Creating Api Controller with custom directory for model
+php artisan make:controller-api --model=App\\Models\\Foo FooController
+
+#Creating Nested Controller API
 php artisan make:controller-api --parent=Foo --model=Bar Foo/BarController
+
+#Creating Nested Controller API with custom directory for model
+php artisan make:controller-api --parent=App\\Models\\Foo --model=App\\Models\\Bar Foo/BarController
 ```
 
 All new/overrided command can be viewed in `vendor/atnic/laravel-generator/app/Console/Commands`.

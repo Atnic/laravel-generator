@@ -207,14 +207,14 @@ class ControllerMakeCommand extends Command
         $parentModelClass = $this->parseModel($this->option('parent'));
         if (!$this->files->exists($this->getPath($parentModelClass))) {
             if ($this->confirm("A {$parentModelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => str_replace($this->rootNamespace(), '', $parentModelClass), '-m' => true, '-f' => true]);
+                $this->call('make:model', ['name' => $parentModelClass, '-m' => true, '-f' => true]);
             }
         }
 
-        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', $parentModelClass).'Policy';
+        $policyClass = $this->rootNamespace().'Policies\\'.class_basename($parentModelClass).'Policy';
         if (!$this->files->exists($this->getPath($policyClass))) {
             if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($parentModelClass)]);
+                $this->call('make:policy', ['name' => $policyClass, '--model' => $parentModelClass]);
             }
         }
 
@@ -243,10 +243,10 @@ class ControllerMakeCommand extends Command
             }
         }
 
-        $policyClass = str_replace_first($this->rootNamespace(), $this->rootNamespace().'Policies\\', $modelClass).'Policy';
+        $policyClass = $this->rootNamespace().'Policies\\'.class_basename($modelClass).'Policy';
         if (!$this->files->exists($this->getPath($policyClass))) {
             if ($this->confirm("A {$policyClass} policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:policy', ['name' => $policyClass, '--model' => class_basename($modelClass)]);
+                $this->call('make:policy', ['name' => $policyClass, '--model' => $modelClass]);
             }
         }
 

@@ -2,18 +2,13 @@
 
 namespace DummyNamespace;
 
-use Smartisan\Filters\Traits\Filterable;
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * DummyClass Model
  */
-class DummyClass extends Model
+class DummyClass extends BaseModel
 {
-    use Filterable;
-
     /** @var string Filter Class */
-    protected $filters = 'DummyNamespace\Filters\DummyClassFilter';
+    protected $filters = 'DummyRootNamespaceFilters\DummyClassFilter';
 
     /** @var string $table */
     //protected $table = '';

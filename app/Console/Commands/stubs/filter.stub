@@ -8,6 +8,16 @@ namespace DummyNamespace;
 class DummyClass extends BaseFilter
 {
     /**
+     * Findable Field,
+     * Find exact value at column, ex: [ 'id', 'user_id' ]
+     * Example usage: &find=id:1,2,3,4 or id=1,2,3,4
+     * @var array
+     */
+    protected $findables = [
+        'id'
+    ];
+
+    /**
      * Searchable Field,
      * support relation also, ex: [ 'name', 'posts' => [ 'title' ] ]
      * @var array
