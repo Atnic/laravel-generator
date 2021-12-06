@@ -13,14 +13,20 @@ trait HasPhoneAttribute
     public function setPhoneAttribute($value = null)
     {
         $this->attributes['phone_country'] = $this->phone_country;
-        if (is_null($value))
-            $this->attributes['phone'] = $value;
-        elseif ($value instanceof PhoneNumber)
+        if (!$value) {
+            $this->attributes['phone'] = null;
+        }
+        elseif ($value instanceof PhoneNumber) {
             $this->attributes['phone'] = $value->serialize();
-        elseif (is_string($value) && Str::contains($value, '+'))
+            $this->attributes['phone_country'] = $value->getCountry();
+        }
+        elseif (is_string($value) && Str::contains($value, '+')) {
             $this->attributes['phone'] = phone($value)->serialize();
+            $this->attributes['phone_country'] = phone($value)->getCountry();
+        }
         else {
             $this->attributes['phone'] = phone($value, $this->phone_country)->serialize();
+            $this->attributes['phone_country'] = phone($value, $this->phone_country)->getCountry();
         }
     }
 

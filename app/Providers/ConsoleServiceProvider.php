@@ -4,27 +4,19 @@ namespace Atnic\LaravelGenerator\Providers;
 
 use Atnic\LaravelGenerator\Console\Commands\AppInstallCommand;
 use Atnic\LaravelGenerator\Console\Commands\AppUpdateCommand;
-use Atnic\LaravelGenerator\Console\Commands\ControllerApiMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\ControllerMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\FactoryMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\FilterMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\MigrationCreator;
 use Atnic\LaravelGenerator\Console\Commands\MigrateMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\ModelMakeCommand;
-use Atnic\LaravelGenerator\Console\Commands\TestApiMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\TestMakeCommand;
 use Atnic\LaravelGenerator\Console\Commands\PolicyMakeCommand;
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 
-class ConsoleServiceProvider extends ServiceProvider
+class ConsoleServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = true;
-
     /**
      * The commands to be registered.
      *
@@ -33,14 +25,12 @@ class ConsoleServiceProvider extends ServiceProvider
     protected $devCommands = [
         'AppInstall' => 'command.app.install',
         'AppUpdate' => 'command.app.update',
-        'ControllerApiMake' => 'command.controller.api.make',
         'ControllerMake' => 'command.controller.make',
         'FactoryMake' => 'command.factory.make',
         'FilterMake' => 'command.filter.make',
         'MigrateMake' => 'command.migrate.make',
         'ModelMake' => 'command.model.make',
         'PolicyMake' => 'command.policy.make',
-        'TestApiMake' => 'command.test.api.make',
         'TestMake' => 'command.test.make',
     ];
 
@@ -77,7 +67,7 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     protected function registerAppInstallCommand()
     {
-        $this->app->singleton('command.app.install', function ($app) {
+        $this->app->singleton('command.app.install', function () {
             return new AppInstallCommand();
         });
     }
@@ -89,20 +79,8 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     protected function registerAppUpdateCommand()
     {
-        $this->app->singleton('command.app.update', function ($app) {
+        $this->app->singleton('command.app.update', function () {
             return new AppUpdateCommand();
-        });
-    }
-
-    /**
-     * Register the command.
-     *
-     * @return void
-     */
-    protected function registerControllerApiMakeCommand()
-    {
-        $this->app->singleton('command.controller.api.make', function ($app) {
-            return new ControllerApiMakeCommand($app['files']);
         });
     }
 
@@ -150,7 +128,7 @@ class ConsoleServiceProvider extends ServiceProvider
     protected function registerCreator()
     {
         $this->app->singleton('migration.creator', function ($app) {
-            return new MigrationCreator($app['files']);
+            return new MigrationCreator($app['files'], $app->basePath('stubs'));
         });
     }
 
@@ -182,18 +160,6 @@ class ConsoleServiceProvider extends ServiceProvider
     {
         $this->app->singleton('command.model.make', function ($app) {
             return new ModelMakeCommand($app['files']);
-        });
-    }
-
-    /**
-     * Register the command.
-     *
-     * @return void
-     */
-    protected function registerTestApiMakeCommand()
-    {
-        $this->app->singleton('command.test.api.make', function ($app) {
-            return new TestApiMakeCommand($app['files']);
         });
     }
 

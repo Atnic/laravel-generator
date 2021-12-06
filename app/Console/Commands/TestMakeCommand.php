@@ -5,20 +5,10 @@ namespace Atnic\LaravelGenerator\Console\Commands;
 use Illuminate\Foundation\Console\TestMakeCommand as Command;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Symfony\Component\Console\Input\InputOption;
 
 class TestMakeCommand extends Command
 {
-    /**
-     * The console command name.
-     *
-     * @var string
-     */
-    protected $signature = 'make:test {name : The name of the class} '.
-        '{--unit : Create a unit test} '.
-        '{--parent= : Generate a nested resource controller test} '.
-        '{--model= : Generate a resource controller test for the given model} '.
-        '{--resource : Generate a resource controller test}';
-
     /**
      * Get the stub file for the generator.
      *
@@ -31,14 +21,33 @@ class TestMakeCommand extends Command
         }
 
         if ($this->option('parent')) {
-            return __DIR__.'/stubs/test.nested.stub';
+            $stub = '/stubs/test.nested.stub';
         } elseif ($this->option('model')) {
-            return __DIR__.'/stubs/test.model.stub';
+            $stub = '/stubs/test.model.stub';
         } elseif ($this->option('resource')) {
-            return __DIR__.'/stubs/test.stub';
+            $stub = '/stubs/test.stub';
+        } else {
+            $stub = '/stubs/test.plain.stub';
         }
 
-        return __DIR__.'/stubs/test.plain.stub';
+        if ($this->option('api')) {
+            $stub = str_replace('.stub', '.api.stub', $stub);
+        }
+
+        return $this->resolveStubPath($stub);
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param  string  $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__.$stub;
     }
 
     /**
@@ -130,16 +139,22 @@ class TestMakeCommand extends Command
         $parentModelClass = $this->parseModel($this->option('parent'));
         if (!$this->files->exists($this->getAppPath($parentModelClass))) {
             if ($this->confirm("A {$parentModelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => str_replace($this->laravel->getNamespace(), '', $parentModelClass), '-m' => true, '-f' => true]);
+                $this->call('make:model', ['name' => $parentModelClass, '-m' => true, '-f' => true]);
             }
         }
 
         return [
             'ParentDummyFullModelClass' => $parentModelClass,
+            '{{ namespacedParentModel }}' => $parentModelClass,
+            '{{namespacedParentModel}}' => $parentModelClass,
             'ParentDummyModelClass' => class_basename($parentModelClass),
+            '{{ parentModel }}' => class_basename($parentModelClass),
+            '{{parentModel}}' => class_basename($parentModelClass),
             'ParentDummyModelVariable' => lcfirst(class_basename($parentModelClass)),
-            'parent_dummy_model_variable' => snake_case(class_basename($parentModelClass)),
-            'ParentDummyTitle' => ucwords(snake_case(class_basename($parentModelClass), ' ')),
+            '{{ parentModelVariable }}' => lcfirst(class_basename($parentModelClass)),
+            '{{parentModelVariable}}' => lcfirst(class_basename($parentModelClass)),
+            'parent_dummy_model_variable' => Str::snake(class_basename($parentModelClass)),
+            'ParentDummyTitle' => ucwords(Str::snake(class_basename($parentModelClass), ' ')),
         ];
     }
 
@@ -154,18 +169,24 @@ class TestMakeCommand extends Command
         $modelClass = $this->parseModel($this->option('model'));
         if (!$this->files->exists($this->getAppPath($modelClass))) {
             if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => str_replace($this->laravel->getNamespace(), '', $modelClass), '-m' => true, '-f' => true]);
+                $this->call('make:model', ['name' => $modelClass, '-m' => true, '-f' => true]);
             }
         }
 
         return array_merge($replace, [
             'DummyFullModelClass' => $modelClass,
+            '{{ namespacedModel }}' => $modelClass,
+            '{{namespacedModel}}' => $modelClass,
             'DummyModelClass' => class_basename($modelClass),
+            '{{ model }}' => class_basename($modelClass),
+            '{{model}}' => class_basename($modelClass),
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-            'dummyModelVariable' => camel_case(class_basename($modelClass)),
-            'dummy_model_variable' => snake_case(class_basename($modelClass)),
-            'dummy_model_plural_variable' => str_plural(snake_case(class_basename($modelClass))),
-            'DummyTitle' => ucwords(snake_case(class_basename($modelClass), ' ')),
+            '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
+            '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
+            'dummyModelVariable' => Str::camel(class_basename($modelClass)),
+            'dummy_model_variable' => Str::snake(class_basename($modelClass)),
+            'dummy_model_plural_variable' => Str::plural(Str::snake(class_basename($modelClass))),
+            'DummyTitle' => ucwords(Str::snake(class_basename($modelClass), ' ')),
         ]);
     }
 
@@ -184,6 +205,7 @@ class TestMakeCommand extends Command
         $model = trim(str_replace('/', '\\', $model), '\\');
 
         if (! Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
+            $rootNamespace = is_dir(app_path('Models')) ? $rootNamespace.'Models\\' : $rootNamespace;
             $model = $rootNamespace.$model;
         }
 
@@ -202,14 +224,14 @@ class TestMakeCommand extends Command
         $name = Str::replaceLast('ControllerTest', '', $name);
         $names = explode('\\', $name);
         foreach ($names as $key => $value) {
-            $names[$key] = snake_case($value);
+            $names[$key] = Str::snake($value);
         }
         if ($this->option('parent') && count($names) >= 2) {
-            $model = str_plural(array_pop($names));
-            $parent = str_plural(array_pop($names));
+            $model = Str::plural(array_pop($names));
+            $parent = Str::plural(array_pop($names));
             array_push($names, $parent, $model);
         } elseif (($this->option('model') || $this->option('resource')) && count($names) >= 1) {
-            $model = str_plural(array_pop($names));
+            $model = Str::plural(array_pop($names));
             array_push($names, $model);
         }
         $name = implode('.', $names);
@@ -226,5 +248,20 @@ class TestMakeCommand extends Command
     protected function getRouteName($name)
     {
         return $this->getViewName($name);
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array_merge(parent::getOptions(), [
+            ['api', null, InputOption::VALUE_NONE, 'Generate an api controller test.'],
+            ['parent', null, InputOption::VALUE_OPTIONAL, 'Generate a nested resource controller test.'],
+            ['model', 'm', InputOption::VALUE_OPTIONAL, 'Generate a resource controller test for the given model.'],
+            ['resource', 'r', InputOption::VALUE_NONE, 'Generate a resource controller test.'],
+        ]);
     }
 }

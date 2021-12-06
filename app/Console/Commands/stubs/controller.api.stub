@@ -1,16 +1,12 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
+use {{ rootNamespace }}Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DummyRootNamespaceHttp\Controllers\Controller;
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-/**
- * DummyClass
- * @extends Controller
- */
-class DummyClass extends Controller
+class {{ class }} extends Controller
 {
     /**
      * Instantiate a new controller instance.
@@ -31,33 +27,33 @@ class DummyClass extends Controller
     {
         // TODO: Index
 
-        return Resource::collection(/* collection */);
+        return JsonResource::collection(/* collection */);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         // TODO: Store
 
-        return (new Resource(/* model */))->response()->setStatusCode(201);
+        return (new JsonResource(/* model */))->response()->setStatusCode(201);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return Resource
+     * @return JsonResource
      */
     public function show($id)
     {
         // TODO: Show
 
-        return new Resource(/* model */);
+        return new JsonResource(/* model */);
     }
 
     /**
@@ -65,25 +61,25 @@ class DummyClass extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return Resource
+     * @return JsonResource
      */
     public function update(Request $request, $id)
     {
         // TODO: Update
 
-        return new Resource(/* model */);
+        return new JsonResource(/* model */);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Resource
+     * @return JsonResource
      */
     public function destroy($id)
     {
         // TODO: Destroy
 
-        return new Resource(/* model */);
+        return new JsonResource(/* model */);
     }
 }

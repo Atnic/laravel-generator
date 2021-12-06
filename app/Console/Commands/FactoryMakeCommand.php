@@ -7,39 +7,15 @@ use Illuminate\Database\Console\Factories\FactoryMakeCommand as Command;
 class FactoryMakeCommand extends Command
 {
     /**
-     * Build the class with the given name.
+     * Resolve the fully-qualified path to the stub.
      *
-     * @param  string  $name
+     * @param  string  $stub
      * @return string
      */
-    protected function buildClass($name)
+    protected function resolveStubPath($stub)
     {
-        $namespaceModel = $this->option('model')
-            ? $this->qualifyClass($this->option('model'))
-            : trim($this->rootNamespace(), '\\').'\\Model';
-
-        $model = class_basename($namespaceModel);
-
-        return str_replace(
-            [
-                'NamespacedDummyModel',
-                'DummyModel',
-            ],
-            [
-                $namespaceModel,
-                $model,
-            ],
-            parent::buildClass($name)
-        );
-    }
-
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
-        return __DIR__.'/stubs/factory.stub';
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__.$stub;
     }
 }

@@ -4,11 +4,12 @@ namespace DummyNamespace;
 
 use DummyFullModelClass;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use DummyRootNamespaceHttp\Controllers\Controller;
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -69,7 +70,7 @@ class DummyClass extends Controller
             ->paginate()->appends(request()->query());
         $this->authorize('index', 'DummyFullModelClass');
 
-        return Resource::collection($dummy_model_plural_variable);
+        return JsonResource::collection($dummy_model_plural_variable);
     }
 
     /**
@@ -180,26 +181,26 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw new HttpException(500, $exception->getMessage(), $exception);
         }
 
-        return (new Resource($dummy_model_variable))->response()->setStatusCode(201);
+        return (new JsonResource($dummy_model_variable))->response()->setStatusCode(201);
     }
 
     /**
      * Display the specified resource.
      *
      * @param DummyModelClass $dummy_model_variable
-     * @return Resource
+     * @return JsonResource
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(DummyModelClass $dummy_model_variable)
     {
         $this->authorize('view', $dummy_model_variable);
 
-        return new Resource($dummy_model_variable);
+        return new JsonResource($dummy_model_variable);
     }
 
     /**
@@ -207,7 +208,7 @@ class DummyClass extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param DummyModelClass $dummy_model_variable
-     * @return Resource
+     * @return JsonResource
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, DummyModelClass $dummy_model_variable)
@@ -310,19 +311,19 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw new HttpException(500, $exception->getMessage(), $exception);
         }
 
-        return new Resource($dummy_model_variable);
+        return new JsonResource($dummy_model_variable);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param DummyModelClass $dummy_model_variable
-     * @return Resource
+     * @return JsonResource
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
@@ -331,6 +332,6 @@ class DummyClass extends Controller
         $this->authorize('delete', $dummy_model_variable);
         $dummy_model_variable->delete();
 
-        return new Resource($dummy_model_variable);
+        return new JsonResource($dummy_model_variable);
     }
 }

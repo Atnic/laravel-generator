@@ -3,8 +3,8 @@
 namespace Atnic\LaravelGenerator\Console\Commands;
 
 use Illuminate\Routing\Console\ControllerMakeCommand as Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Controller Make Command
@@ -20,23 +20,40 @@ class ControllerMakeCommand extends Command
     {
         $stub = null;
 
-        if ($this->option('parent')) {
+        if ($type = $this->option('type')) {
+            $stub = "/stubs/controller.{$type}.stub";
+        } elseif ($this->option('parent')) {
             $stub = '/stubs/controller.nested.stub';
         } elseif ($this->option('model')) {
             $stub = '/stubs/controller.model.stub';
+        } elseif ($this->option('invokable')) {
+            $stub = '/stubs/controller.invokable.stub';
         } elseif ($this->option('resource')) {
             $stub = '/stubs/controller.stub';
         }
 
         if ($this->option('api') && is_null($stub)) {
-            $stub = '/stubs/controller.api.stub';
-        } elseif ($this->option('api') && ! is_null($stub)) {
+            $stub = '/stubs/controller.plain.api.stub';
+        } elseif ($this->option('api') && ! is_null($stub) && ! $this->option('invokable')) {
             $stub = str_replace('.stub', '.api.stub', $stub);
         }
 
         $stub = $stub ?? '/stubs/controller.plain.stub';
 
-        return __DIR__.$stub;
+        return $this->resolveStubPath($stub);
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param  string  $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__.$stub;
     }
 
     /**
@@ -115,7 +132,7 @@ class ControllerMakeCommand extends Command
     protected function getTranslationName($name)
     {
         $name = $this->getRouteName($name);
-        $name = array_last(explode('.', $name));
+        $name = Arr::last(explode('.', $name));
 
         return $name;
     }
@@ -130,12 +147,12 @@ class ControllerMakeCommand extends Command
     protected function buildTranslation($name)
     {
         $name = $this->getRouteName($name);
-        $name = array_last(explode('.', $name));
+        $name = Arr::last(explode('.', $name));
         $name = str_replace('_', ' ', $name);
 
         $replace = [
             'dummy_model_plural_variable' => $name,
-            'dummy_model_variable' => str_singular($name),
+            'dummy_model_variable' => Str::singular($name),
         ];
 
         return str_replace(array_keys($replace), array_values($replace), $this->files->get($this->getTranslationStub()));
@@ -205,6 +222,7 @@ class ControllerMakeCommand extends Command
     protected function buildParentReplacements()
     {
         $parentModelClass = $this->parseModel($this->option('parent'));
+
         if (!$this->files->exists($this->getPath($parentModelClass))) {
             if ($this->confirm("A {$parentModelClass} model does not exist. Do you want to generate it?", true)) {
                 $this->call('make:model', ['name' => $parentModelClass, '-m' => true, '-f' => true]);
@@ -220,11 +238,17 @@ class ControllerMakeCommand extends Command
 
         return [
             'ParentDummyFullModelClass' => $parentModelClass,
+            '{{ namespacedParentModel }}' => $parentModelClass,
+            '{{namespacedParentModel}}' => $parentModelClass,
             'ParentDummyModelClass' => class_basename($parentModelClass),
+            '{{ parentModel }}' => class_basename($parentModelClass),
+            '{{parentModel}}' => class_basename($parentModelClass),
             'ParentDummyModelVariable' => lcfirst(class_basename($parentModelClass)),
-            'parent_dummy_model_variable' => snake_case(class_basename($parentModelClass)),
-            'parent_dummy_model_plural_variable' => str_plural(snake_case(class_basename($parentModelClass))),
-            'ParentDummyTitle' => ucwords(snake_case(class_basename($parentModelClass), ' ')),
+            '{{ parentModelVariable }}' => lcfirst(class_basename($parentModelClass)),
+            '{{parentModelVariable}}' => lcfirst(class_basename($parentModelClass)),
+            'parent_dummy_model_variable' => Str::snake(class_basename($parentModelClass)),
+            'parent_dummy_model_plural_variable' => Str::plural(Str::snake(class_basename($parentModelClass))),
+            'ParentDummyTitle' => ucwords(Str::snake(class_basename($parentModelClass), ' ')),
         ];
     }
 
@@ -237,9 +261,10 @@ class ControllerMakeCommand extends Command
     protected function buildModelReplacements(array $replace)
     {
         $modelClass = $this->parseModel($this->option('model'));
+
         if (!$this->files->exists($this->getPath($modelClass))) {
             if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
-                $this->call('make:model', ['name' => str_replace($this->rootNamespace(), '', $modelClass), '-m' => true, '-f' => true]);
+                $this->call('make:model', ['name' => $modelClass, '-m' => true, '-f' => true]);
             }
         }
 
@@ -250,14 +275,22 @@ class ControllerMakeCommand extends Command
             }
         }
 
+        $replace = $this->buildFormRequestReplacements($replace, $modelClass);
+
         return array_merge($replace, [
             'DummyFullModelClass' => $modelClass,
+            '{{ namespacedModel }}' => $modelClass,
+            '{{namespacedModel}}' => $modelClass,
             'DummyModelClass' => class_basename($modelClass),
+            '{{ model }}' => class_basename($modelClass),
+            '{{model}}' => class_basename($modelClass),
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-            'dummyModelVariable' => camel_case(class_basename($modelClass)),
-            'dummy_model_variable' => snake_case(class_basename($modelClass)),
-            'dummy_model_plural_variable' => str_plural(snake_case(class_basename($modelClass))),
-            'DummyTitle' => ucwords(snake_case(class_basename($modelClass), ' ')),
+            '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
+            '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
+            'dummyModelVariable' => Str::camel(class_basename($modelClass)),
+            'dummy_model_variable' => Str::snake(class_basename($modelClass)),
+            'dummy_model_plural_variable' => Str::plural(Str::snake(class_basename($modelClass))),
+            'DummyTitle' => ucwords(Str::snake(class_basename($modelClass), ' ')),
         ]);
     }
 
@@ -289,8 +322,9 @@ class ControllerMakeCommand extends Command
         $name = $this->qualifyClass($this->getNameInput());
         $controllerClass = Str::replaceFirst($this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\\', '', $name);
 
-        $this->call($this->option('api') ? 'make:test-api' : 'make:test', [
-            'name' => ($this->option('api') ? str_replace("Api\\", "", $controllerClass) : $controllerClass).'Test',
+        $this->call('make:test', [
+            'name' => $controllerClass.'Test',
+            '--api' => $this->option('api') ? : false,
             '--parent' => $this->option('parent') ? : null,
             '--model' => $this->option('model') ? : null,
             '--resource' => $this->option('resource') ? : false,
@@ -312,10 +346,10 @@ class ControllerMakeCommand extends Command
             }
             $path = $this->getViewPath($name);
 
-            if (!$this->files->exists(str_replace_last('.blade.php', '/index.blade.php', $path))) {
+            if (!$this->files->exists(Str::replaceLast('.blade.php', '/index.blade.php', $path))) {
                 foreach ([ 'index', 'create', 'show', 'edit' ] as $key => $method) {
-                    $this->makeDirectory(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path));
-                    $this->files->put(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path), $this->buildView($name, $method));
+                    $this->makeDirectory(Str::replaceLast('.blade.php', '/' . $method . '.blade.php', $path));
+                    $this->files->put(Str::replaceLast('.blade.php', '/' . $method . '.blade.php', $path), $this->buildView($name, $method));
                 }
             }
         }
@@ -325,8 +359,8 @@ class ControllerMakeCommand extends Command
 
         if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
             foreach ([ 'index', 'create', 'show', 'edit' ] as $key => $method) {
-                $this->makeDirectory(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path));
-                $this->files->put(str_replace_last('.blade.php', '/' . $method . '.blade.php', $path), $this->buildView($name, $method));
+                $this->makeDirectory(Str::replaceLast('.blade.php', '/' . $method . '.blade.php', $path));
+                $this->files->put(Str::replaceLast('.blade.php', '/' . $method . '.blade.php', $path), $this->buildView($name, $method));
             }
         } else {
             $this->makeDirectory($path);
@@ -349,7 +383,7 @@ class ControllerMakeCommand extends Command
         $routeName = $this->getRouteName($name);
         $routePath = $this->getRoutePath($name);
 
-        $routeDefinition = 'Route::get(\''.$routePath.'\', \''.$nameWithoutNamespace.'\')->name(\''.$routeName.'\');'.PHP_EOL;
+        $routeDefinition = 'Route::get(\''.$routePath.'\', \''.$name.'\')->name(\''.$routeName.'\');'.PHP_EOL;
 
         if ($this->option('parent') || $this->option('model') || $this->option('resource')) {
             $asExploded = explode('/', $routePath);
@@ -357,12 +391,12 @@ class ControllerMakeCommand extends Command
                 array_pop($asExploded);
                 $as = implode('.', $asExploded);
                 if ($this->option('api'))
-                    $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \'api.'.$as.'\' ]);'.PHP_EOL;
-                else $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
+                    $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$name.'\', [ \'as\' => \'api.'.$as.'\' ]);'.PHP_EOL;
+                else $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$name.'\', [ \'as\' => \''.$as.'\' ]);'.PHP_EOL;
             } else {
                 if ($this->option('api'))
-                    $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\', [ \'as\' => \'api\' ]);'.PHP_EOL;
-                else $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$nameWithoutNamespace.'\');'.PHP_EOL;
+                    $routeDefinition = 'Route::apiResource(\''.$routePath.'\', \''.$name.'\', [ \'as\' => \'api\' ]);'.PHP_EOL;
+                else $routeDefinition = 'Route::resource(\''.$routePath.'\', \''.$name.'\');'.PHP_EOL;
             }
         }
 
@@ -383,14 +417,14 @@ class ControllerMakeCommand extends Command
         $name = Str::replaceLast('Controller', '', $name);
         $names = explode('\\', $name);
         foreach ($names as $key => $value) {
-            $names[$key] = snake_case($value);
+            $names[$key] = Str::snake($value);
         }
         if ($this->option('parent') && count($names) >= 2) {
-            $model = str_plural(array_pop($names));
-            $parent = str_plural(array_pop($names));
+            $model = Str::plural(array_pop($names));
+            $parent = Str::plural(array_pop($names));
             array_push($names, $parent, $model);
         } elseif (($this->option('model') || $this->option('resource')) && count($names) >= 1) {
-            $model = str_plural(array_pop($names));
+            $model = Str::plural(array_pop($names));
             array_push($names, $model);
         }
         $name = implode('.', $names);
@@ -410,11 +444,11 @@ class ControllerMakeCommand extends Command
         $name = Str::replaceLast('Controller', '', $name);
         $names = explode('\\', $name);
         foreach ($names as $key => $value) {
-            $names[$key] = snake_case($value);
+            $names[$key] = Str::snake($value);
         }
         if (count($names) >= 2) {
             array_pop($names);
-            $parent = str_plural(array_pop($names));
+            $parent = Str::plural(array_pop($names));
             array_push($names, $parent);
         }
         $name = implode('.', $names);
@@ -468,25 +502,12 @@ class ControllerMakeCommand extends Command
         $routeName = $this->getRouteName($name);
         $routeNameExploded = explode('.', $routeName);
         $routePath = str_replace('.', '/', $this->getViewName($routeName));
+        if ($this->option('api') && Str::startsWith($routePath, 'api/')) {
+            $routePath = Str::replaceFirst('api/', '', $routePath);
+        }
         if ($this->option('parent') && count($routeNameExploded) >= 2) {
-            $routePath = str_replace_last('/', '.', $routePath);
+            $routePath = Str::replaceLast('/', '.', $routePath);
         }
         return $routePath;
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['model', 'm', InputOption::VALUE_OPTIONAL, 'Generate a resource controller for the given model.'],
-            ['resource', 'r', InputOption::VALUE_NONE, 'Generate a resource controller class.'],
-            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate a single method, invokable controller class.'],
-            ['parent', 'p', InputOption::VALUE_OPTIONAL, 'Generate a nested resource controller class.'],
-            ['api', null, InputOption::VALUE_NONE, 'Exclude the create and edit methods from the controller.'],
-        ];
     }
 }

@@ -16,6 +16,6 @@ class MigrationCreator extends BaseMigrationCreator
      */
     public function stubPath()
     {
-        return __DIR__.'/stubs/migration';
+        return __DIR__.'/stubs';
     }
 }

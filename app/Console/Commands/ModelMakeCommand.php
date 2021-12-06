@@ -40,6 +40,21 @@ class ModelMakeCommand extends Command
     }
 
     /**
+     * Create a model factory for the model.
+     *
+     * @return void
+     */
+    protected function createFactory()
+    {
+        $factory = class_basename($this->argument('name'));
+
+        $this->call('make:factory', [
+            'name' => "{$factory}Factory",
+            '--model' => $this->qualifyClass($this->getNameInput()),
+        ]);
+    }
+
+    /**
      * Build the class with the given name.
      *
      * @param  string  $name
@@ -72,23 +87,6 @@ class ModelMakeCommand extends Command
     }
 
     /**
-     * Create a migration file for the model.
-     *
-     * @return void
-     */
-    protected function createMigration()
-    {
-        $table = $this->option('pivot') ?
-            Str::snake(class_basename($this->argument('name'))) :
-            Str::plural(Str::snake(class_basename($this->argument('name'))));
-
-        $this->call('make:migration', [
-            'name' => "create_{$table}_table",
-            '--create' => $table,
-        ]);
-    }
-
-    /**
      * Get the stub file for the generator.
      *
      * @param string|null $name
@@ -96,12 +94,22 @@ class ModelMakeCommand extends Command
      */
     protected function getStub($name = null)
     {
-        if ($name == $this->qualifyClass('BaseModel')) return __DIR__.'/stubs/model.base.stub';
-        if ($this->option('pivot')) {
-            return __DIR__.'/stubs/pivot.model.stub';
-        }
+        if ($name == $this->qualifyClass('BaseModel')) return $this->resolveStubPath('/stubs/model.base.stub');
 
-        return __DIR__.'/stubs/model.stub';
+        return parent::getStub();
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param  string  $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__.$stub;
     }
 
     /**
@@ -111,7 +119,7 @@ class ModelMakeCommand extends Command
      */
     protected function getTranslationStub()
     {
-        return __DIR__.'/stubs/translation.stub';
+        return $this->resolveStubPath('/stubs/translation.stub');
     }
 
     /**

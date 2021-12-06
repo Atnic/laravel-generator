@@ -51,9 +51,9 @@ class AppInstallCommand extends Command
             $this->info('Storage Link...');
             $this->call('storage:link');
         }
-        if (!file_exists(app_path('Http/Controllers/HomeController.php')) && $this->confirm('Do you want to run make:auth?')) {
-            $this->info('Make Auth...');
-            $this->call('make:auth');
+        if (!file_exists(app_path('Http/Controllers/Auth/AuthenticatedSessionController.php')) && $this->confirm('Do you want to run breeze:install?')) {
+            $this->info('Breeze Install...');
+            $this->call('breeze:install');
         }
         $this->info('Migrate and Seeding...');
         if ($this->option('migrate-fresh')) {

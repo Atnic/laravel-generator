@@ -3,13 +3,13 @@
 namespace Atnic\LaravelGenerator\Console\Commands;
 
 use Illuminate\Foundation\Console\PolicyMakeCommand as Command;
+use Illuminate\Support\Str;
 
 /**
  * Policy Make Command
  */
 class PolicyMakeCommand extends Command
 {
-
     /**
      * Execute the console command.
      *
@@ -66,11 +66,24 @@ class PolicyMakeCommand extends Command
      */
     protected function getStub($name = null)
     {
-        if ($name == $this->qualifyClass('ModelPolicy')) return __DIR__.'/stubs/policy.model.stub';
+        if ($name == $this->qualifyClass('ModelPolicy')) return $this->resolveStubPath('/stubs/policy.model.stub');
 
         return $this->option('model')
-            ? __DIR__.'/stubs/policy.stub'
+            ? $this->resolveStubPath('/stubs/policy.stub')
             : parent::getStub();
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param  string  $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__.$stub;
     }
 
     /**
@@ -84,13 +97,13 @@ class PolicyMakeCommand extends Command
     {
         $model = str_replace('/', '\\', $model);
 
-        if (starts_with($model, $this->laravel->getNamespace())) {
+        if (Str::startsWith($model, $this->laravel->getNamespace())) {
             $namespaceModel = $model;
         } else {
             $namespaceModel = $this->laravel->getNamespace() . $model;
         }
 
-        if (starts_with($model, '\\')) {
+        if (Str::startsWith($model, '\\')) {
             $stub = str_replace('NamespacedDummyModel', trim($model, '\\'), $stub);
         } else {
             $stub = str_replace('NamespacedDummyModel', $namespaceModel, $stub);
@@ -104,16 +117,16 @@ class PolicyMakeCommand extends Command
 
         $dummyUser = class_basename($this->userProviderModel());
 
-        $dummyModel = camel_case($model) === 'user' ? 'model' : $model;
+        $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
 
-        $stub = str_replace('DocDummyModel', snake_case($dummyModel, ' '), $stub);
+        $stub = str_replace('DocDummyModel', Str::snake($dummyModel, ' '), $stub);
 
         $stub = str_replace('DummyModel', $model, $stub);
 
-        $stub = str_replace('dummyModel', camel_case($dummyModel), $stub);
+        $stub = str_replace('dummyModel', Str::camel($dummyModel), $stub);
 
         $stub = str_replace('DummyUser', $dummyUser, $stub);
 
-        return str_replace('DocDummyPluralModel', snake_case(str_plural($dummyModel), ' '), $stub);
+        return str_replace('DocDummyPluralModel', Str::snake(Str::plural($dummyModel), ' '), $stub);
     }
 }

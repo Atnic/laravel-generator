@@ -4,21 +4,20 @@
     "keywords": ["generator", "package", "laravel"],
     "license": "MIT",
     "type": "package",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../eloquent-filters"
+        }
+    ],
     "require": {
-        "php": ">=7.0",
-        "atnic/eloquent-filters": "^2.2",
-        "laravel/framework": "^5.5|^5.6|^5.7|^5.8",
-        "laravel/passport": ">=4.0",
-        "propaganistas/laravel-intl": ">=2.1",
+        "php": "^7.3|^8.0",
+        "atnic/eloquent-filters": "dev-develop",
+        "laravel/breeze": "^1.4",
+        "laravel/framework": "^8.65",
+        "laravel/passport": "^10.2",
+        "lozhkindm/laravel-intl": "^3.2",
         "propaganistas/laravel-phone": "^4.2"
-    },
-    "require-dev": {
-        "fideloper/proxy": "~3.3",
-        "filp/whoops": "~2.0",
-        "fzaninotto/faker": "~1.4",
-        "laravel/tinker": "~1.0",
-        "mockery/mockery": "~1.0",
-        "phpunit/phpunit": "^7.0"
     },
     "autoload": {
         "psr-4": {

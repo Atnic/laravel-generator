@@ -3,6 +3,7 @@
 namespace DummyNamespace;
 
 use Smartisan\Filters\Traits\Filterable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Atnic\LaravelGenerator\Traits\HasExtendedAttributes;
 use Atnic\LaravelGenerator\Traits\ResolveRouteBindingWithFilter;
@@ -13,5 +14,5 @@ use Atnic\LaravelGenerator\Traits\SetterGetterExtendedAttribute;
  */
 class BaseModel extends Model
 {
-    use Filterable, HasExtendedAttributes, ResolveRouteBindingWithFilter, SetterGetterExtendedAttribute;
+    use HasFactory, Filterable, HasExtendedAttributes, ResolveRouteBindingWithFilter, SetterGetterExtendedAttribute;
 }

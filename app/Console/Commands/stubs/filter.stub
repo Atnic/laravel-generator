@@ -45,7 +45,7 @@ class DummyClass extends BaseFilter
     protected $default_sort = null;
 
     /**
-     * Default per page, null if use model per page default, ex: 20
+     * Default per page, null if using default per page of model, ex: 20
      * @var int|null
      */
     protected $default_per_page = null;
