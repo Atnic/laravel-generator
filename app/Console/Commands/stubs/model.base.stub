@@ -1,6 +1,6 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 use Smartisan\Filters\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +10,7 @@ use Atnic\LaravelGenerator\Traits\ResolveRouteBindingWithFilter;
 use Atnic\LaravelGenerator\Traits\SetterGetterExtendedAttribute;
 
 /**
- * DummyClass Model
+ * BaseModel Model
  */
 class BaseModel extends Model
 {

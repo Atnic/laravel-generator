@@ -1,14 +1,14 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
-use NamespacedDummyUserModel;
-use NamespacedDummyModel;
+use {{ namespacedModel }};
+use {{ namespacedUserModel }};
 
 /**
- * DummyModel Policy
+ * {{ class }} Policy
  */
-class DummyClass extends ModelPolicy
+class {{ class }} extends ModelPolicy
 {
-    
+
 }

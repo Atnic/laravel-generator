@@ -3,7 +3,7 @@
 @include('models.children.index', [
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
-  'model_class' => \DummyFullModelClass::class,
+  'model_class' => \{{ namespacedModel }}::class,
   'parent' => $parent_dummy_model_variable,
   'models' => $dummy_model_plural_variable,
   'action_buttons_view' => 'generator::components.models.children.index.action_buttons',

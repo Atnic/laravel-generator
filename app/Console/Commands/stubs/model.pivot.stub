@@ -1,20 +1,20 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 use Smartisan\Filters\Traits\Filterable;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * DummyClass Pivot Model
+ * {{ class }} Pivot Model
  * @extends Pivot
  */
-class DummyClass extends Pivot
+class {{ class }} extends Pivot
 {
     use Filterable;
 
     /** @var string Filter Class */
-    protected $filters = 'DummyNamespace\Filters\DummyClassFilter';
+    protected $filters = '{{ rootNamespace }}Filters\{{ class }}Filter';
 
     /** @var string $table */
     //protected $table = '';

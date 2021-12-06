@@ -3,6 +3,6 @@
 @include('models.children.create', [
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
-  'model_class' => \DummyFullModelClass::class,
+  'model_class' => \{{ namespacedModel }}::class,
   'parent' => $parent_dummy_model_variable
 ])

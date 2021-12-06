@@ -68,9 +68,7 @@ class PolicyMakeCommand extends Command
     {
         if ($name == $this->qualifyClass('ModelPolicy')) return $this->resolveStubPath('/stubs/policy.model.stub');
 
-        return $this->option('model')
-            ? $this->resolveStubPath('/stubs/policy.stub')
-            : parent::getStub();
+        return parent::getStub();
     }
 
     /**
@@ -84,49 +82,5 @@ class PolicyMakeCommand extends Command
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
             ? $customPath
             : __DIR__.$stub;
-    }
-
-    /**
-     * Replace the model for the given stub.
-     *
-     * @param  string  $stub
-     * @param  string  $model
-     * @return string
-     */
-    protected function replaceModel($stub, $model)
-    {
-        $model = str_replace('/', '\\', $model);
-
-        if (Str::startsWith($model, $this->laravel->getNamespace())) {
-            $namespaceModel = $model;
-        } else {
-            $namespaceModel = $this->laravel->getNamespace() . $model;
-        }
-
-        if (Str::startsWith($model, '\\')) {
-            $stub = str_replace('NamespacedDummyModel', trim($model, '\\'), $stub);
-        } else {
-            $stub = str_replace('NamespacedDummyModel', $namespaceModel, $stub);
-        }
-
-        $stub = str_replace(
-            "use {$namespaceModel};\nuse {$namespaceModel};", "use {$namespaceModel};", $stub
-        );
-
-        $model = class_basename(trim($model, '\\'));
-
-        $dummyUser = class_basename($this->userProviderModel());
-
-        $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
-
-        $stub = str_replace('DocDummyModel', Str::snake($dummyModel, ' '), $stub);
-
-        $stub = str_replace('DummyModel', $model, $stub);
-
-        $stub = str_replace('dummyModel', Str::camel($dummyModel), $stub);
-
-        $stub = str_replace('DummyUser', $dummyUser, $stub);
-
-        return str_replace('DocDummyPluralModel', Str::snake(Str::plural($dummyModel), ' '), $stub);
     }
 }

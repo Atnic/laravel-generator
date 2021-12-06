@@ -1,16 +1,16 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
-use DummyFullModelClass;
+use {{ namespacedModel }};
 use Illuminate\Support\Facades\Route;
-use ParentDummyFullModelClass;
-use NamespacedDummyUserModel;
+use {{ namespacedParentModel }};
+use {{ namespacedUserModel }};
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class DummyClass extends TestCase
+class {{ class }} extends TestCase
 {
     /**
      * Display a listing of the resource.
@@ -20,12 +20,13 @@ class DummyClass extends TestCase
     public function testIndex()
     {
         if (!Route::has('dummy_route.index')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_plural_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->saveMany(factory(DummyModelClass::class, 5)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
+        $dummy_model_plural_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->saveMany({{ model }}::factory(5)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
 
         $response = $this->get(dummy_action_index."?search=lorem");
         if ($response->exception) {
@@ -44,11 +45,12 @@ class DummyClass extends TestCase
     public function testCreate()
     {
         if (!Route::has('dummy_route.create')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
 
         $response = $this->get(dummy_action_create);
         if ($response->exception) {
@@ -67,13 +69,14 @@ class DummyClass extends TestCase
     public function testStore()
     {
         if (!Route::has('dummy_route.store')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
 
-        $response = $this->post(dummy_action_store, factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
+        $response = $this->post(dummy_action_store, {{ model }}::factory()->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
         if (($errors = session()->get('errors')) && !$errors->isEmpty()) {
             $this->expectOutputString('');
             $this->setOutputCallback(function () use($response, $errors) { return json_encode($errors->toArray(), JSON_PRETTY_PRINT); });
@@ -96,12 +99,13 @@ class DummyClass extends TestCase
     public function testShow()
     {
         if (!Route::has('dummy_route.show')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save({{ model }}::factory()->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
 
         $response = $this->get(dummy_action_show);
         if ($response->exception) {
@@ -120,12 +124,13 @@ class DummyClass extends TestCase
     public function testEdit()
     {
         if (!Route::has('dummy_route.edit')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save({{ model }}::factory()->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
 
         $response = $this->get(dummy_action_edit);
         if ($response->exception) {
@@ -144,14 +149,15 @@ class DummyClass extends TestCase
     public function testUpdate()
     {
         if (!Route::has('dummy_route.update')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save({{ model }}::factory()->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
 
-        $response = $this->put(dummy_action_update, factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
+        $response = $this->put(dummy_action_update, {{ model }}::factory()->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ])->toArray());
         if (($errors = session()->get('errors')) && !$errors->isEmpty()) {
             $this->expectOutputString('');
             $this->setOutputCallback(function () use($response, $errors) { return json_encode($errors->toArray(), JSON_PRETTY_PRINT); });
@@ -175,12 +181,13 @@ class DummyClass extends TestCase
     public function testDestroy()
     {
         if (!Route::has('dummy_route.destroy')) { $this->expectNotToPerformAssertions(); return; }
-        $user = factory(User::class)->create();
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->actingAs($user);
 
-        $parent_dummy_model_variable = factory(ParentDummyModelClass::class)->create();
-        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save(factory(DummyModelClass::class)->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
+        $parent_dummy_model_variable = {{ parentModel }}::factory()->create();
+        $dummy_model_variable = $parent_dummy_model_variable->dummy_model_plural_variable()->save({{ model }}::factory()->make([ $parent_dummy_model_variable->getForeignKey() => $parent_dummy_model_variable->getKey() ]));
 
         $response = $this->delete(dummy_action_destroy);
         if ($response->exception) {

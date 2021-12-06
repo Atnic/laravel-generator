@@ -1,26 +1,26 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
-use DummyFullModelClass;
+use {{ namespacedModel }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ namespacedRequests }}
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use DummyRootNamespaceHttp\Controllers\Controller;
 
 /**
- * DummyClass
+ * {{ class }}
  */
-class DummyClass extends Controller
+class {{ class }} extends Controller
 {
     /**
      * Relations
      * @param  \Illuminate\Http\Request|null $request
-     * @param DummyModelClass $dummy_model_variable
+     * @param {{ model }} $dummy_model_variable
      * @return array
      */
-    public static function relations(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function relations(Request $request = null, {{ model }} $dummy_model_variable = null)
     {
         return [
             'dummy_model_variable' => [
@@ -38,10 +38,10 @@ class DummyClass extends Controller
     /**
      * Visibles
      * @param  \Illuminate\Http\Request|null $request
-     * @param DummyModelClass $dummy_model_variable
+     * @param {{ model }} $dummy_model_variable
      * @return array
      */
-    public static function visibles(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function visibles(Request $request = null, {{ model }} $dummy_model_variable = null)
     {
         return [
             'index' => [
@@ -62,10 +62,10 @@ class DummyClass extends Controller
     /**
      * Fields
      * @param  \Illuminate\Http\Request|null $request
-     * @param DummyModelClass $dummy_model_variable
+     * @param {{ model }} $dummy_model_variable
      * @return array
      */
-    public static function fields(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function fields(Request $request = null, {{ model }} $dummy_model_variable = null)
     {
         return [
             'create' => [
@@ -90,10 +90,10 @@ class DummyClass extends Controller
     /**
      * Rules
      * @param  \Illuminate\Http\Request|null $request
-     * @param DummyModelClass $dummy_model_variable
+     * @param {{ model }} $dummy_model_variable
      * @return array
      */
-    public static function rules(Request $request = null, DummyModelClass $dummy_model_variable = null)
+    public static function rules(Request $request = null, {{ model }} $dummy_model_variable = null)
     {
         return [
             'hasMany' => [
@@ -135,9 +135,9 @@ class DummyClass extends Controller
      */
     public function index()
     {
-        $dummy_model_plural_variable = DummyModelClass::filter()
+        $dummy_model_plural_variable = {{ model }}::filter()
             ->paginate()->appends(request()->query());
-        $this->authorize('index', 'DummyFullModelClass');
+        $this->authorize('index', '{{ namespacedModel }}');
 
         return response()->view('dummy_view.index', [
             'dummy_model_plural_variable' => $dummy_model_plural_variable,
@@ -154,7 +154,7 @@ class DummyClass extends Controller
      */
     public function create()
     {
-        $this->authorize('create', 'DummyFullModelClass');
+        $this->authorize('create', '{{ namespacedModel }}');
 
         return response()->view('dummy_view.create', [
             'fields' => self::fields(request())['create']
@@ -164,20 +164,20 @@ class DummyClass extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \{{ namespacedStoreRequest }}  $request
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Request $request)
+    public function store({{ storeRequest }} $request)
     {
-        $this->authorize('create', 'DummyFullModelClass');
+        $this->authorize('create', '{{ namespacedModel }}');
         $request->validate(self::rules($request)['store']);
         foreach (self::rules($request)['hasMany'] as $key => $rule)
             $request->validate(array_merge([ $key => 'array' ], $rule));
         foreach (self::rules($request)['hasOne'] as $key => $rule)
             $request->validate(array_merge([ $key => 'array' ], $rule));
 
-        $dummy_model_variable = new DummyModelClass;
+        $dummy_model_variable = new {{ model }};
         foreach (self::rules($request)['store'] as $key => $value) {
             if (Str::contains($value, [ 'file', 'image', 'mimetypes', 'mimes' ])) {
                 if ($request->hasFile($key)) {
@@ -269,7 +269,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             return back()->withInput()->with('status', $exception->getMessage())->with('status-type', 'danger');
         }
@@ -286,11 +286,11 @@ class DummyClass extends Controller
     /**
      * Display the specified resource.
      *
-     * @param DummyModelClass $dummy_model_variable
+     * @param  \{{ namespacedModel }}  $dummy_model_variable
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show(DummyModelClass $dummy_model_variable)
+    public function show({{ model }} $dummy_model_variable)
     {
         $this->authorize('view', $dummy_model_variable);
 
@@ -304,11 +304,11 @@ class DummyClass extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param DummyModelClass $dummy_model_variable
+     * @param  \{{ namespacedModel }}  $dummy_model_variable
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function edit(DummyModelClass $dummy_model_variable)
+    public function edit({{ model }} $dummy_model_variable)
     {
         $this->authorize('update', $dummy_model_variable);
 
@@ -321,12 +321,12 @@ class DummyClass extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param DummyModelClass $dummy_model_variable
+     * @param  \{{ namespacedUpdateRequest }}  $request
+     * @param  \{{ namespacedModel }}  $dummy_model_variable
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, DummyModelClass $dummy_model_variable)
+    public function update({{ updateRequest }} $request, {{ model }} $dummy_model_variable)
     {
         $this->authorize('update', $dummy_model_variable);
         $request->validate(self::rules($request, $dummy_model_variable)['update']);
@@ -426,7 +426,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             return back()->withInput()->with('status', $exception->getMessage())->with('status-type', 'danger');
         }
@@ -443,12 +443,12 @@ class DummyClass extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param DummyModelClass $dummy_model_variable
+     * @param  \{{ namespacedModel }}  $dummy_model_variable
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
-    public function destroy(DummyModelClass $dummy_model_variable)
+    public function destroy({{ model }} $dummy_model_variable)
     {
         $this->authorize('delete', $dummy_model_variable);
         $dummy_model_variable->delete();

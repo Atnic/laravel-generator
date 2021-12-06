@@ -6,5 +6,5 @@
   'panel_title' => ucwords(__('dummy_route.singular')),
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
-  'model_class' => \DummyFullModelClass::class,
+  'model_class' => \{{ namespacedModel }}::class,
 ])

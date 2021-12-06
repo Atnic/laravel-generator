@@ -1,15 +1,15 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
-use DummyFullModelClass;
+use {{ namespacedModel }};
 use Illuminate\Support\Facades\Route;
-use NamespacedDummyUserModel;
+use {{ namespacedUserModel }};
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class DummyClass extends TestCase
+class {{ class }} extends TestCase
 {
     /**
      * Display a listing of the resource.
@@ -58,7 +58,7 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+        // $dummy_model_variable = {{ model }}::factory()->create();
 
         // $response = $this->getJson(dummy_action_show);
         // if ($response->exception) {
@@ -83,7 +83,7 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+        // $dummy_model_variable = {{ model }}::factory()->create();
 
         // $response = $this->putJson(dummy_action_update, [
         //     'name' => 'Test'
@@ -110,7 +110,7 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        // $dummy_model_variable = factory(DummyModelClass::class)->create();
+        // $dummy_model_variable = {{ model }}::factory()->create();
 
         // $response = $this->deleteJson(dummy_action_destroy);
         // if ($response->exception) {

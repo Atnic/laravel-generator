@@ -1,14 +1,14 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
+use {{ rootNamespace }}Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DummyRootNamespaceHttp\Controllers\Controller;
 
 /**
- * DummyClass
+ * {{ class }}
  */
-class DummyClass extends Controller
+class {{ class }} extends Controller
 {
     /**
      * Instantiate a new controller instance.
@@ -48,6 +48,7 @@ class DummyClass extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -85,6 +86,7 @@ class DummyClass extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
@@ -95,6 +97,7 @@ class DummyClass extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {

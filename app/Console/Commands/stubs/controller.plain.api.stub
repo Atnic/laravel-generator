@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * DummyClass
+ * {{ class }}
  */
-class DummyClass extends Controller
+class {{ class }} extends Controller
 {
     /**
      * Instantiate a new controller instance.

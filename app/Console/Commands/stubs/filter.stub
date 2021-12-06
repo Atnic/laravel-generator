@@ -1,11 +1,11 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 /**
- * DummyClass Filter
+ * {{ class }} Filter
  */
-class DummyClass extends BaseFilter
+class {{ class }} extends BaseFilter
 {
     /**
      * Findable Field,

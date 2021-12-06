@@ -7,7 +7,7 @@
   'panel_title' => ucwords(__('dummy_route.plural')),
   'resource_route' => 'dummy_route',
   'model_variable' => 'dummy_model_variable',
-  'model_class' => \DummyFullModelClass::class,
+  'model_class' => \{{ namespacedModel }}::class,
   'models' => $dummy_model_plural_variable,
   'action_buttons_view' => 'generator::components.models.index.action_buttons',
 ])

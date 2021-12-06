@@ -1,15 +1,15 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
-use DummyFullModelClass;
+use {{ namespacedModel }};
 use Illuminate\Support\Facades\Route;
-use NamespacedDummyUserModel;
+use {{ namespacedUserModel }};
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class DummyClass extends TestCase
+class {{ class }} extends TestCase
 {
     /**
      * Display a listing of the resource.
@@ -24,7 +24,7 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        $dummy_model_plural_variable = DummyModelClass::factory(5)->create();
+        $dummy_model_plural_variable = {{ model }}::factory(5)->create();
 
         $response = $this->getJson(dummy_action_index."?search=lorem");
         if ($response->exception) {
@@ -47,7 +47,7 @@ class DummyClass extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api');
-        $response = $this->postJson(dummy_action_store, DummyModelClass::factory()->make()->toArray());
+        $response = $this->postJson(dummy_action_store, {{ model }}::factory()->make()->toArray());
         if ($response->exception) {
             $this->expectOutputString('');
             if ($response->status() == 422)
@@ -71,7 +71,7 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        $dummy_model_variable = DummyModelClass::factory()->create();
+        $dummy_model_variable = {{ model }}::factory()->create();
 
         $response = $this->getJson(dummy_action_show);
         if ($response->exception) {
@@ -95,9 +95,9 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        $dummy_model_variable = DummyModelClass::factory()->create();
+        $dummy_model_variable = {{ model }}::factory()->create();
 
-        $response = $this->putJson(dummy_action_update, DummyModelClass::factory()->make()->toArray());
+        $response = $this->putJson(dummy_action_update, {{ model }}::factory()->make()->toArray());
         if ($response->exception) {
             $this->expectOutputString('');
             if ($response->status() == 422)
@@ -121,7 +121,7 @@ class DummyClass extends TestCase
 
         $this->actingAs($user, 'api');
 
-        $dummy_model_variable = DummyModelClass::factory()->create();
+        $dummy_model_variable = {{ model }}::factory()->create();
 
         $response = $this->deleteJson(dummy_action_destroy);
         if ($response->exception) {

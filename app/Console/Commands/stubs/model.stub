@@ -1,14 +1,14 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 /**
- * DummyClass Model
+ * {{ class }} Model
  */
-class DummyClass extends BaseModel
+class {{ class }} extends BaseModel
 {
     /** @var string Filter Class */
-    protected $filters = 'DummyRootNamespaceFilters\DummyClassFilter';
+    protected $filters = '{{ rootNamespace }}Filters\{{ class }}Filter';
 
     /** @var string $table */
     //protected $table = '';

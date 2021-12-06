@@ -1,14 +1,14 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 use Illuminate\Support\Facades\Route;
-use NamespacedDummyUserModel;
+use {{ namespacedUserModel }};
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class DummyClass extends TestCase
+class {{ class }} extends TestCase
 {
     /**
      * Invoke single action controller.
