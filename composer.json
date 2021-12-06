@@ -4,15 +4,9 @@
     "keywords": ["generator", "package", "laravel"],
     "license": "MIT",
     "type": "package",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../eloquent-filters"
-        }
-    ],
     "require": {
         "php": "^7.3|^8.0",
-        "atnic/eloquent-filters": "dev-develop",
+        "atnic/eloquent-filters": "^2.2.2",
         "laravel/breeze": "^1.4",
         "laravel/framework": "^8.65",
         "laravel/passport": "^10.2",
