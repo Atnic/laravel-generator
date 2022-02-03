@@ -63,7 +63,16 @@ class BaseFilter extends Filter
      */
     public function __call($name, $arguments)
     {
-        if (Str::contains($name, '__')) {
+        if (is_array($arguments[0]) && count($arguments[0]) && $this->builder->getModel()->{$name}() instanceof Relation) {
+            return $this->builder->whereHas($name, function (Builder $query) use($name, $arguments) {
+                $request = new Request($arguments[0]);
+                /** @var Relation $relation */
+                $relation = $this->builder->getModel()->{$name}();
+                $model = $relation->getModel();
+                return (new ("{$model->getFilter()}")($request))->apply($query);
+            });
+        }
+        elseif (Str::contains($name, '__')) {
             $operations = explode('__', $name, 2);
             return $this->{$operations[1]}($operations[0], $arguments[0]);
         }
@@ -82,7 +91,7 @@ class BaseFilter extends Filter
     {
         $filters = array_diff(get_class_methods($this), [
             '__construct', '__call', 'apply', 'getFilters', 'getFindables', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql',
-            'eq', 'ne', 'lt', 'lte', 'gt', 'gte', 'between', 'in', 'not_in', 'null', 'not_null', 'begins_with', 'contains'
+            'eq', 'ne', 'lt', 'lte', 'gt', 'gte', 'between', 'in', 'not_in', 'null', 'not_null', 'begins_with', 'contains', 'ends_with'
         ]);
         $filters = array_merge($filters, array_map(function ($findable, $key) {
             return is_array($findable) ? $key : $findable;
@@ -91,7 +100,7 @@ class BaseFilter extends Filter
             return is_array($searchable) ? $key : $searchable;
         }, $this->searchables, array_keys($this->searchables)));
         $filters = array_merge($filters, array_filter($this->request->keys(), function ($key) {
-            return Str::contains($key, '__');
+            return Str::contains($key, '__') || is_array($this->request->get($key));
         }));
 
         return Arr::only($this->request->query(), array_unique($filters));
@@ -225,7 +234,7 @@ class BaseFilter extends Filter
                     if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                             /** @var BelongsTo|MorphTo $relation */
-                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getOwnerKey()}", $relation->getQualifiedForeignKey());
+                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getOwnerKeyName()}", $relation->getQualifiedForeignKeyName());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
                             /** @var HasOne|MorphOne $relation */
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getForeignKeyName()}", $relation->getQualifiedParentKeyName());
@@ -586,9 +595,9 @@ class BaseFilter extends Filter
         /** @var Connection $connection */
         $connection = $this->builder->getConnection();
         if ($connection->getDriverName() == 'pgsql')
-            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value");
+            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "$value%");
         else
-            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value");
+            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "$value%");
     }
 
     /**
@@ -604,6 +613,21 @@ class BaseFilter extends Filter
             return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value%");
         else
             return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value%");
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function ends_with($column, $value)
+    {
+        /** @var Connection $connection */
+        $connection = $this->builder->getConnection();
+        if ($connection->getDriverName() == 'pgsql')
+            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value");
+        else
+            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value");
     }
 
     /**
