@@ -69,7 +69,8 @@ class BaseFilter extends Filter
                 /** @var Relation $relation */
                 $relation = $this->builder->getModel()->{$name}();
                 $model = $relation->getModel();
-                return (new ("{$model->getFilter()}")($request))->apply($query);
+                $filter = $model->getFilter();
+                return (new $filter($request))->apply($query);
             });
         }
         elseif (Str::contains($name, '__')) {
@@ -234,7 +235,7 @@ class BaseFilter extends Filter
                     if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                             /** @var BelongsTo|MorphTo $relation */
-                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getOwnerKeyName()}", $relation->getQualifiedForeignKeyName());
+                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getOwnerKey()}", $relation->getQualifiedForeignKey());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
                             /** @var HasOne|MorphOne $relation */
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getForeignKeyName()}", $relation->getQualifiedParentKeyName());
