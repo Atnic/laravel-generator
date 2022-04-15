@@ -18,6 +18,7 @@ class DummyClass extends TestCase
     public function test()
     {
         if (!Route::has('dummy_route')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user, 'api');

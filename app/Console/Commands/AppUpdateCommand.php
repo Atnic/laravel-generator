@@ -13,6 +13,7 @@ class AppUpdateCommand extends Command
      */
     protected $signature = 'app:update '.
         '{--production : Run config:cache and route:cache}'.
+        '{--no-downtime : Run without down and up}'.
         '{--seed= : Run seeder}';
 
     /**
@@ -39,7 +40,8 @@ class AppUpdateCommand extends Command
      */
     public function handle()
     {
-        $this->call('down');
+        if (!$this->option('no-downtime'))
+            $this->call('down');
         if (!is_link(public_path('storage'))) {
             $this->call('storage:link');
         }
@@ -57,6 +59,7 @@ class AppUpdateCommand extends Command
             $this->call('config:cache');
             $this->call('route:cache');
         }
-        $this->call('up');
+        if (!$this->option('no-downtime'))
+            $this->call('up');
     }
 }

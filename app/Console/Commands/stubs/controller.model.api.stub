@@ -4,6 +4,7 @@ namespace DummyNamespace;
 
 use DummyFullModelClass;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -48,10 +49,10 @@ class DummyClass extends Controller
     }
 
     /**
-    * Instantiate a new controller instance.
-    *
-    * @return void
-    */
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('auth:api');
@@ -180,7 +181,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw new HttpException(500, $exception->getMessage(), $exception);
         }
@@ -310,7 +311,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw new HttpException(500, $exception->getMessage(), $exception);
         }

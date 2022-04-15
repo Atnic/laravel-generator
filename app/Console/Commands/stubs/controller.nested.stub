@@ -274,7 +274,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             return back()->withInput()->with('status', $exception->getMessage())->with('status-type', 'danger');
         }
@@ -445,7 +445,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             return back()->withInput()->with('status', $exception->getMessage())->with('status-type', 'danger');
         }

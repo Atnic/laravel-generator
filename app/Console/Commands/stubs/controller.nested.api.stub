@@ -185,7 +185,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw new HttpException(500, $exception->getMessage(), $exception);
         }
@@ -321,7 +321,7 @@ class DummyClass extends Controller
             }
             foreach ($deletedModels as $model) $model->delete();
             DB::commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             DB::rollBack();
             throw new HttpException(500, $exception->getMessage(), $exception);
         }

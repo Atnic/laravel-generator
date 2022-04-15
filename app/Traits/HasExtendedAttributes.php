@@ -40,34 +40,36 @@ trait HasExtendedAttributes
 
     /**
      * @param $value
-     * @return string
+     * @return string|null
      */
     protected function asStorageUrl($value)
     {
-        return Storage::url($value);
+        if (Storage::exists($value))
+            return Storage::url($value);
+        return $this->asStoragePublicUrl($value);
     }
 
     /**
      * @param $value
-     * @return string
+     * @return string|null
      */
     protected function asStoragePublicUrl($value)
     {
-        return Storage::disk('public')->url($value);
+        if (Storage::disk('public')->exists($value))
+            return Storage::disk('public')->url($value);
+        return null;
     }
 
     /**
      * @param $value
-     * @return string
+     * @return string|null
      */
     protected function asStorageCloudUrl($value)
     {
         if (Storage::cloud()->exists($value))
             return Storage::cloud()->url($value);
-        elseif (Storage::exists($value))
-            return $this->asStorageUrl($value);
         else
-            return $this->asStoragePublicUrl($value);
+            return $this->asStorageUrl($value);
     }
 
     /**

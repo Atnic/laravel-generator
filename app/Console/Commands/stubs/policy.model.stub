@@ -14,7 +14,7 @@ class ModelPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view list of model.
+     * Determine whether the user can view any models.
      *
      * @param DummyUser $user
      * @param null $parent
@@ -43,7 +43,7 @@ class ModelPolicy
     }
 
     /**
-     * Determine whether the user can create model.
+     * Determine whether the user can create models.
      *
      * @param DummyUser $user
      * @param null $parent
@@ -87,7 +87,7 @@ class ModelPolicy
     }
 
     /**
-     * Determine whether the user can restore the contact.
+     * Determine whether the user can restore the model.
      *
      * @param DummyUser $user
      * @param Model $model
@@ -101,7 +101,7 @@ class ModelPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete the contact.
+     * Determine whether the user can permanently delete the model.
      *
      * @param DummyUser $user
      * @param Model $model

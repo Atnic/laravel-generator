@@ -138,8 +138,8 @@ class TestMakeCommand extends Command
             'ParentDummyFullModelClass' => $parentModelClass,
             'ParentDummyModelClass' => class_basename($parentModelClass),
             'ParentDummyModelVariable' => lcfirst(class_basename($parentModelClass)),
-            'parent_dummy_model_variable' => snake_case(class_basename($parentModelClass)),
-            'ParentDummyTitle' => ucwords(snake_case(class_basename($parentModelClass), ' ')),
+            'parent_dummy_model_variable' => Str::snake(class_basename($parentModelClass)),
+            'ParentDummyTitle' => ucwords(Str::snake(class_basename($parentModelClass), ' ')),
         ];
     }
 
@@ -162,10 +162,10 @@ class TestMakeCommand extends Command
             'DummyFullModelClass' => $modelClass,
             'DummyModelClass' => class_basename($modelClass),
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-            'dummyModelVariable' => camel_case(class_basename($modelClass)),
-            'dummy_model_variable' => snake_case(class_basename($modelClass)),
-            'dummy_model_plural_variable' => str_plural(snake_case(class_basename($modelClass))),
-            'DummyTitle' => ucwords(snake_case(class_basename($modelClass), ' ')),
+            'dummyModelVariable' => Str::camel(class_basename($modelClass)),
+            'dummy_model_variable' => Str::snake(class_basename($modelClass)),
+            'dummy_model_plural_variable' => Str::plural(Str::snake(class_basename($modelClass))),
+            'DummyTitle' => ucwords(Str::snake(class_basename($modelClass), ' ')),
         ]);
     }
 
@@ -202,14 +202,14 @@ class TestMakeCommand extends Command
         $name = Str::replaceLast('ControllerTest', '', $name);
         $names = explode('\\', $name);
         foreach ($names as $key => $value) {
-            $names[$key] = snake_case($value);
+            $names[$key] = Str::snake($value);
         }
         if ($this->option('parent') && count($names) >= 2) {
-            $model = str_plural(array_pop($names));
-            $parent = str_plural(array_pop($names));
+            $model = Str::plural(array_pop($names));
+            $parent = Str::plural(array_pop($names));
             array_push($names, $parent, $model);
         } elseif (($this->option('model') || $this->option('resource')) && count($names) >= 1) {
-            $model = str_plural(array_pop($names));
+            $model = Str::plural(array_pop($names));
             array_push($names, $model);
         }
         $name = implode('.', $names);

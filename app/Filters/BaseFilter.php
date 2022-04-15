@@ -56,14 +56,29 @@ class BaseFilter extends Filter
         }
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     * @return Builder
+     */
     public function __call($name, $arguments)
     {
-        if (Str::contains($name, '__')) {
+        if (is_array($arguments[0]) && count($arguments[0]) && $this->builder->getModel()->{$name}() instanceof Relation) {
+            return $this->builder->whereHas($name, function (Builder $query) use($name, $arguments) {
+                $request = new Request($arguments[0]);
+                /** @var Relation $relation */
+                $relation = $this->builder->getModel()->{$name}();
+                $model = $relation->getModel();
+                $filter = $model->getFilter();
+                return (new $filter($request))->apply($query);
+            });
+        }
+        elseif (Str::contains($name, '__')) {
             $operations = explode('__', $name, 2);
             return $this->{$operations[1]}($operations[0], $arguments[0]);
         }
         elseif (isset($this->findables[$name]) || in_array($name, $this->findables))
-            return $this->find("{$name}:{$arguments[0]}");
+            return $this->find("{$name}={$arguments[0]}");
         elseif (isset($this->searchables[$name]) || in_array($name, $this->searchables))
             return $this->search($arguments[0], isset($this->searchables[$name]) ? [ $name => $this->searchables[$name] ] : [ $name ]);
     }
@@ -77,7 +92,7 @@ class BaseFilter extends Filter
     {
         $filters = array_diff(get_class_methods($this), [
             '__construct', '__call', 'apply', 'getFilters', 'getFindables', 'getSearchables', 'getSortables', 'buildSearch', 'buildSql',
-            'eq', 'ne', 'lt', 'lte', 'gt', 'gte', 'between', 'in', 'null', 'not_null', 'begins_with', 'contains'
+            'eq', 'ne', 'lt', 'lte', 'gt', 'gte', 'between', 'in', 'not_in', 'null', 'not_null', 'begins_with', 'contains', 'ends_with'
         ]);
         $filters = array_merge($filters, array_map(function ($findable, $key) {
             return is_array($findable) ? $key : $findable;
@@ -86,7 +101,7 @@ class BaseFilter extends Filter
             return is_array($searchable) ? $key : $searchable;
         }, $this->searchables, array_keys($this->searchables)));
         $filters = array_merge($filters, array_filter($this->request->keys(), function ($key) {
-            return Str::contains($key, '__');
+            return Str::contains($key, '__') || is_array($this->request->get($key));
         }));
 
         return Arr::only($this->request->query(), array_unique($filters));
@@ -126,7 +141,7 @@ class BaseFilter extends Filter
         $finded_columns = $value ? explode('|', $value) : [];
         $finds = [];
         foreach ($finded_columns as $key => $finded_column) {
-            $find = $finded_column ? explode(':', $finded_column) : [];
+            $find = $finded_column ? explode('=', $finded_column) : [];
             if (!is_array($find) || !in_array($find[0], $this->findables) || !$find[1]) continue;
             array_push($finds, [
                 'column' => $find[0],
@@ -209,21 +224,21 @@ class BaseFilter extends Filter
         return $this->builder->when(!$validator->fails(), function (Builder $query) use($sorts) {
             if (empty($query->getQuery()->columns)) $query->select([ '*' => $query->qualifyColumn('*') ]);
             foreach ($sorts as $sort) {
-                if (str_contains($sort['column'], '.')) {
+                if (Str::contains($sort['column'], '.')) {
                     $join = explode('.', $sort['column']);
                     /** @var Relation $relation */
                     $relation = Relation::noConstraints(function () use($query, $join) {
                         return $query->getModel()->{$join[0]}();
                     });
                     $related = clone $relation->getModel();
-                    $related->setTable('t'.strtolower(str_random(8)));
+                    $related->setTable('t'.strtolower(Str::random(8)));
                     if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo', 'HasOne', 'MorphOne', 'BelongsToOne', 'BelongsToThrough' ])) {
                         if (in_array(class_basename($relation), [ 'BelongsTo', 'MorphTo' ])) {
                             /** @var BelongsTo|MorphTo $relation */
-                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), $related->qualifyColumn($relation->getOwnerKey()), $relation->getQualifiedForeignKey());
+                            $query->leftJoin(DB::raw('('. $this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getOwnerKey()}", $relation->getQualifiedForeignKey());
                         } elseif (in_array(class_basename($relation), [ 'HasOne', 'MorphOne' ])) {
                             /** @var HasOne|MorphOne $relation */
-                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$related->getTable()), $related->qualifyColumn($relation->getForeignKeyName()), $relation->getQualifiedParentKeyName());
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getForeignKeyName()}", $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
                             /** @var BelongsToOne $relation */
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
@@ -242,7 +257,9 @@ class BaseFilter extends Filter
                         $query->addSelect(DB::raw($related->getTable().'.'.$join[1].' as '.$join[0].'_'.$join[1]));
                     }
                 } else {
-                    $query->orderByRaw("({$query->qualifyColumn($sort['column'])} IS NULL)");
+                    $grammar = $query->getModel()->getConnection()->getQueryGrammar();
+                    if (!($query->qualifyColumn($sort['column']) instanceof Expression))
+                        $query->orderByRaw("({$grammar->wrap($query->qualifyColumn($sort['column']))} IS NULL)");
                     $query->orderBy($query->qualifyColumn($sort['column']), $sort['dir']);
                 }
             }
@@ -516,7 +533,33 @@ class BaseFilter extends Filter
      */
     public function in($column, $value)
     {
-        return $this->builder->whereIn($this->builder->qualifyColumn($column), explode(',', $value));
+        if (is_array($value))
+            $values = $value;
+        else $values = explode(',', $value);
+        $values = array_map(function ($value) {
+            if (is_float($value)) return (float) $value;
+            elseif (is_numeric($value)) return (int) $value;
+            return $value;
+        }, $values);
+        return $this->builder->whereIn($this->builder->qualifyColumn($column), $values);
+    }
+
+    /**
+     * @param string $column
+     * @param string|array $value
+     * @return Builder
+     */
+    public function not_in($column, $value)
+    {
+        if (is_array($value))
+            $values = $value;
+        else $values = explode(',', $value);
+        $values = array_map(function ($value) {
+            if (is_float($value)) return  (float) $value;
+            elseif (is_numeric($value)) return (int) $value;
+            return $value;
+        }, $values);
+        return $this->builder->whereNotIn($this->builder->qualifyColumn($column), $values);
     }
 
     /**
@@ -529,12 +572,18 @@ class BaseFilter extends Filter
     }
 
     /**
-     * @param string $column
+     * @param string $columns
      * @return Builder
      */
-    public function not_null($column)
+    public function not_null($columns)
     {
-        return $this->builder->whereNotNull($this->builder->qualifyColumn($column));
+        $columns = explode(',', $columns);
+        $validator = validator([ 'value' => $columns ], [ 'value.*' => 'string' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($columns) {
+            foreach ($columns as $column) {
+                $query->whereNotNull($column);
+            }
+        });
     }
 
     /**
@@ -547,9 +596,9 @@ class BaseFilter extends Filter
         /** @var Connection $connection */
         $connection = $this->builder->getConnection();
         if ($connection->getDriverName() == 'pgsql')
-            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value");
+            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "$value%");
         else
-            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value");
+            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "$value%");
     }
 
     /**
@@ -565,5 +614,133 @@ class BaseFilter extends Filter
             return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value%");
         else
             return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value%");
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function ends_with($column, $value)
+    {
+        /** @var Connection $connection */
+        $connection = $this->builder->getConnection();
+        if ($connection->getDriverName() == 'pgsql')
+            return $this->builder->where($this->builder->qualifyColumn($column), 'ilike', "%$value");
+        else
+            return $this->builder->where($this->builder->qualifyColumn($column), 'like', "%$value");
+    }
+
+    /**
+     * @param $column
+     * @param $value
+     * @return Builder
+     */
+    public function doesnt_contains($column, $value)
+    {
+        return $this->builder->where(function (Builder $query) use($column, $value) {
+            $query->where($this->builder->qualifyColumn($column), 'not like', "%$value%")
+                ->orWhereNull($this->builder->qualifyColumn($column));
+        });
+    }
+
+    /**
+     * Get collection of resources by has relation
+     * @param  string $values
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function where_has($values)
+    {
+        $hases = explode('|', $values);
+        $model = $this->builder->getModel();
+        $hases = collect($hases)->filter(function ($has) use($model) {
+            $relation_has = explode(',', $has)[0];
+            if (Str::contains($has, '.')) return ($model->{explode('.', $relation_has)[0]}() instanceof Relation);
+            return ($model->{$relation_has}() instanceof Relation);
+        })->toArray();
+        $validator = validator([ 'values' => $hases ], [ 'values' => 'array|min:1' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($hases) {
+            foreach ($hases as $has) {
+                $exploded_has = explode(',', $has);
+                $relation = $exploded_has[0];
+
+                $args = array_map(function ($value){
+                    if (is_float($value)) return  (float) $value;
+                    elseif (is_numeric($value)) return (int) $value;
+                    elseif ($value == 'NULL') return null;
+                    return $value;
+                }, array_splice($exploded_has,1, count($exploded_has)));
+
+                $query->whereHas($relation, function (Builder $query) use ($args) {
+                    $index = 0;
+
+                    while ($index < count($args)) {
+                        $column = $args[$index];
+                        $operator = $args[$index+1];
+
+                        $invalidOperator = !in_array(strtolower($operator), $query->getQuery()->operators, true) &&
+                            !in_array(strtolower($operator), $query->getQuery()->grammar->getOperators(), true);
+
+                        if ($invalidOperator) {
+                            $query->where($query->qualifyColumn($column), $operator);
+                            $index += 2;
+                        } else {
+                            $query->where($query->qualifyColumn($column), $operator, $args[$index + 2]);
+                            $index += 3;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Get collection of resources by has relation
+     * @param  string $values
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function where_doesnt_have($values)
+    {
+        $hases = explode('|', $values);
+        $model = $this->builder->getModel();
+        $hases = collect($hases)->filter(function ($has) use($model) {
+            $relation_has = explode(',', $has)[0];
+            if (Str::contains($has, '.')) return ($model->{explode('.', $relation_has)[0]}() instanceof Relation);
+            return ($model->{$relation_has}() instanceof Relation);
+        })->toArray();
+        $validator = validator([ 'values' => $hases ], [ 'values' => 'array|min:1' ]);
+        return $this->builder->when(!$validator->fails(), function (Builder $query) use($hases) {
+            foreach ($hases as $has) {
+                $exploded_has = explode(',', $has);
+                $relation = $exploded_has[0];
+
+                $args = array_map(function ($value){
+                    if (is_float($value)) return  (float) $value;
+                    elseif (is_numeric($value)) return (int) $value;
+                    elseif ($value == 'NULL') return null;
+                    return $value;
+                }, array_splice($exploded_has,1, count($exploded_has)));
+
+                $query->whereDoesntHave($relation, function (Builder $query) use ($args) {
+                    $index = 0;
+
+                    while ($index < count($args)) {
+                        $column = $args[$index];
+                        $operator = $args[$index+1];
+
+                        $invalidOperator = !in_array(strtolower($operator), $query->getQuery()->operators, true) &&
+                            !in_array(strtolower($operator), $query->getQuery()->grammar->getOperators(), true);
+
+                        if ($invalidOperator) {
+                            $query->where($query->qualifyColumn($column), $operator);
+                            $index += 2;
+                        } else {
+                            $query->where($query->qualifyColumn($column), $operator, $args[$index + 2]);
+                            $index += 3;
+                        }
+                    }
+                });
+            }
+        });
     }
 }

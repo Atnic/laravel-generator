@@ -19,6 +19,7 @@ class DummyClass extends TestCase
     public function testIndex()
     {
         if (!Route::has('dummy_route.index')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
@@ -42,6 +43,7 @@ class DummyClass extends TestCase
     public function testCreate()
     {
         if (!Route::has('dummy_route.create')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
@@ -62,6 +64,7 @@ class DummyClass extends TestCase
     public function testStore()
     {
         if (!Route::has('dummy_route.store')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
@@ -88,6 +91,7 @@ class DummyClass extends TestCase
     public function testShow()
     {
         if (!Route::has('dummy_route.show')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
@@ -111,6 +115,7 @@ class DummyClass extends TestCase
     public function testEdit()
     {
         if (!Route::has('dummy_route.edit')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
@@ -134,6 +139,7 @@ class DummyClass extends TestCase
     public function testUpdate()
     {
         if (!Route::has('dummy_route.update')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
@@ -164,6 +170,7 @@ class DummyClass extends TestCase
     public function testDestroy()
     {
         if (!Route::has('dummy_route.destroy')) { $this->expectNotToPerformAssertions(); return; }
+        /** @var User $user */
         $user = factory(User::class)->create();
 
         $this->actingAs($user);
