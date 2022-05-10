@@ -102,7 +102,9 @@ class PolicyMakeCommand extends Command
 
         $model = class_basename(trim($model, '\\'));
 
-        $dummyUser = class_basename($this->userProviderModel());
+        if (method_exists($this, 'userProviderModel'))
+            $dummyUser = class_basename($this->userProviderModel());
+        else $dummyUser = class_basename(config('auth.providers.users.model'));
 
         $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
 
