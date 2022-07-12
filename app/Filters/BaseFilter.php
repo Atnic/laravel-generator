@@ -241,13 +241,13 @@ class BaseFilter extends Filter
                             $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()).') as '.$related->getTable()), "{$related->getTable()}.{$relation->getForeignKeyName()}", $relation->getQualifiedParentKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToOne' ])) {
                             /** @var BelongsToOne $relation */
-                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->select([
                                     '*' => $relation->getRelated()->qualifyColumn('*') ,
                                     $relation->getForeignPivotKeyName() => $relation->getTable().'.'.$relation->getForeignPivotKeyName()
                                 ])).') as '.$related->getTable()), $relation->getQualifiedParentKeyName(), $related->getTable().'.'.$relation->getForeignPivotKeyName());
                         } elseif (in_array(class_basename($relation), [ 'BelongsToThrough' ])) {
                             /** @var BelongsToThrough $relation */
-                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->addSelect([
+                            $query->leftJoin(DB::raw('('.$this->buildSql($relation->getQuery()->select([
                                     '*' => $relation->getRelated()->qualifyColumn('*') ,
                                     $relation->getSecondKeyName() => $relation->getQualifiedSecondOwnerKeyName().' as '.$relation->getSecondKeyName()
                                 ])).') as '.$related->getTable()), $relation->getQualifiedFarKeyName(), $related->getTable().'.'.explode('.', $relation->getQualifiedForeignKeyName())[1]);
