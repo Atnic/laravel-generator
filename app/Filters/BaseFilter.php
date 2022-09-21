@@ -63,7 +63,7 @@ class BaseFilter extends Filter
      */
     public function __call($name, $arguments)
     {
-        if (is_array($arguments[0]) && count($arguments[0]) && $this->builder->getModel()->{$name}() instanceof Relation) {
+        if (is_array($arguments[0]) && count($arguments[0]) && method_exists($this->builder->getModel(), $name) && $this->builder->getModel()->{$name}() instanceof Relation) {
             return $this->builder->whereHas($name, function (Builder $query) use($name, $arguments) {
                 $request = new Request($arguments[0]);
                 /** @var Relation $relation */
